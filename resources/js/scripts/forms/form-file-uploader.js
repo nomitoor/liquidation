@@ -1,81 +1,81 @@
-/*=========================================================================================
-    File Name: form-file-uploader.js
-    Description: dropzone
-    --------------------------------------------------------------------------------------
-    Item Name: Vuexy  - Vuejs, HTML & Laravel Admin Dashboard Template
-    Author: PIXINVENT
-    Author URL: http://www.themeforest.net/user/pixinvent
-==========================================================================================*/
+Dropzone.options.dropzone =
+{
+  maxFiles: 1,
+  maxFilesize: 6800,
+  acceptedFiles: ".csv",
+  addRemoveLinks: true,
+  timeout: 50000,
+  init: function () {
 
-Dropzone.autoDiscover = false;
+    // Get images
+    var myDropzone = this;
+    $.ajax({
+      url: '/manifest',
+      type: 'POST',
+      dataType: 'json',
+      success: function (data) {
+        //console.log(data);
+        $.each(data, function (key, value) {
 
-$(function () {
-  'use strict';
-
-  var singleFile = $('#dpz-single-file');
-  var multipleFiles = $('#dpz-multiple-files');
-  var buttonSelect = $('#dpz-btn-select-files');
-  var limitFiles = $('#dpz-file-limits');
-  var acceptFiles = $('#dpz-accept-files');
-  var removeThumb = $('#dpz-remove-thumb');
-  var removeAllThumbs = $('#dpz-remove-all-thumb');
-
-  // Basic example
-  singleFile.dropzone({
-    paramName: 'file', // The name that will be used to transfer the file
-    maxFiles: 1
-  });
-
-  // Multiple Files
-  multipleFiles.dropzone({
-    paramName: 'file', // The name that will be used to transfer the file
-    maxFilesize: 0.5, // MB
-    clickable: true
-  });
-
-  // Use Button To Select Files
-  buttonSelect.dropzone({
-    clickable: '#select-files' // Define the element that should be used as click trigger to select files.
-  });
-
-  // Limit File Size and No. Of Files
-  limitFiles.dropzone({
-    paramName: 'file', // The name that will be used to transfer the file
-    maxFilesize: 0.5, // MB
-    maxFiles: 5,
-    maxThumbnailFilesize: 1 // MB
-  });
-
-  // Accepted Only Files
-  acceptFiles.dropzone({
-    paramName: 'file', // The name that will be used to transfer the file
-    maxFilesize: 1, // MB
-    acceptedFiles: 'image/*'
-  });
-
-  //Remove Thumbnail
-  removeThumb.dropzone({
-    paramName: 'file', // The name that will be used to transfer the file
-    maxFilesize: 1, // MB
-    addRemoveLinks: true,
-    dictRemoveFile: ' Trash'
-  });
-
-  // Remove All Thumbnails
-  removeAllThumbs.dropzone({
-    paramName: 'file', // The name that will be used to transfer the file
-    maxFilesize: 1, // MB
-    init: function () {
-      // Using a closure.
-      var _this = this;
-
-      // Setup the observer for the button.
-      $('#clear-dropzone').on('click', function () {
-        // Using "_this" here, because "this" doesn't point to the dropzone anymore
-        _this.removeAllFiles();
-        // If you want to cancel uploads as well, you
-        // could also call _this.removeAllFiles(true);
+          var file = { name: value.name, size: value.size };
+          myDropzone.options.addedfile.call(myDropzone, file);
+          myDropzone.options.thumbnail.call(myDropzone, file, value.path);
+          myDropzone.emit("complete", file);
+        });
+      }
+    });
+  },
+  removedfile: function (file) {
+    if (this.options.dictRemoveFile) {
+      return Dropzone.confirm("Are You Sure to " + this.options.dictRemoveFile, function () {
+        if (file.previewElement.id != "") {
+          var name = file.previewElement.id;
+        } else {
+          var name = file.name;
+        }
+        //console.log(name);
+        $.ajax({
+          headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          },
+          type: 'POST',
+          url: delete_url,
+          data: { filename: name },
+          success: function (data) {
+            alert(data.success + " File has been successfully removed!");
+          },
+          error: function (e) {
+            console.log(e);
+          }
+        });
+        var fileRef;
+        return (fileRef = file.previewElement) != null ?
+          fileRef.parentNode.removeChild(file.previewElement) : void 0;
       });
     }
-  });
-});
+  },
+
+  success: function (file, response) {
+    file.previewElement.id = response.success;
+    //console.log(file); 
+    // set new images names in dropzone’s preview box.
+    var olddatadzname = file.previewElement.querySelector("[data-dz-name]");
+    file.previewElement.querySelector("img").alt = response.success;
+    olddatadzname.innerHTML = response.success;
+  },
+  error: function (file, response) {
+    if ($.type(response) === "string")
+      var message = response; //dropzone sends it's own error messages in string
+    else
+      var message = response.message;
+    file.previewElement.classList.add("dz-error");
+    _ref = file.previewElement.querySelectorAll("[data-dz-errormessage]");
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      node = _ref[_i];
+      _results.push(node.textContent = message);
+    }
+    return _results;
+  }
+
+};

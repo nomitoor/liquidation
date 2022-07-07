@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StaterkitController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\ManifestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,9 +20,13 @@ use App\Http\Controllers\LanguageController;
 Auth::routes();
 
 
+
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/', [StaterkitController::class, 'home'])->name('home');
-    Route::get('home', [StaterkitController::class, 'home'])->name('home');
+    // Route::get('home', [StaterkitController::class, 'home'])->name('home');
+    
+    Route::resource('manifest', ManifestController::class);
+
     // Route Components
     Route::get('layouts/collapsed-menu', [StaterkitController::class, 'collapsed_menu'])->name('collapsed-menu');
     Route::get('layouts/full', [StaterkitController::class, 'layout_full'])->name('layout-full');

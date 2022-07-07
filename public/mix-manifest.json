@@ -99,6 +99,7 @@
     "/js/scripts/forms/form-tooltip-valid.js": "/js/scripts/forms/form-tooltip-valid.js",
     "/js/scripts/forms/form-validation.js": "/js/scripts/forms/form-validation.js",
     "/js/scripts/forms/form-wizard.js": "/js/scripts/forms/form-wizard.js",
+    "/js/scripts/forms/manifest-file-upload.js": "/js/scripts/forms/manifest-file-upload.js",
     "/js/scripts/forms/pickers/form-pickers.js": "/js/scripts/forms/pickers/form-pickers.js",
     "/js/scripts/maps/map-leaflet.js": "/js/scripts/maps/map-leaflet.js",
     "/js/scripts/pages/app-calendar-events.js": "/js/scripts/pages/app-calendar-events.js",
