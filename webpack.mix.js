@@ -2,6 +2,8 @@ const mix = require('laravel-mix')
 const exec = require('child_process').exec
 require('dotenv').config()
 
+
+
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
