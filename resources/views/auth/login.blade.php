@@ -37,7 +37,7 @@
               </g>
             </g>
           </svg>
-          <h2 class="brand-text text-primary ml-1">Amazon Liquidation</h2>
+          <h2 class="brand-text text-primary ml-1">Liquidation Software</h2>
         </a>
 
         <h4 class="card-title mb-1">Welcome to Amazon Liquidation! 👋</h4>
