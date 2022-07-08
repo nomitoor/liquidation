@@ -1,0 +1,34 @@
+{
+  "menu": [
+    {
+      "url": "home",
+      "name": "Home",
+      "icon": "home",
+      "slug": "home"
+    },
+    {
+      "url": "manifest",
+      "name": "Manifest",
+      "icon": "home",
+      "slug": "manifest"
+    },
+    {
+      "url": "manifest",
+      "name": "Workers",
+      "icon": "home",
+      "slug": "manifest"
+    },
+    {
+      "url": "manifest",
+      "name": "Warehouses",
+      "icon": "home",
+      "slug": "manifest"
+    },
+    {
+      "url": "manifest",
+      "name": "Pallets",
+      "icon": "home",
+      "slug": "manifest"
+    }
+  ]
+}
