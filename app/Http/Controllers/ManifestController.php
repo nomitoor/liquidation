@@ -54,6 +54,8 @@ class ManifestController extends Controller
             $filename = $file->getClientOriginalName();
             $location = 'uploads';
 
+            $file->move(public_path($location), $file->getClientOriginalName());
+
             $filepath = public_path($location . "/" . $filename);
 
             Excel::import(new ManifestImport, $filepath);
