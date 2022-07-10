@@ -21,7 +21,7 @@ class ManifestController extends Controller
         $manifest = Manifest::all();
 
         $breadcrumbs = [
-            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
+            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Upload Manfiest"]
         ];
 
         return view('manifest/manifest', ['breadcrumbs' => $breadcrumbs, 'manifest' => $manifest]);
@@ -61,13 +61,13 @@ class ManifestController extends Controller
             Excel::import(new ManifestImport, $filepath);
 
             $breadcrumbs = [
-                ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
+                ['link' => "manifest", 'name' => "Manifest"], ['name' => "Upload Manfiest"]
             ];
             $manifest = Manifest::all();
             return view('manifest/manifest', ['breadcrumbs' => $breadcrumbs, 'manifest' => $manifest]);
         }
         $breadcrumbs = [
-            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
+            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Upload Manfiest"]
         ];
         $manifest = Manifest::all();
         return view('manifest/manifest', ['breadcrumbs' => $breadcrumbs, 'manifest' => $manifest]);
@@ -135,7 +135,7 @@ class ManifestController extends Controller
     public function getManifest(Request $request)
     {
         $breadcrumbs = [
-            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
+            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Upload Manfiest"]
         ];
 
         return view('manifest/import-products', ['breadcrumbs' => $breadcrumbs]);
