@@ -17,7 +17,7 @@ class CreateManifestsTable extends Migration
             $table->id();
             $table->string('bol');
             $table->string('package_id');
-            $table->string('item_description');
+            $table->text('item_description');
             $table->string('units');
             $table->string('unit_cost');
             $table->string('total_cost');

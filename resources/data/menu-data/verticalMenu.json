@@ -13,6 +13,12 @@
       "slug": "manifest"
     },
     {
+      "url": "bar-code-scanner",
+      "name": "Import Products",
+      "icon": "home",
+      "slug": "bar-code-scanner"
+    },
+    {
       "url": "manifest",
       "name": "Workers",
       "icon": "home",

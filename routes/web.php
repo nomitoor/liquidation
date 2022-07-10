@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StaterkitController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ManifestController;
+use App\Models\Manifest;
+use Illuminate\Database\Capsule\Manager;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,8 +25,12 @@ Auth::routes();
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/', [StaterkitController::class, 'home'])->name('home');
-    // Route::get('home', [StaterkitController::class, 'home'])->name('home');
-    
+    Route::get('home', [StaterkitController::class, 'home'])->name('home');
+
+    Route::get('get-all', [ManifestController::class, 'getAll'])->name('allManifest');
+    Route::get('scan-results', [ManifestController::class, 'getManifest'])->name('getResults');
+    Route::get('show-found-products', [ManifestController::class, 'getFoundProducts']);
+    Route::get('bar-code-scanner', [ManifestController::class, 'codeScanner']);
     Route::resource('manifest', ManifestController::class);
 
     // Route Components

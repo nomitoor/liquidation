@@ -1,2 +1,7 @@
 /vendor
 /vendor/
+/node_modules
+package-lock.json
+composer.lock
+storage/*.key
+.env
