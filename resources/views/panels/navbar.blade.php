@@ -149,7 +149,6 @@
         <small class="search-data-size mr-50 text-muted">&apos;11kb</small>
       </a>
     </li>
-    
     <li class="auto-suggestion">
       <a class="d-flex align-items-center justify-content-between w-100" href="{{url('app/file-manager')}}">
         <div class="d-flex">
