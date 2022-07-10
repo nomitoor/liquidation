@@ -6,7 +6,7 @@
 @section('content')
 <div class="card">
     <div class="row">
-        <div class="col-2 mt-2 mb-2 ml-2">
+        <div class="col-lg-6 col-xl-6 col-sm-12 col-md-4 mt-2 mb-2 ml-2">
             <button id="opener" class="btn btn-primary w-100">Scan Again</button>
         </div>
     </div>
