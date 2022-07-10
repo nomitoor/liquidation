@@ -14,7 +14,7 @@
     },
     {
       "url": "bar-code-scanner",
-      "name": "Recieve Products",
+      "name": "Import Products",
       "icon": "home",
       "slug": "bar-code-scanner"
     },

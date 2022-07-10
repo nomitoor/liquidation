@@ -187,7 +187,7 @@ return [
     // My Locale
 
     "Manifest" => 'Manifest',
-    'Recieve Proudcts' => 'Recieve Products',
+    'Import Proudcts' => 'Import Products',
     "Workers" => "Worker",
     "Warehouses" => "Warehouse",
     "Pallets" => "Pallets",
