@@ -21,6 +21,9 @@ use Illuminate\Database\Capsule\Manager;
 // Auth::routes();
 Auth::routes();
 
+Route::get('migrate', function () {
+    \Artisan::call('migrate');
+});
 
 
 Route::group(['middleware' => 'auth'], function () {
