@@ -32,6 +32,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('bar-code-scanner', [ManifestController::class, 'codeScanner']);
     Route::post('scanned-manifests', [ManifestController::class, 'getManifest'])->name('scanned-manifests');
     Route::post('import-scanned-products', [ManifestController::class, 'importToScannedProducts'])->name('import-scanned-products');
+    Route::get('view-scanned-products', [ManifestController::class, 'viewScannedProducts'])->name('view-scanned-products');
+    Route::get('all-scanned-products', [ManifestController::class, 'allScannedProducts'])->name('all-scanned-products');
     Route::resource('manifest', ManifestController::class);
 
     // Route Components

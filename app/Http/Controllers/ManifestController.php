@@ -186,4 +186,18 @@ class ManifestController extends Controller
 
         return response()->json(array('message' => 'Manifest producsts updated', 'code' => '201'));
     }
+
+    public function viewScannedProducts()
+    {
+        $breadcrumbs = [
+            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
+        ];
+
+        return view('manifest/products', ['breadcrumbs' => $breadcrumbs]);
+    }
+
+    public function allScannedProducts()
+    {
+        return response()->json(array('data' => ScannedProducts::all()));
+    }
 }

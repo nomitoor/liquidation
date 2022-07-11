@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'DataTables')
+@section('title', 'Import Products')
 
 
 @section('content')
@@ -88,9 +88,6 @@
                                                         <tbody id="myTable">
                                                         </tbody>
                                                     </table>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Accept</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -355,7 +352,7 @@
     });
 
     $('#scan_bar_code').click(function() {
-        alert('im here');
+        // alert('im here');
     });
 
     $('#submit_code').click(function() {
@@ -420,6 +417,9 @@
                 success: function(data) {
                     if (data.code == '201') {
                         alert('Import done!');
+                        setInterval(function() {
+                            location.href = '<?php echo route('view-scanned-products') ?>'
+                        }, 3000);
                     } else {
                         alert('Error')
                     }
