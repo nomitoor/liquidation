@@ -7,6 +7,19 @@
 <div class="card">
     <div class="row">
         <div class="col-lg-6 col-xl-6 col-sm-12 col-md-4 mt-2 mb-2 ml-2">
+            <div class="form-group">
+                <label for="basicInput">Enter product ID or Bol ID</label>
+                <input type="text" class="form-control product_code" placeholder="Enter product ID or Bol ID" />
+            </div>
+            <button class="btn btn-primary w-100 col-lg-4 col-lg-4 col-sm-4" id="submit_code">
+                Submit
+            </button>
+
+            <button id="scan_bar_code" class="btn btn-primary w-100 col-lg-4 col-lg-4 col-sm-4">Scan Bar Code</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-xl-6 col-sm-12 col-md-4 mt-1 mb-2 ml-2">
             <button id="opener" class="btn btn-primary w-100">Scan Again</button>
         </div>
     </div>
@@ -20,6 +33,75 @@
         </div>
     </div>
 
+    <section id="modal-themes">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="demo-inline-spacing">
+
+                            <div class="d-inline-block">
+
+
+                                <div class="modal-size-lg d-inline-block">
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-outline-primary open-modal d-none" data-toggle="modal" data-target="#large">
+                                        Large Modal
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade text-left" id="large" tabindex="-1" role="dialog" aria-labelledby="myModalLabel17" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title" id="myModalLabel17">Found Manifests</h4>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="container-fluid">
+                                                        <div class="row">
+                                                            <div class="col-xs-12 col-lg-2 col-sm-12 col-md-12">
+                                                                <label>Total Units</label>
+                                                                <h3 class="total_units"></h3>
+                                                            </div>
+                                                            <div class="col-xs-12 col-lg-2 col-sm-12 col-md-12">
+                                                                <label>Grand Total</label>
+                                                                <h3 class="total_costs"></h3>
+                                                            </div>
+                                                            <div class="col-xs-12 col-lg-6 col-sm-12 col-md-12 ml-auto mb-2 text-right">
+                                                                <input type="hidden" id="select_id" />
+                                                                <button class="btn btn-success mt-1 accept_products">Accept</button>
+                                                                <button class="btn btn-danger mt-1">Deny</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Description</th>
+                                                                <th>units</th>
+                                                                <th>unit cost</th>
+                                                                <th>total cost</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="myTable">
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Accept</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
 </div>
 @endsection
 
@@ -268,10 +350,82 @@
             var code = result.codeResult.code;
             Quagga.stop();
 
-            window.location.href = "scan-results?package_id=" + code;
-
-            console.log(code);
+            getManifest(code)
         });
     });
+
+    $('#scan_bar_code').click(function() {
+        alert('im here');
+    });
+
+    $('#submit_code').click(function() {
+        var product_code = $('.product_code').val();
+        $('#select_id').val(product_code);
+        getManifest(product_code)
+
+        $('.product_code').val('');
+    })
+
+    function getManifest(id) {
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo route('scanned-manifests') ?>',
+            data: {
+                '_token': '<?php echo csrf_token() ?>',
+                'id': id
+            },
+            success: function(data) {
+
+                if (data.code == '201') {
+                    $('.open-modal').click();
+                    var table = document.getElementById("myTable");
+                    var unit_count = 0;
+                    var total_cost = 0;
+
+                    data.data.forEach((manifest) => {
+                        var row = table.insertRow(0);
+                        var cell0 = row.insertCell(0);
+                        var cell1 = row.insertCell(1);
+                        var cell2 = row.insertCell(2);
+                        var cell3 = row.insertCell(3);
+
+                        unit_count += parseInt(manifest.units)
+                        total_cost = parseFloat(total_cost) + parseFloat(manifest.total_cost)
+
+                        cell0.innerHTML = manifest.item_description;
+                        cell1.innerHTML = manifest.units;
+                        cell2.innerHTML = manifest.unit_cost;
+                        cell3.innerHTML = manifest.total_cost;
+
+                    })
+                    $('.total_units').html(unit_count)
+                    $('.total_costs').html(total_cost.toFixed(2))
+
+                } else {
+                    alert("Nothing found against your ID please try with a valid ID");
+                }
+            }
+        });
+
+        $('.accept_products').click(function() {
+            var select_id = $('#select_id').val();
+            console.log(select_id);
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo route('import-scanned-products') ?>',
+                data: {
+                    '_token': '<?php echo csrf_token() ?>',
+                    'id': select_id
+                },
+                success: function(data) {
+                    if (data.code == '201') {
+                        alert('Import done!');
+                    } else {
+                        alert('Error')
+                    }
+                }
+            });
+        });
+    }
 </script>
 @endsection
