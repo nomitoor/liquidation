@@ -11,24 +11,24 @@
                 <label for="basicInput">Enter product ID or Bol ID</label>
                 <input type="text" class="form-control product_code" placeholder="Enter product ID or Bol ID" />
             </div>
-            <button class="btn btn-primary w-100 col-lg-4 col-lg-4 col-sm-4" id="submit_code">
-                Submit
-            </button>
 
-            <button id="scan_bar_code" class="btn btn-primary w-100 col-lg-4 col-lg-4 col-sm-4">Scan Bar Code</button>
+            <button id="scan_bar_code" class="btn btn-primary w-100 col-lg-4 col-lg-4 col-sm-4">Open Camera</button>
+            <button id="stop_camera" class="btn btn-primary w-100 col-lg-4 col-lg-4 col-sm-4">Srop Camera</button>
         </div>
     </div>
-    <div class="row">
-        <div class="col-lg-6 col-xl-6 col-sm-12 col-md-4 mt-1 mb-2 ml-2">
-            <button id="opener" class="btn btn-primary w-100">Scan Again</button>
+    <div class="d-none" id="camera-div">
+        <div class="row">
+            <div class="col-lg-6 col-xl-6 col-sm-12 col-md-4 mt-1 mb-2 ml-2">
+                <button id="opener" class="btn btn-primary w-100">Scan Again</button>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-6">
-            <div id="modal" title="Barcode scanner">
-                <span class="found"></span>
-                <div id="interactive" class="viewport"></div>
-                <div id="deviceSelection" class="d-none"></div>
+        <div class="row">
+            <div class="col-6">
+                <div id="modal" title="Barcode scanner">
+                    <span class="found"></span>
+                    <div id="interactive" class="viewport"></div>
+                    <div id="deviceSelection" class="d-none"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -340,8 +340,22 @@
             },
             lastResult: null
         };
+        $('#scan_bar_code').click(function() {
+            $('#camera-div').removeClass('d-none');
+            $('#camera-div').addClass('d-block');
+            App.init();
+        });
 
-        App.init();
+        $('#stop_camera').click(function() {
+            $('#camera-div').addClass('d-none');
+            $('#camera-div').removeClass('d-block');
+            Quagga.stop();
+        });
+        $('#opener').click(function() {
+            $('#camera-div').removeClass('d-none');
+            $('#camera-div').addClass('d-block');
+            App.init();
+        });
 
         Quagga.onDetected(function(result) {
             var code = result.codeResult.code;
@@ -351,11 +365,8 @@
         });
     });
 
-    $('#scan_bar_code').click(function() {
-        // alert('im here');
-    });
 
-    $('#submit_code').click(function() {
+    $('.product_code').change(function() {
         var product_code = $('.product_code').val();
         $('#select_id').val(product_code);
         getManifest(product_code)
@@ -378,6 +389,7 @@
                     var table = document.getElementById("myTable");
                     var unit_count = 0;
                     var total_cost = 0;
+                    table.innerHTML = "";
 
                     data.data.forEach((manifest) => {
                         var row = table.insertRow(0);
@@ -416,10 +428,8 @@
                 },
                 success: function(data) {
                     if (data.code == '201') {
+                        $('.close').click()
                         alert('Import done!');
-                        setInterval(function() {
-                            location.href = '<?php echo route('view-scanned-products') ?>'
-                        }, 3000);
                     } else {
                         alert('Error')
                     }

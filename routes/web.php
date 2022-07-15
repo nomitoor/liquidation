@@ -4,8 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StaterkitController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ManifestController;
-use App\Models\Manifest;
-use Illuminate\Database\Capsule\Manager;
+use App\Http\Controllers\PalletsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +37,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('view-scanned-products', [ManifestController::class, 'viewScannedProducts'])->name('view-scanned-products');
     Route::get('all-scanned-products', [ManifestController::class, 'allScannedProducts'])->name('all-scanned-products');
     Route::resource('manifest', ManifestController::class);
+
+    Route::resource('pallets', PalletsController::class);
+
 
     // Route Components
     Route::get('layouts/collapsed-menu', [StaterkitController::class, 'collapsed_menu'])->name('collapsed-menu');

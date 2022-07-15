@@ -19,22 +19,16 @@
       "slug": "bar-code-scanner"
     },
     {
-      "url": "manifest",
-      "name": "Workers",
+      "url": "view-scanned-products",
+      "name": "All Received Products",
       "icon": "home",
-      "slug": "manifest"
+      "slug": "view-scanned-products"
     },
     {
-      "url": "manifest",
-      "name": "Warehouses",
+      "url": "pallets",
+      "name": "Create Pallets",
       "icon": "home",
-      "slug": "manifest"
-    },
-    {
-      "url": "manifest",
-      "name": "Pallets",
-      "icon": "home",
-      "slug": "manifest"
+      "slug": "pallets"
     }
   ]
 }
