@@ -20,7 +20,7 @@ class PalletsController extends Controller
         $pallets = Pallets::get();
 
         $breadcrumbs = [
-            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Upload Manfiest"]
+            ['link' => "pallets", 'name' => "Pallets"], ['name' => "Index"]
         ];
 
         return view('pallets/pallets', [
@@ -39,7 +39,7 @@ class PalletsController extends Controller
         $products = ScannedProducts::select('bol')->where('pallet_id', null)->groupBy('bol')->get();
 
         $breadcrumbs = [
-            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
+            ['link' => "pallets", 'name' => "Pallets"], ['name' => "Create"]
         ];
 
         return view('pallets/create', ['breadcrumbs' => $breadcrumbs, 'products' => $products]);
@@ -98,7 +98,7 @@ class PalletsController extends Controller
         }
 
         $breadcrumbs = [
-            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
+            ['link' => "pallets", 'name' => "Pallets"], ['name' => "View"]
         ];
 
         return view('pallets/products', [

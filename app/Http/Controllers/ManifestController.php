@@ -22,7 +22,7 @@ class ManifestController extends Controller
         $manifest = Manifest::all();
 
         $breadcrumbs = [
-            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Upload Manfiest"]
+            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
         ];
 
         return view('manifest/manifest', ['breadcrumbs' => $breadcrumbs, 'manifest' => $manifest]);
@@ -36,7 +36,7 @@ class ManifestController extends Controller
     public function create()
     {
         $breadcrumbs = [
-            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
+            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Create"]
         ];
 
         return view('manifest/create', ['breadcrumbs' => $breadcrumbs]);
@@ -190,7 +190,7 @@ class ManifestController extends Controller
     public function viewScannedProducts()
     {
         $breadcrumbs = [
-            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
+            ['link' => "view-scanned-products", 'name' => "Products"], ['name' => "Index"]
         ];
 
         return view('manifest/products', ['breadcrumbs' => $breadcrumbs]);
