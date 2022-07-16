@@ -366,11 +366,9 @@
     });
 
 
-    $('.product_code').change(function() {
+    $('.product_code').bind("input change", function(e) {
         var product_code = $('.product_code').val();
-        $('#select_id').val(product_code);
         getManifest(product_code)
-
         $('.product_code').val('');
     })
 
