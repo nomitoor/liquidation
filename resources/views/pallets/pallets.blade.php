@@ -47,7 +47,6 @@
                                     foreach ($bols as $bol) {
                                         echo str_replace('"', "", str_replace('[', "", str_replace(']', "", $bol))) . ',</br>';
                                     }
-
                                     ?>
                                 </td>
                                 <td>{{ $pallet->total_price }}</td>
