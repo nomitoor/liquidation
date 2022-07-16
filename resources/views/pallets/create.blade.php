@@ -28,7 +28,7 @@
 
                             <div class="col-md-12 mb-1">
                                 <label>Name</label>
-                                <input type="name" class="form-control" name="pallet_name"/>
+                                <input type="hidden" class="form-control" name="pallet_name" value="<?= uniqid(); ?>" />
                                 <label>Select products</label>
                                 <select class="select2 form-control" name="bol[]" multiple>
                                     @foreach($products as $product)

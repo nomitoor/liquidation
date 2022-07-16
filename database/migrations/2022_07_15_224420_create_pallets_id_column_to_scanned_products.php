@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePalletsProductTable extends Migration
+class CreatePalletsIdColumnToScannedProducts extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class CreatePalletsProductTable extends Migration
      */
     public function up()
     {
-        Schema::create('pallets_products', function (Blueprint $table) {
-            $table->string('pallets');
-            $table->string('bol_id');
+        Schema::table('scanned_products', function (Blueprint $table) {
+            $table->string('pallet_id')->after('item_description')->nullable();
         });
     }
 
@@ -26,6 +25,8 @@ class CreatePalletsProductTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pallets_products');
+        Schema::table('scanned_products', function (Blueprint $table) {
+            //
+        });
     }
 }

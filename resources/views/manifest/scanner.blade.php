@@ -429,7 +429,6 @@
                 success: function(data) {
                     if (data.code == '201') {
                         $('.close').click()
-                        alert('Import done!');
                     } else {
                         alert('Error')
                     }

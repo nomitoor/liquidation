@@ -26,17 +26,46 @@
                     <a class="btn btn-primary" href="{{ route('pallets.create') }}">Create Pallets</a>
                 </div>
                 <div class="card-datatable">
-                    <table class="manifest-data table">
+                    <table class="table">
                         <thead>
                             <tr>
-                                <th>bol</th>
-                                <th>item description</th>
-                                <th>package id</th>
-                                <th>total cost</th>
-                                <th>unit cost</th>
-                                <th>units</th>
+                                <th>pallet id</th>
+                                <th>Bol id</th>
+                                <th>Total price</th>
+                                <th>Total units</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
+                        <tbody>
+                            @foreach($pallets as $pallet)
+                            <tr>
+                                <td>{{ $pallet->pallets_id }}</td>
+                                <td>
+                                    <?php
+
+                                    $bols = explode(',', $pallet->bol_ids);
+                                    foreach ($bols as $bol) {
+                                        echo str_replace('"', "", str_replace('[', "", str_replace(']', "", $bol))) . ',</br>';
+                                    }
+
+                                    ?>
+                                </td>
+                                <td>{{ $pallet->total_price }}</td>
+                                <td>{{ $pallet->total_unit }}</td>
+                                <td>
+                                    <a href="{{ route('pallets.show', $pallet->id) }}" class="btn btn-warning btn-sm">
+                                        View
+                                    </a>
+                                    <a class="btn btn-info btn-sm">
+                                        Edit
+                                    </a>
+                                    <button class="btn btn-danger btn-sm">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -62,39 +91,51 @@
 <!-- <script src="{{ asset(mix('js/scripts/tables/table-datatables-advanced.js')) }}"></script> -->
 
 <script>
-    var dt_ajax_table = $('.manifest-data');
+    function viewProducts(id) {
+        alert(id)
+    }
 
+    function getManifest(id) {
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo route('scanned-manifests') ?>',
+            data: {
+                '_token': '<?php echo csrf_token() ?>',
+                'id': id
+            },
+            success: function(data) {
 
-    var dt_ajax = dt_ajax_table.dataTable({
-        processing: true,
-        dom: '<"d-flex justify-content-between align-items-center mx-0 row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"d-flex justify-content-between mx-0 row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-        ajax: "{{ route('allManifest') }}",
-        columns: [{
-                data: 'bol'
-            },
-            {
-                data: 'item_description'
-            },
-            {
-                data: 'package_id'
-            },
-            {
-                data: 'total_cost'
-            },
-            {
-                data: 'unit_cost'
-            },
-            {
-                data: 'units'
-            },
-        ],
-        language: {
-            paginate: {
-                // remove previous & next text from pagination
-                previous: '&nbsp;',
-                next: '&nbsp;'
+                if (data.code == '201') {
+                    $('.open-modal').click();
+                    var table = document.getElementById("myTable");
+                    var unit_count = 0;
+                    var total_cost = 0;
+                    table.innerHTML = "";
+
+                    data.data.forEach((manifest) => {
+                        var row = table.insertRow(0);
+                        var cell0 = row.insertCell(0);
+                        var cell1 = row.insertCell(1);
+                        var cell2 = row.insertCell(2);
+                        var cell3 = row.insertCell(3);
+
+                        unit_count += parseInt(manifest.units)
+                        total_cost = parseFloat(total_cost) + parseFloat(manifest.total_cost)
+
+                        cell0.innerHTML = manifest.item_description;
+                        cell1.innerHTML = manifest.units;
+                        cell2.innerHTML = manifest.unit_cost;
+                        cell3.innerHTML = manifest.total_cost;
+
+                    })
+                    $('.total_units').html(unit_count)
+                    $('.total_costs').html(total_cost.toFixed(2))
+
+                } else {
+                    alert("Nothing found against your ID please try with a valid ID");
+                }
             }
-        }
-    });
+        });
+    }
 </script>
 @endsection

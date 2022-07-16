@@ -188,7 +188,7 @@ return [
     "Manifest" => 'Manifest',
     'Receive Products' => 'Receive Products',
     'Create Pallets' => 'Create Pallets',
-    'All Received Products' => 'All Received Products',
+    'All Received Products' => 'Products',
     "Workers" => "Worker",
     "Warehouses" => "Warehouse",
     "Pallets" => "Pallets",

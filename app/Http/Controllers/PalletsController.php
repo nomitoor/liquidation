@@ -6,6 +6,7 @@ use App\Models\Pallets;
 use App\Models\PalletsProducts;
 use App\Models\ScannedProducts;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class PalletsController extends Controller
 {
@@ -16,7 +17,7 @@ class PalletsController extends Controller
      */
     public function index()
     {
-        // $manifest = Manifest::all();
+        $pallets = Pallets::get();
 
         $breadcrumbs = [
             ['link' => "manifest", 'name' => "Manifest"], ['name' => "Upload Manfiest"]
@@ -24,7 +25,7 @@ class PalletsController extends Controller
 
         return view('pallets/pallets', [
             'breadcrumbs' => $breadcrumbs,
-            // 'manifest' => $manifest
+            'pallets' => $pallets
         ]);
     }
 
@@ -35,18 +36,7 @@ class PalletsController extends Controller
      */
     public function create()
     {
-        $products = ScannedProducts::select('bol')->groupBy('bol')->get();
-
-        $added_pallelts = PalletsProducts::select('bol_id')->get();
-
-        dd($added_pallelts);
-
-        foreach ($added_pallelts as $added) {
-            $check = $products->contains($added->bol);
-            if($check){
-                $products->forget($added->bol);
-            }
-        }
+        $products = ScannedProducts::select('bol')->where('pallet_id', null)->groupBy('bol')->get();
 
         $breadcrumbs = [
             ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
@@ -63,27 +53,28 @@ class PalletsController extends Controller
      */
     public function store(Request $request)
     {
-        $pallet_id = uniqid();
-        
-        Pallets::create([
-            'pallets_id' => $pallet_id,
-        ]);
+        $total_price = 0;
+        $total_units = 0;
 
         foreach ($request->bol as $bol) {
-            PalletsProducts::create([
-                'pallets' => $pallet_id,
-                'bol_id' => $bol
-            ]);
+            $scanned_products = ScannedProducts::where('bol', $bol)->get();
+            
+            foreach ($scanned_products as $products) {
+                $total_price += (float) $products->total_cost;
+                $total_units += (int) $products->units;                
+            }
+
+            ScannedProducts::where('bol', $bol)->update(['pallet_id' => $request->pallet_name]);
         }
 
-        $breadcrumbs = [
-            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Upload Manfiest"]
-        ];
-
-        return view('pallets/pallets', [
-            'breadcrumbs' => $breadcrumbs,
-            // 'manifest' => $manifest
+        Pallets::create([
+            'pallets_id' => $request->pallet_name,
+            'bol_ids' => json_encode($request->bol),
+            'total_price' => $total_price,
+            'total_unit' => $total_units
         ]);
+
+        return redirect('/pallets');
     }
 
     /**
@@ -92,9 +83,32 @@ class PalletsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Pallets $pallet)
     {
-        //
+        $bol_id = explode(',', $pallet->bol_ids);
+        $bol_ids = str_replace('"', "", str_replace('[', "", str_replace(']', "", $bol_id)));
+
+        $pallet_products = [];
+
+        foreach ($bol_ids as $bol_id) {
+            $prd = ScannedProducts::where('bol', $bol_id)->get();
+            foreach ($prd as $pd) {
+                array_push($pallet_products, $pd);
+            }
+        }
+
+        $breadcrumbs = [
+            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
+        ];
+
+        return view('pallets/products', [
+            'breadcrumbs' => $breadcrumbs,
+            'products' => $pallet_products,
+            'invoice_number' => $pallet->pallets_id,
+            'date_issued' => Carbon::parse($pallet->created_at)->format('d-M-Y'),
+            'total_price' => $pallet->total_price,
+            'total_units' => $pallet->total_unit
+        ]);
     }
 
     /**
