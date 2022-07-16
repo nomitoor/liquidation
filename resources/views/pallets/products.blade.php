@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'Invoice Preview')
+@section('title', 'View Pallets')
 
 @section('vendor-style')
 <link rel="stylesheet" href="{{asset('vendors/css/pickers/flatpickr/flatpickr.min.css')}}">
@@ -46,13 +46,10 @@
                                 </svg>
                                 <h3 class="text-primary invoice-logo">Liquidation</h3>
                             </div>
-                            <p class="card-text mb-25">Address #1</p>
-                            <p class="card-text mb-25">Address #2</p>
-                            <p class="card-text mb-0">Address #3</p>
                         </div>
                         <div class="mt-md-0 mt-2">
                             <h4 class="invoice-title">
-                                Invoice
+                                Pallet ID
                                 <span class="invoice-number">#{{ $invoice_number }}</span>
                             </h4>
                             <div class="invoice-date-wrapper">
@@ -95,7 +92,7 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th class="py-1">Bol</th>
+                                    <th class="py-1">Item Description</th>
                                     <th class="py-1">Total Units</th>
                                     <th class="py-1">Total Cost</th>
                                 </tr>
@@ -105,7 +102,7 @@
 
                                 <tr>
                                     <td>
-                                        {{ $product->bol }}
+                                        {{ $product->item_description }}
                                     </td>
                                     <td>
                                         {{ $product->units }}

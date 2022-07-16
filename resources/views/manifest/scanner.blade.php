@@ -9,7 +9,7 @@
         <div class="col-lg-6 col-xl-6 col-sm-12 col-md-4 mt-2 mb-2 ml-2">
             <div class="form-group">
                 <label for="basicInput">Enter product ID or Bol ID</label>
-                <input type="text" class="form-control product_code" placeholder="Enter product ID or Bol ID" />
+                <input type="text" class="form-control product_code" id="product_code" placeholder="Enter product ID or Bol ID" />
             </div>
 
             <button id="scan_bar_code" class="btn btn-primary w-100 col-lg-4 col-lg-4 col-sm-4">Open Camera</button>
@@ -427,6 +427,7 @@
                 },
                 success: function(data) {
                     if (data.code == '201') {
+                        $('#product_code').focus();
                         $('.close').click()
                     } else {
                         alert('Error')

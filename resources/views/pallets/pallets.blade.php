@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'Products')
+@section('title', 'All Pallets')
 
 @section('vendor-style')
 {{-- vendor css files --}}
@@ -22,7 +22,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header border-bottom">
-                    <h4 class="card-title">All Products</h4>
+                    <h4 class="card-title">All Pallets</h4>
                     <a class="btn btn-primary" href="{{ route('pallets.create') }}">Create Pallets</a>
                 </div>
                 <div class="card-datatable">
@@ -30,9 +30,9 @@
                         <thead>
                             <tr>
                                 <th>pallet id</th>
-                                <th>Bol id</th>
                                 <th>Total price</th>
                                 <th>Total units</th>
+                                <th>Created At</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -40,17 +40,9 @@
                             @foreach($pallets as $pallet)
                             <tr>
                                 <td>{{ $pallet->pallets_id }}</td>
-                                <td>
-                                    <?php
-
-                                    $bols = explode(',', $pallet->bol_ids);
-                                    foreach ($bols as $bol) {
-                                        echo str_replace('"', "", str_replace('[', "", str_replace(']', "", $bol))) . ',</br>';
-                                    }
-                                    ?>
-                                </td>
                                 <td>{{ $pallet->total_price }}</td>
                                 <td>{{ $pallet->total_unit }}</td>
+                                <td>{{ $pallet->created_at }}</td>
                                 <td>
                                     <a href="{{ route('pallets.show', $pallet->id) }}" class="btn btn-warning btn-sm">
                                         View
