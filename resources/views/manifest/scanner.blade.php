@@ -369,6 +369,7 @@
     $('.product_code').bind("input change", function(e) {
         var product_code = $('.product_code').val();
         getManifest(product_code)
+        $('#select_id').val(product_code)
         $('.product_code').val('');
     })
 
