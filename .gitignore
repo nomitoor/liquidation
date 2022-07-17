@@ -4,5 +4,5 @@
 package-lock.json
 composer.lock
 storage/*.key
-.env
-config/database.php
+/.env
+/config/database.php
