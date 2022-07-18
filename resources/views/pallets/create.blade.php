@@ -19,7 +19,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Select Pallets</h4>
+                    <h4 class="card-title">Please add pallet name</h4>
                 </div>
                 <div class="card-body">
                     <form method="POST" enctype="multipart/form-data" id="upload-file" action="{{ route('pallets.store') }}">
@@ -28,13 +28,13 @@
 
                             <div class="col-md-12 mb-1">
                                 <label>Name</label>
-                                <input type="hidden" class="form-control" name="pallet_name" value="<?= uniqid(); ?>" />
-                                <label>Select products</label>
+                                <input type="text" class="form-control" name="pallet_name" />
+                                <!-- <label>Select products</label>
                                 <select class="select2 form-control" name="bol[]" multiple>
                                     @foreach($products as $product)
                                     <option value='{{ $product->bol }}'>{{$product->bol}}</option>
                                     @endforeach
-                                </select>
+                                </select> -->
                             </div>
 
                             <div class="col-md-12">

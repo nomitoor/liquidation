@@ -53,15 +53,21 @@ class PalletsController extends Controller
      */
     public function store(Request $request)
     {
+        $pallet = Pallets::create([
+            'pallets_id' => $request->pallet_name,
+        ]);
+
+        return redirect('pallets/' . $pallet->id . '/edit');
+
         $total_price = 0;
         $total_units = 0;
 
         foreach ($request->bol as $bol) {
             $scanned_products = ScannedProducts::where('bol', $bol)->get();
-            
+
             foreach ($scanned_products as $products) {
                 $total_price += (float) $products->total_cost;
-                $total_units += (int) $products->units;                
+                $total_units += (int) $products->units;
             }
 
             ScannedProducts::where('bol', $bol)->update(['pallet_id' => $request->pallet_name]);
@@ -117,9 +123,13 @@ class PalletsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Pallets $pallet)
     {
-        //
+        $breadcrumbs = [
+            ['link' => "pallets", 'name' => "Pallets"], ['name' => "Create"]
+        ];
+
+        return view('pallets/edit', ['breadcrumbs' => $breadcrumbs, 'pallets' => $pallet]);
     }
 
     /**
@@ -129,9 +139,50 @@ class PalletsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Pallets $pallet)
     {
-        //
+        $scanned_products = ScannedProducts::where('bol', $request->bol_id)->get();
+
+        if (count($scanned_products)) {
+            $bol_id_array = unserialize($pallet->bol_ids);
+            if ($bol_id_array) {
+                foreach ($bol_id_array as $ids) {
+                    if ($ids == $request->bol_id) {
+                        return response()->json(array('message' => 'Bol already added to this pallet', 'code' => '403'));
+                    }
+                }
+                array_push($bol_id_array, $request->bol_id);
+            } else {
+                $bol_id_array = [];
+                array_push($bol_id_array, $request->bol_id);
+            }
+
+            $total_price = 0;
+            $total_units = 0;
+
+            foreach ($scanned_products as $products) {
+                $total_price += (float) $products->total_cost;
+                $total_units += (int) $products->units;
+            }
+
+            $new_total_price = $pallet->total_price + $total_price;
+            $new_total_units = $pallet->total_unit + $total_units;
+
+            ScannedProducts::where('bol', $request->bol_id)->update(['pallet_id' => $pallet->id]);
+
+            $pallet->update([
+                'bol_ids' => serialize($bol_id_array),
+                'total_price' => $new_total_price,
+                'total_unit' => $new_total_units,
+            ]);
+
+            return response()->json(array(
+                'data' => unserialize($pallet->bol_ids),
+                'code' => '201'
+            ));
+        } else {
+            return response()->json(array('message' => 'Bol id not found', 'code' => '403'));
+        }
     }
 
     /**
