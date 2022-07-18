@@ -22,6 +22,7 @@ Auth::routes();
 
 Route::get('migrate', function () {
     \Artisan::call('migrate');
+    \Artisan::call('db:seed');
 });
 
 
