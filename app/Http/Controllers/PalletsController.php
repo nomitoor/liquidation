@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Pallets;
 use App\Models\PalletsProducts;
 use App\Models\ScannedProducts;
@@ -17,7 +18,7 @@ class PalletsController extends Controller
      */
     public function index()
     {
-        $pallets = Pallets::get();
+        $pallets = Pallets::with('category')->get();
 
         $breadcrumbs = [
             ['link' => "pallets", 'name' => "Pallets"], ['name' => "Index"]
@@ -37,12 +38,13 @@ class PalletsController extends Controller
     public function create()
     {
         $products = ScannedProducts::select('bol')->where('pallet_id', null)->groupBy('bol')->get();
+        $categories = Category::orderBy('title', 'ASC')->get(['id', 'title']);
 
         $breadcrumbs = [
             ['link' => "pallets", 'name' => "Pallets"], ['name' => "Create"]
         ];
 
-        return view('pallets/create', ['breadcrumbs' => $breadcrumbs, 'products' => $products]);
+        return view('pallets/create', ['breadcrumbs' => $breadcrumbs, 'products' => $products, 'categories' => $categories]);
     }
 
     /**
@@ -55,6 +57,8 @@ class PalletsController extends Controller
     {
         $pallet = Pallets::create([
             'pallets_id' => $request->pallet_name,
+            'description' => $request->description,
+            'category_id' => $request->category_id
         ]);
 
         return redirect('pallets/' . $pallet->id . '/edit');
@@ -129,7 +133,9 @@ class PalletsController extends Controller
             ['link' => "pallets", 'name' => "Pallets"], ['name' => "Create"]
         ];
 
-        return view('pallets/edit', ['breadcrumbs' => $breadcrumbs, 'pallets' => $pallet]);
+        $scanned_products = ScannedProducts::whereIn('bol', unserialize($pallet->bol_ids) ?: [])->get(['bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
+
+        return view('pallets/edit', ['breadcrumbs' => $breadcrumbs, 'pallets' => $pallet, 'scanned_products' => $scanned_products]);
     }
 
     /**
@@ -141,7 +147,8 @@ class PalletsController extends Controller
      */
     public function update(Request $request, Pallets $pallet)
     {
-        $scanned_products = ScannedProducts::where('bol', $request->bol_id)->get();
+        $products_query = ScannedProducts::where('bol', $request->bol_id);
+        $scanned_products = $products_query->get();
 
         if (count($scanned_products)) {
             $bol_id_array = unserialize($pallet->bol_ids);
@@ -168,7 +175,9 @@ class PalletsController extends Controller
             $new_total_price = $pallet->total_price + $total_price;
             $new_total_units = $pallet->total_unit + $total_units;
 
-            ScannedProducts::where('bol', $request->bol_id)->update(['pallet_id' => $pallet->id]);
+            $products_query->update(['pallet_id' => $pallet->id]);
+
+            $updated_scanned_products = ScannedProducts::whereIn('bol', $bol_id_array)->get(['bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
 
             $pallet->update([
                 'bol_ids' => serialize($bol_id_array),
@@ -177,7 +186,7 @@ class PalletsController extends Controller
             ]);
 
             return response()->json(array(
-                'data' => unserialize($pallet->bol_ids),
+                'data' => $updated_scanned_products->toArray(),
                 'code' => '201'
             ));
         } else {

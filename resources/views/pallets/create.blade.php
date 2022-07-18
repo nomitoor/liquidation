@@ -37,6 +37,21 @@
                                 </select> -->
                             </div>
 
+                            <div class="col-md-12 mb-1">
+                                <label>Description</label>
+                                <input type="text" class="form-control" name="description" />
+                            </div>
+
+                            <div class="col-md-12 mb-1">
+                                <label>Category</label>
+                                <select name="category_id" id="categoryId" class="form-control">
+                                    <option value="">Please select a category</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->title }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-primary" id="submit">Submit</button>
                             </div>

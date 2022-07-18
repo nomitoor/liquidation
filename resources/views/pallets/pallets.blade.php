@@ -29,7 +29,9 @@
                     <table class="table">
                         <thead>
                             <tr>
+                                <th>Category</th>
                                 <th>pallet id</th>
+                                <th>Description</th>
                                 <th>Total price</th>
                                 <th>Total units</th>
                                 <th>Created At</th>
@@ -39,7 +41,9 @@
                         <tbody>
                             @foreach($pallets as $pallet)
                             <tr>
+                                <td>{{ $pallet->category->title }}</td>
                                 <td>{{ $pallet->pallets_id }}</td>
+                                <td>{{ $pallet->description }}</td>
                                 <td>{{ $pallet->total_price }}</td>
                                 <td>{{ $pallet->total_unit }}</td>
                                 <td>{{ $pallet->created_at }}</td>

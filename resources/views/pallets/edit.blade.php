@@ -39,13 +39,23 @@
                                         <thead>
                                             <tr>
                                                 <th>Bol IDs</th>
+                                                <th>Package ID</th>
+                                                <th>Item Description</th>
+                                                <th>Units</th>
+                                                <th>Unit Cost</th>
+                                                <th>Total Cost</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @if($pallets->bol_ids !== null)
-                                            @foreach(unserialize($pallets->bol_ids) as $bol_id)
+                                            @foreach($scanned_products as $product)
                                             <tr>
-                                                <th>{{$bol_id}}</th>
+                                                <th>{{$product->bol}}</th>
+                                                <th>{{$product->package_id}}</th>
+                                                <th>{{$product->item_description}}</th>
+                                                <th>{{$product->units}}</th>
+                                                <th>{{$product->unit_cost}}</th>
+                                                <th>{{$product->total_cost}}</th>
                                             </tr>
                                             @endforeach
                                             @else
@@ -101,26 +111,29 @@
                     // })
 
                     // $('.open-modal').click();
-                    var table = document.getElementById("myTable");
+                    var table = document.getElementById("myTable").getElementsByTagName('tbody')[0];
                     // var unit_count = 0;
                     // var total_cost = 0;
                     table.innerHTML = "";
 
-                    data.data.forEach((pallet) => {
+                    data.data.forEach((scanned_product) => {
                         var row = table.insertRow(0);
                         var cell0 = row.insertCell(0);
-
-                        // var cell1 = row.insertCell(1);
-                        // var cell2 = row.insertCell(2);
-                        // var cell3 = row.insertCell(3);
+                        var cell1 = row.insertCell(1);
+                        var cell2 = row.insertCell(2);
+                        var cell3 = row.insertCell(3);
+                        var cell4 = row.insertCell(4);
+                        var cell5 = row.insertCell(5);
 
                         // unit_count += parseInt(manifest.units)
                         // total_cost = parseFloat(total_cost) + parseFloat(manifest.total_cost)
 
-                        cell0.innerHTML = pallet;
-                        // cell1.innerHTML = manifest.units;
-                        // cell2.innerHTML = manifest.unit_cost;
-                        // cell3.innerHTML = manifest.total_cost;
+                        cell0.innerHTML = scanned_product.bol;
+                        cell1.innerHTML = scanned_product.package_id;
+                        cell2.innerHTML = scanned_product.item_description
+                        cell3.innerHTML = scanned_product.units;
+                        cell4.innerHTML = scanned_product.unit_cost;
+                        cell5.innerHTML = scanned_product.total_cost;
 
                     })
 
