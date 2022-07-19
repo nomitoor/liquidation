@@ -40,7 +40,7 @@
                                 <div class="input-group">
                                     <input type="text" class="form-control product_code" placeholder="Enter product ID or Bol ID" />
                                     <span class="input-group-btn">
-                                        <button class="btn btn-info">
+                                        <button class="btn btn-info" onclick="undoPallet('<?php echo $pallets->id ?>')">
                                             <i class="fa fa-undo" aria-hidden="true"></i>Undo
                                         </button>
                                     </span>
@@ -170,9 +170,30 @@
         }
     })
 
+    function undoPallet(id) {
+        var result = confirm("Are your sure you want to remove this product from this pallete?");
+        if (result) {
+            event.preventDefault();
+            $.ajax({
+                type: 'post',
+                url: '/pallets/undo',
+                data: {
+                    '_token': '<?php echo csrf_token() ?>',
+                    'id': id,
+                },
+                success: function(data) {
+                    if (data.code == '201') {
+                        location.reload()
+                    }
+                }
+            });
+        }
+    }
+
     function deletePallet(id, bol_id) {
         var result = confirm("Are your sure you want to remove this product from this pallete?");
         if (result) {
+            event.preventDefault();
             $.ajax({
                 type: 'post',
                 url: '/pallets/delete',

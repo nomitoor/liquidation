@@ -40,6 +40,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('manifest', ManifestController::class);
     
     Route::post('pallets/delete', [PalletsController::class, 'deletePalletsWithBol']);
+    Route::post('pallets/undo', [PalletsController::class, 'undoPallets']);
     Route::resource('pallets', PalletsController::class);
 
 

@@ -5,17 +5,38 @@
 
 @section('content')
 <div class="card">
-    <div class="row">
-        <div class="col-lg-6 col-xl-6 col-sm-12 col-md-4 mt-2 mb-2 ml-2">
-            <div class="form-group">
-                <label for="basicInput">Enter product ID or Bol ID</label>
-                <input type="text" class="form-control product_code" id="product_code" placeholder="Enter product ID or Bol ID" />
-            </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12 col-12 mt-2">
+                <button class="btn btn-success" id="start_seasion">Start Seasion</button>
+                <div class="d-none enter-details">
+                    <div class="form-group">
+                        <label for="basicInput">Paste Bar code product ID or Bol ID</label>
+                        <input type="text" class="form-control product_code" id="product_code" placeholder="Paste Bar code product ID or Bol ID" />
+                    </div>
 
-            <button id="scan_bar_code" class="btn btn-primary w-100 col-lg-4 col-lg-4 col-sm-4">Open Camera</button>
-            <button id="stop_camera" class="btn btn-primary w-100 col-lg-4 col-lg-4 col-sm-4">Srop Camera</button>
+                    <label for="basicInput">Type product ID or Bol ID</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control product_code_type" id="product_code_type" placeholder="Type product ID or Bol ID" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" onclick="getData()">Enter</button>
+                        </span>
+                    </div>
+
+                    <div class="mt-1">
+                        <button class="btn btn-success" id="end_seasion">End Seasion</button>
+                    </div>
+                </div>
+                <input type="hidden" id="number" />
+                <!-- <button id="scan_bar_code" class="btn btn-primary w-100 col-lg-4 col-lg-4 col-sm-4">Open Camera</button>
+            <button id="stop_camera" class="btn btn-primary w-100 col-lg-4 col-lg-4 col-sm-4">Stop Camera</button> -->
+            </div>
+            <div class="col-lg-6 col-xl-6 col-sm-12 col-md-4 mt-2">
+                <h1 class="counter" style="margin-top: 90px;text-align: center;"></h1>
+            </div>
         </div>
     </div>
+
     <div class="d-none" id="camera-div">
         <div class="row">
             <div class="col-lg-6 col-xl-6 col-sm-12 col-md-4 mt-1 mb-2 ml-2">
@@ -365,6 +386,21 @@
         });
     });
 
+    $('#start_seasion').click(function(e) {
+        e.preventDefault();
+        $('.enter-details').removeClass('d-none');
+        $('.enter-details').addClass('d-block');
+        alert('Seation Started')
+    });
+
+    $('#end_seasion').click(function(e) {
+        e.preventDefault();
+        $('.enter-details').removeClass('d-block');
+        $('.enter-details').addClass('d-none');
+        document.getElementById('number').value = 0;
+        $('.counter').html('')
+        alert('Seation ended')
+    })
 
     $('.product_code').bind("input change", function(e) {
         var product_code = $('.product_code').val();
@@ -372,6 +408,13 @@
         $('#select_id').val(product_code)
         $('.product_code').val('');
     })
+
+    function getData() {
+        var product_code_type = $('.product_code_type').val();
+        getManifest(product_code_type)
+        $('#select_id').val(product_code_type)
+        $('.product_code_type').val('');
+    }
 
     function getManifest(id) {
         $.ajax({
@@ -414,27 +457,30 @@
                 }
             }
         });
-
-        $('.accept_products').click(function() {
-            var select_id = $('#select_id').val();
-            console.log(select_id);
-            $.ajax({
-                type: 'POST',
-                url: '<?php echo route('import-scanned-products') ?>',
-                data: {
-                    '_token': '<?php echo csrf_token() ?>',
-                    'id': select_id
-                },
-                success: function(data) {
-                    if (data.code == '201') {
-                        $('#product_code').focus();
-                        $('.close').click()
-                    } else {
-                        alert('Error')
-                    }
-                }
-            });
-        });
     }
+    var i = 0;
+    $('.accept_products').click(function() {
+        var select_id = $('#select_id').val();
+        i++;
+        document.getElementById('number').value = i;
+        $('.counter').html(document.getElementById('number').value)
+
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo route('import-scanned-products') ?>',
+            data: {
+                '_token': '<?php echo csrf_token() ?>',
+                'id': select_id
+            },
+            success: function(data) {
+                if (data.code == '201') {
+                    $('#product_code').focus();
+                    $('.close').click()
+                } else {
+                    alert('Error')
+                }
+            }
+        });
+    });
 </script>
 @endsection

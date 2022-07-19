@@ -206,11 +206,43 @@ class PalletsController extends Controller
             unset($data[$key]);
         }
 
+        ScannedProducts::where('bol', $request->bol_id)->update(['pallet_id' => NULL]);
+
         $total_price = 0;
         $total_units = 0;
         foreach ($data as $value) {
             $products = ScannedProducts::where('bol', $value)->get(['units', 'unit_cost', 'total_cost']);
-            ScannedProducts::where('bol', $request->bol_id)->update(['pallet_id' => NULL]);
+
+            foreach ($products as $product) {
+                $total_price += (float) $product->total_cost;
+                $total_units += (int) $product->units;
+            }
+        }
+
+        $pallet->update([
+            'bol_ids' => serialize($data),
+            'total_price' => $total_price,
+            'total_unit' => $total_units,
+        ]);
+
+        return response()->json(array('code' => '201', 'message' => 'done'));
+    }
+
+    public function undoPallets(Request $request)
+    {
+        $pallet = Pallets::where('id', $request->id)->first();
+        $data = unserialize($pallet->bol_ids);
+
+        if (($key = array_search(end($data), $data)) !== false) {
+            unset($data[$key]);
+        }
+
+        ScannedProducts::where('bol', $request->bol_id)->update(['pallet_id' => NULL]);
+
+        $total_price = 0;
+        $total_units = 0;
+        foreach ($data as $value) {
+            $products = ScannedProducts::where('bol', $value)->get(['units', 'unit_cost', 'total_cost']);
 
             foreach ($products as $product) {
                 $total_price += (float) $product->total_cost;
