@@ -1,4 +1,5 @@
 <?php
+ini_set('max_execution_time', 1800); //3 minutes
 
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
