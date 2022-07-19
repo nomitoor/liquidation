@@ -29,9 +29,8 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Category</th>
                                 <th>pallet id</th>
-                                <th>Description</th>
+                                <th>Category</th>
                                 <th>Total price</th>
                                 <th>Total units</th>
                                 <th>Created At</th>
@@ -41,9 +40,8 @@
                         <tbody>
                             @foreach($pallets as $pallet)
                             <tr>
-                                <td>{{ $pallet->category->title }}</td>
-                                <td>{{ $pallet->pallets_id }}</td>
-                                <td>{{ $pallet->description }}</td>
+                                <td>{{ 'DE'.sprintf("%05d", $pallet->id) }}</td>
+                                <td>{{ $pallet->category->title ?? '-' }}</td>
                                 <td>{{ $pallet->total_price }}</td>
                                 <td>{{ $pallet->total_unit }}</td>
                                 <td>{{ $pallet->created_at }}</td>
@@ -51,12 +49,9 @@
                                     <a href="{{ route('pallets.show', $pallet->id) }}" class="btn btn-warning btn-sm">
                                         View
                                     </a>
-                                    <a class="btn btn-info btn-sm">
+                                    <a href="{{ route('pallets.edit', $pallet->id) }}" class="btn btn-info btn-sm">
                                         Edit
                                     </a>
-                                    <button class="btn btn-danger btn-sm">
-                                        Delete
-                                    </button>
                                 </td>
                             </tr>
                             @endforeach

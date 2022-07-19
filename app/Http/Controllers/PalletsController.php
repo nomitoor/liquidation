@@ -56,7 +56,6 @@ class PalletsController extends Controller
     public function store(Request $request)
     {
         $pallet = Pallets::create([
-            'pallets_id' => $request->pallet_name,
             'description' => $request->description,
             'category_id' => $request->category_id
         ]);
@@ -78,7 +77,6 @@ class PalletsController extends Controller
         }
 
         Pallets::create([
-            'pallets_id' => $request->pallet_name,
             'bol_ids' => json_encode($request->bol),
             'total_price' => $total_price,
             'total_unit' => $total_units
@@ -95,8 +93,7 @@ class PalletsController extends Controller
      */
     public function show(Pallets $pallet)
     {
-        $bol_id = explode(',', $pallet->bol_ids);
-        $bol_ids = str_replace('"', "", str_replace('[', "", str_replace(']', "", $bol_id)));
+        $bol_ids = unserialize($pallet->bol_ids);
 
         $pallet_products = [];
 
@@ -114,7 +111,7 @@ class PalletsController extends Controller
         return view('pallets/products', [
             'breadcrumbs' => $breadcrumbs,
             'products' => $pallet_products,
-            'invoice_number' => $pallet->pallets_id,
+            'invoice_number' => $pallet->id,
             'date_issued' => Carbon::parse($pallet->created_at)->format('d-M-Y'),
             'total_price' => $pallet->total_price,
             'total_units' => $pallet->total_unit
@@ -133,7 +130,7 @@ class PalletsController extends Controller
             ['link' => "pallets", 'name' => "Pallets"], ['name' => "Create"]
         ];
 
-        $scanned_products = ScannedProducts::whereIn('bol', unserialize($pallet->bol_ids) ?: [])->get(['bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
+        $scanned_products = ScannedProducts::whereIn('bol', unserialize($pallet->bol_ids) ?: [])->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
 
         return view('pallets/edit', ['breadcrumbs' => $breadcrumbs, 'pallets' => $pallet, 'scanned_products' => $scanned_products]);
     }
@@ -147,7 +144,7 @@ class PalletsController extends Controller
      */
     public function update(Request $request, Pallets $pallet)
     {
-        $products_query = ScannedProducts::where('bol', $request->bol_id);
+        $products_query = ScannedProducts::where('bol', $request->bol_id)->where('pallet_id', NULL);
         $scanned_products = $products_query->get();
 
         if (count($scanned_products)) {
@@ -177,7 +174,7 @@ class PalletsController extends Controller
 
             $products_query->update(['pallet_id' => $pallet->id]);
 
-            $updated_scanned_products = ScannedProducts::whereIn('bol', $bol_id_array)->get(['bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
+            $updated_scanned_products = ScannedProducts::whereIn('bol', $bol_id_array)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
 
             $pallet->update([
                 'bol_ids' => serialize($bol_id_array),
@@ -200,8 +197,33 @@ class PalletsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function deletePalletsWithBol(Request $request)
     {
-        //
+        $pallet = Pallets::where('id', $request->id)->first();
+        $data = unserialize($pallet->bol_ids);
+
+        if (($key = array_search($request->bol_id, $data)) !== false) {
+            unset($data[$key]);
+        }
+
+        $total_price = 0;
+        $total_units = 0;
+        foreach ($data as $value) {
+            $products = ScannedProducts::where('bol', $value)->get(['units', 'unit_cost', 'total_cost']);
+            ScannedProducts::where('bol', $request->bol_id)->update(['pallet_id' => NULL]);
+
+            foreach ($products as $product) {
+                $total_price += (float) $product->total_cost;
+                $total_units += (int) $product->units;
+            }
+        }
+
+        $pallet->update([
+            'bol_ids' => serialize($data),
+            'total_price' => $total_price,
+            'total_unit' => $total_units,
+        ]);
+
+        return response()->json(array('code' => '201', 'message' => 'done'));
     }
 }

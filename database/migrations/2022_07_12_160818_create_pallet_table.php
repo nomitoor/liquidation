@@ -15,7 +15,6 @@ class CreatePalletTable extends Migration
     {
         Schema::create('pallet', function (Blueprint $table) {
             $table->id();
-            $table->string('pallets_id');
             $table->string('bol_ids');
             $table->string('total_price');
             $table->string('total_unit');

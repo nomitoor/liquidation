@@ -14,11 +14,10 @@ class UpdatePalletColumns extends Migration
     public function up()
     {
         Schema::table('pallet', function (Blueprint $table) {
-            $table->string('pallets_id')->nullable()->change();
             $table->longText('bol_ids')->nullable()->change();
             $table->string('total_price')->nullable()->change();
             $table->string('total_unit')->nullable()->change();
-            $table->string('description')->nullable()->after('pallets_id');
+            $table->string('description')->nullable()->after('id');
             $table->foreignId('category_id')->nullable()->constrained('categories')->after('id');
         });
     }

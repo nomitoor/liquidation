@@ -19,27 +19,19 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Please add pallet name</h4>
+                    <h4 class="card-title">Please Enter Pallet Details</h4>
                 </div>
                 <div class="card-body">
                     <form method="POST" enctype="multipart/form-data" id="upload-file" action="{{ route('pallets.store') }}">
                         {{ csrf_field() }}
                         <div class="row">
 
-                            <div class="col-md-12 mb-1">
-                                <label>Name</label>
-                                <input type="text" class="form-control" name="pallet_name" />
-                                <!-- <label>Select products</label>
-                                <select class="select2 form-control" name="bol[]" multiple>
-                                    @foreach($products as $product)
-                                    <option value='{{ $product->bol }}'>{{$product->bol}}</option>
-                                    @endforeach
-                                </select> -->
+                            <div class="col-md-12">
                             </div>
 
-                            <div class="col-md-12 mb-1">
+                            <div class="col-md-12">
                                 <label>Description</label>
-                                <input type="text" class="form-control" name="description" />
+                                <textarea type="text" class="form-control" name="description"></textarea>
                             </div>
 
                             <div class="col-md-12 mb-1">
@@ -47,7 +39,7 @@
                                 <select name="category_id" id="categoryId" class="form-control">
                                     <option value="">Please select a category</option>
                                     @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->title }}</option>
+                                    <option value="{{ $category->id }}">{{ $category->title }}</option>
                                     @endforeach
                                 </select>
                             </div>
