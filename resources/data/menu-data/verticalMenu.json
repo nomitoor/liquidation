@@ -29,6 +29,18 @@
       "name": "Create Pallets",
       "icon": "home",
       "slug": "pallets"
+    },
+    {
+      "url": "claims",
+      "name": "View Claims",
+      "icon": "home",
+      "slug": "claims"
+    },
+    {
+      "url": "unknown",
+      "name": "View Unknown",
+      "icon": "home",
+      "slug": "unknown"
     }
   ]
 }

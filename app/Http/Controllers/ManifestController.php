@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ManifestImport;
+use App\Models\ClaimList;
 use App\Models\ScannedProducts;
 
 class ManifestController extends Controller
@@ -155,6 +156,25 @@ class ManifestController extends Controller
 
     public function importToScannedProducts(Request $request)
     {
+        if ($request->unknown) {
+            if ($request->save_as == 'bol') {
+                $bol_id = $request->id;
+                $package_id = '';
+            } else {
+                $package_id = $request->id;
+                $bol_id = '';
+            }
+
+            ScannedProducts::create([
+                'bol' => $bol_id,
+                'package_id' => $package_id,
+                'unknown_list' => 'yes'
+            ]);
+
+            return response()->json(array('message' => 'Added to unknown list', 'code' => '201'));
+        }
+
+
         $with_package_id = Manifest::where('package_id', $request->id)->get();
         $with_bol_id = Manifest::where('bol', $request->id)->get();
 
@@ -168,11 +188,23 @@ class ManifestController extends Controller
                     'unit_cost' => $item->unit_cost,
                     'total_cost' => $item->total_cost,
                 ]);
+
+
+                if ($request->claim_list) {
+                    ClaimList::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
+                    ]);
+                }
                 $item->delete();
             }
         } else {
             foreach ($with_bol_id as $item) {
-                $current = ScannedProducts::create([
+                ScannedProducts::create([
                     'bol' => $item->bol,
                     'package_id' => $item->package_id,
                     'item_description' => $item->item_description,
@@ -180,6 +212,16 @@ class ManifestController extends Controller
                     'unit_cost' => $item->unit_cost,
                     'total_cost' => $item->total_cost,
                 ]);
+                if ($request->claim_list) {
+                    ClaimList::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
+                    ]);
+                }
                 $item->delete();
             }
         }

@@ -188,6 +188,8 @@ return [
     "Manifest" => 'Manifest',
     'Receive Products' => 'Receive Products',
     'Create Pallets' => 'Create Pallets',
+    'View Claims' => 'View Claims',
+    'View Unknown' => 'View Unknown',
     'All Received Products' => 'Products',
     "Workers" => "Worker",
     "Warehouses" => "Warehouse",

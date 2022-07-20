@@ -43,6 +43,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('pallets/undo', [PalletsController::class, 'undoPallets']);
     Route::resource('pallets', PalletsController::class);
 
+    Route::get('unknown', [PalletsController::class, 'unknown']);
+    Route::get('claims', [PalletsController::class, 'claims']);
 
     // Route Components
     Route::get('layouts/collapsed-menu', [StaterkitController::class, 'collapsed_menu'])->name('collapsed-menu');

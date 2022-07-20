@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\ClaimList;
 use App\Models\Pallets;
 use App\Models\PalletsProducts;
 use App\Models\ScannedProducts;
@@ -257,5 +258,31 @@ class PalletsController extends Controller
         ]);
 
         return response()->json(array('code' => '201', 'message' => 'done'));
+    }
+
+    public function unknown()
+    {
+        $unknown = ScannedProducts::where('unknown_list', 'yes')->get();
+        $breadcrumbs = [
+            ['link' => "pallets", 'name' => "Pallets"], ['name' => "Index"]
+        ];
+
+        return view('different/unknown', [
+            'breadcrumbs' => $breadcrumbs,
+            'unknown' => $unknown
+        ]);
+    }
+
+    public function claims()
+    {
+        $claims = ClaimList::get();
+        $breadcrumbs = [
+            ['link' => "pallets", 'name' => "Pallets"], ['name' => "Index"]
+        ];
+
+        return view('different/claims', [
+            'breadcrumbs' => $breadcrumbs,
+            'unknown' => $claims
+        ]);
     }
 }

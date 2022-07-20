@@ -93,7 +93,7 @@
                                                             <div class="col-xs-12 col-lg-6 col-sm-12 col-md-12 ml-auto mb-2 text-right">
                                                                 <input type="hidden" id="select_id" />
                                                                 <button class="btn btn-success mt-1 accept_products">Accept</button>
-                                                                <button class="btn btn-danger mt-1">Deny</button>
+                                                                <button class="btn btn-success mt-1 accept_products_to_claim_list">Accept and add to claim list</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -120,6 +120,37 @@
                 </div>
             </div>
     </section>
+
+    <button type="button" class="btn btn-primary d-none" id="unknown-list" data-toggle="modal" data-target="#exampleModal">
+        Launch demo modal
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add to unknown list</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h3 class="uknown-list"></h3>
+                    <input type="hidden" value="" id="unknown-field">
+                    <div class="form-check">
+                        <input type="radio" class="form-check-radio" name="unknownId" value="bol" id="bolid">
+                        <label class="form-check-label" for="bolid">Save as BOL ID</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-radio" name="unknownId" value="package" id="packageid">
+                        <label class="form-check-label" for="packageid">Save as Package ID</label>
+                    </div>
+                    <button class="btn btn-primary mt-1 add-unknown-id">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -453,12 +484,47 @@
                     $('.total_costs').html(total_cost.toFixed(2))
 
                 } else {
-                    alert("Nothing found against your ID please try with a valid ID");
+
+                    var result = confirm("Do you want add this to unknown list?");
+                    if (result) {
+                        $('.uknown-list').html(id)
+                        $('#unknown-field').val(id)
+                        $('#unknown-list').click()
+                    }
                 }
             }
         });
     }
+
     var i = 0;
+    $('.add-unknown-id').click(function() {
+        var select_id = $('#unknown-field').val();
+        var save_as = $('input[name="unknownId"]:checked').val();
+        i++;
+        document.getElementById('number').value = i;
+        $('.counter').html(document.getElementById('number').value)
+
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo route('import-scanned-products') ?>',
+            data: {
+                '_token': '<?php echo csrf_token() ?>',
+                'id': select_id,
+                'save_as': save_as,
+                'unknown': true
+            },
+            success: function(data) {
+                if (data.code == '201') {
+                    alert(data.message);
+                    $('#product_code').focus();
+                    $('.close').click()
+                } else {
+                    alert('Error')
+                }
+            }
+        });
+    });
+
     $('.accept_products').click(function() {
         var select_id = $('#select_id').val();
         i++;
@@ -471,6 +537,31 @@
             data: {
                 '_token': '<?php echo csrf_token() ?>',
                 'id': select_id
+            },
+            success: function(data) {
+                if (data.code == '201') {
+                    $('#product_code').focus();
+                    $('.close').click()
+                } else {
+                    alert('Error')
+                }
+            }
+        });
+    });
+
+    $('.accept_products_to_claim_list').click(function() {
+        var select_id = $('#select_id').val();
+        i++;
+        document.getElementById('number').value = i;
+        $('.counter').html(document.getElementById('number').value)
+
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo route('import-scanned-products') ?>',
+            data: {
+                '_token': '<?php echo csrf_token() ?>',
+                'id': select_id,
+                'claim_list': true
             },
             success: function(data) {
                 if (data.code == '201') {
