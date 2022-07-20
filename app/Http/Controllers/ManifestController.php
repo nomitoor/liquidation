@@ -180,14 +180,14 @@ class ManifestController extends Controller
 
         if (count($with_package_id)) {
             foreach ($with_package_id as $item) {
-                ScannedProducts::create([
-                    'bol' => $item->bol,
-                    'package_id' => $item->package_id,
-                    'item_description' => $item->item_description,
-                    'units' => $item->units,
-                    'unit_cost' => $item->unit_cost,
-                    'total_cost' => $item->total_cost,
-                ]);
+                // ScannedProducts::create([
+                //     'bol' => $item->bol,
+                //     'package_id' => $item->package_id,
+                //     'item_description' => $item->item_description,
+                //     'units' => $item->units,
+                //     'unit_cost' => $item->unit_cost,
+                //     'total_cost' => $item->total_cost,
+                // ]);
 
 
                 if ($request->claim_list) {
@@ -204,14 +204,14 @@ class ManifestController extends Controller
             }
         } else {
             foreach ($with_bol_id as $item) {
-                ScannedProducts::create([
-                    'bol' => $item->bol,
-                    'package_id' => $item->package_id,
-                    'item_description' => $item->item_description,
-                    'units' => $item->units,
-                    'unit_cost' => $item->unit_cost,
-                    'total_cost' => $item->total_cost,
-                ]);
+                // ScannedProducts::create([
+                //     'bol' => $item->bol,
+                //     'package_id' => $item->package_id,
+                //     'item_description' => $item->item_description,
+                //     'units' => $item->units,
+                //     'unit_cost' => $item->unit_cost,
+                //     'total_cost' => $item->total_cost,
+                // ]);
                 if ($request->claim_list) {
                     ClaimList::create([
                         'bol' => $item->bol,
@@ -240,6 +240,11 @@ class ManifestController extends Controller
 
     public function allScannedProducts()
     {
-        return response()->json(array('data' => ScannedProducts::where('unknown_list', null)->get()));
+        return response()->json(array('data' => ScannedProducts::get()));
+    }
+
+    public function allClaims()
+    {
+        return response()->json(array('data' => ClaimList::get()));
     }
 }

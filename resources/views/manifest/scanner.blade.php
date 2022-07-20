@@ -8,7 +8,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12 col-12 mt-2">
-                <button class="btn btn-success" id="start_seasion">Start Seasion</button>
+                <button class="btn btn-primary" id="start_seasion">Start Session</button>
                 <div class="d-none enter-details">
                     <div class="form-group">
                         <label for="basicInput">Paste Bar code product ID or Bol ID</label>
@@ -24,7 +24,7 @@
                     </div>
 
                     <div class="mt-1">
-                        <button class="btn btn-success" id="end_seasion">End Seasion</button>
+                        <button class="btn btn-danger" id="end_seasion">End Session</button>
                     </div>
                 </div>
                 <input type="hidden" id="number" />
@@ -93,7 +93,7 @@
                                                             <div class="col-xs-12 col-lg-6 col-sm-12 col-md-12 ml-auto mb-2 text-right">
                                                                 <input type="hidden" id="select_id" />
                                                                 <button class="btn btn-success mt-1 accept_products">Accept</button>
-                                                                <button class="btn btn-success mt-1 accept_products_to_claim_list">Accept and add to claim list</button>
+                                                                <button class="btn btn-danger mt-1 accept_products_to_claim_list">Add to Claim List</button>
                                                             </div>
                                                         </div>
                                                     </div>

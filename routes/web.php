@@ -37,6 +37,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('import-scanned-products', [ManifestController::class, 'importToScannedProducts'])->name('import-scanned-products');
     Route::get('view-scanned-products', [ManifestController::class, 'viewScannedProducts'])->name('view-scanned-products');
     Route::get('all-scanned-products', [ManifestController::class, 'allScannedProducts'])->name('all-scanned-products');
+    Route::get('all-claim-products', [ManifestController::class, 'allClaims'])->name('all-claim-products');
+
     Route::resource('manifest', ManifestController::class);
     
     Route::post('pallets/delete', [PalletsController::class, 'deletePalletsWithBol']);
