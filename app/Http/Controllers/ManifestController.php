@@ -240,6 +240,6 @@ class ManifestController extends Controller
 
     public function allScannedProducts()
     {
-        return response()->json(array('data' => ScannedProducts::all()));
+        return response()->json(array('data' => ScannedProducts::where('unknown_list', null)->get()));
     }
 }
