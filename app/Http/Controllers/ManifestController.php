@@ -216,20 +216,10 @@ class ManifestController extends Controller
 
         $with_package_id = Manifest::where('package_id', $request->id)->get();
         $with_bol_id = Manifest::where('bol', $request->id)->get();
-        $dropshipbin = Manifest::whereRaw('FIND_IN_SET(?, bol)', [$request->id])->get();
+        $dropshipbin = Manifest::whereRaw('FIND_IN_SET(?, bol)', [$request->id])->where('package_id', 'DROPSHIP_BIN')->get();
 
         if (count($with_package_id)) {
             foreach ($with_package_id as $item) {
-                ScannedProducts::create([
-                    'bol' => $item->bol,
-                    'package_id' => $item->package_id,
-                    'item_description' => $item->item_description,
-                    'units' => $item->units,
-                    'unit_cost' => $item->unit_cost,
-                    'total_cost' => $item->total_cost,
-                ]);
-
-
                 if ($request->claim_list) {
                     ClaimList::create([
                         'bol' => $item->bol,
@@ -239,6 +229,15 @@ class ManifestController extends Controller
                         'unit_cost' => $item->unit_cost,
                         'total_cost' => $item->total_cost,
                         'claim_desription' => $request->description
+                    ]);
+                }else{
+                    ScannedProducts::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
                     ]);
                 }
                 $item->delete();
@@ -274,14 +273,6 @@ class ManifestController extends Controller
 
         } else {
             foreach ($with_bol_id as $item) {
-                ScannedProducts::create([
-                    'bol' => $item->bol,
-                    'package_id' => $item->package_id,
-                    'item_description' => $item->item_description,
-                    'units' => $item->units,
-                    'unit_cost' => $item->unit_cost,
-                    'total_cost' => $item->total_cost,
-                ]);
                 if ($request->claim_list) {
                     ClaimList::create([
                         'bol' => $item->bol,
@@ -291,6 +282,15 @@ class ManifestController extends Controller
                         'unit_cost' => $item->unit_cost,
                         'total_cost' => $item->total_cost,
                         'claim_desription' => $request->description
+                    ]);
+                }else{
+                    ScannedProducts::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
                     ]);
                 }
                 $item->delete();
