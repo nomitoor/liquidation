@@ -12,6 +12,6 @@ class ClaimList extends Model
     protected $table = 'claim_list';
 
     protected $fillable = [
-        'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost',
+        'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost', 'claim_desription'
     ];
 }

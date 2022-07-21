@@ -144,14 +144,53 @@ class ManifestController extends Controller
     {
         $with_package_id = Manifest::where('package_id', $request->id)->get();
         $with_bol_id = Manifest::where('bol', $request->id)->get();
+        $dropshipbin = Manifest::whereRaw('FIND_IN_SET(?, bol)', [$request->id])->get();
 
         if (count($with_package_id)) {
             return response()->json(array('message' => 'Found with Package ID', 'data' => $with_package_id, 'code' => '201'));
         } else if (count($with_bol_id)) {
             return response()->json(array('message' => 'Found with Bol ID', 'data' => $with_bol_id, 'code' => '201'));
+        } else if (count($dropshipbin)) {
+            return response()->json(array('message' => 'Found with Bol ID', 'data' => $dropshipbin, 'code' => '201'));
         } else {
             return response()->json(array('message' => 'not found', 'code' => '404'));
         }
+    }
+
+
+    public function removeScannedProducts(Request $request)
+    {
+        $with_package_id = ScannedProducts::where('package_id', $request->id)->get();
+        $with_bol_id = ScannedProducts::where('bol', $request->id)->get();
+
+        if (count($with_package_id)) {
+            foreach ($with_package_id as $item) {
+                Manifest::create([
+                    'bol' => $item->bol,
+                    'package_id' => $item->package_id,
+                    'item_description' => $item->item_description,
+                    'units' => $item->units,
+                    'unit_cost' => $item->unit_cost,
+                    'total_cost' => $item->total_cost,
+                ]);
+                $item->delete();
+            }
+        } else {
+            foreach ($with_bol_id as $item) {
+                Manifest::create([
+                    'bol' => $item->bol,
+                    'package_id' => $item->package_id,
+                    'item_description' => $item->item_description,
+                    'units' => $item->units,
+                    'unit_cost' => $item->unit_cost,
+                    'total_cost' => $item->total_cost,
+                ]);
+
+                $item->delete();
+            }
+        }
+
+        return response()->json(array('message' => 'Manifest products updated', 'code' => '201'));
     }
 
     public function importToScannedProducts(Request $request)
@@ -177,17 +216,18 @@ class ManifestController extends Controller
 
         $with_package_id = Manifest::where('package_id', $request->id)->get();
         $with_bol_id = Manifest::where('bol', $request->id)->get();
+        $dropshipbin = Manifest::whereRaw('FIND_IN_SET(?, bol)', [$request->id])->get();
 
         if (count($with_package_id)) {
             foreach ($with_package_id as $item) {
-                // ScannedProducts::create([
-                //     'bol' => $item->bol,
-                //     'package_id' => $item->package_id,
-                //     'item_description' => $item->item_description,
-                //     'units' => $item->units,
-                //     'unit_cost' => $item->unit_cost,
-                //     'total_cost' => $item->total_cost,
-                // ]);
+                ScannedProducts::create([
+                    'bol' => $item->bol,
+                    'package_id' => $item->package_id,
+                    'item_description' => $item->item_description,
+                    'units' => $item->units,
+                    'unit_cost' => $item->unit_cost,
+                    'total_cost' => $item->total_cost,
+                ]);
 
 
                 if ($request->claim_list) {
@@ -198,20 +238,50 @@ class ManifestController extends Controller
                         'units' => $item->units,
                         'unit_cost' => $item->unit_cost,
                         'total_cost' => $item->total_cost,
+                        'claim_desription' => $request->description
                     ]);
                 }
                 $item->delete();
             }
+        } else if (count($dropshipbin)) {
+
+            foreach ($dropshipbin as $bin) {
+                $exploded_bin = explode(',', $bin->bol);
+                while (($i = array_search($request->id, $exploded_bin)) !== false) {
+                    unset($exploded_bin[$i]);
+                }
+
+                $bol_ids = $bin->bol_ids;
+                if ($bol_ids == null) {
+                    $string = serialize($request->id);
+                } else {
+                    $ids = unserialize($bol_ids);
+                    $string = serialize($ids . ',' . $request->id);
+                }
+
+                Manifest::whereRaw('FIND_IN_SET(?, bol)', [$request->id])->update([
+                    'bol' => implode(',', $exploded_bin),
+                    'bol_ids' => $string
+                ]);
+
+
+                if ($dropshipbin->bol == '' || $dropshipbin->bol == null) {
+                    Manifest::whereRaw('FIND_IN_SET(?, bol)', [$request->id])->update([
+                        'package_id' => uniqid(),
+                    ]);
+                }
+            }
+
         } else {
             foreach ($with_bol_id as $item) {
-                // ScannedProducts::create([
-                //     'bol' => $item->bol,
-                //     'package_id' => $item->package_id,
-                //     'item_description' => $item->item_description,
-                //     'units' => $item->units,
-                //     'unit_cost' => $item->unit_cost,
-                //     'total_cost' => $item->total_cost,
-                // ]);
+                ScannedProducts::create([
+                    'bol' => $item->bol,
+                    'package_id' => $item->package_id,
+                    'item_description' => $item->item_description,
+                    'units' => $item->units,
+                    'unit_cost' => $item->unit_cost,
+                    'total_cost' => $item->total_cost,
+                ]);
                 if ($request->claim_list) {
                     ClaimList::create([
                         'bol' => $item->bol,
@@ -220,13 +290,14 @@ class ManifestController extends Controller
                         'units' => $item->units,
                         'unit_cost' => $item->unit_cost,
                         'total_cost' => $item->total_cost,
+                        'claim_desription' => $request->description
                     ]);
                 }
                 $item->delete();
             }
         }
 
-        return response()->json(array('message' => 'Manifest producsts updated', 'code' => '201'));
+        return response()->json(array('message' => 'Manifest products updated', 'code' => '201'));
     }
 
     public function viewScannedProducts()
@@ -246,5 +317,19 @@ class ManifestController extends Controller
     public function allClaims()
     {
         return response()->json(array('data' => ClaimList::get()));
+    }
+
+    public function getProducts(Request $request)
+    {
+        $with_package_id = ScannedProducts::where('package_id', $request->id)->get();
+        $with_bol_id = ScannedProducts::where('bol', $request->id)->get();
+
+        if (count($with_package_id)) {
+            return response()->json(array('message' => 'Found with Package ID', 'data' => $with_package_id, 'code' => '201'));
+        } else if (count($with_bol_id)) {
+            return response()->json(array('message' => 'Found with Bol ID', 'data' => $with_bol_id, 'code' => '201'));
+        } else {
+            return response()->json(array('message' => 'not found', 'code' => '404'));
+        }
     }
 }

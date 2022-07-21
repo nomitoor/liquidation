@@ -23,6 +23,11 @@
                         </span>
                     </div>
 
+                    <label for="basicInput">Remove from the product list</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control remove_from_products" id="remove_from_products" placeholder="Type product ID or Bol ID" />
+                    </div>
+
                     <div class="mt-1">
                         <button class="btn btn-danger" id="end_seasion">End Session</button>
                     </div>
@@ -151,6 +156,73 @@
             </div>
         </div>
     </div>
+
+
+    <section id="modal-themes">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="demo-inline-spacing">
+
+                            <div class="d-inline-block">
+
+
+                                <div class="modal-size-lg d-inline-block">
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-outline-primary open-product-model d-none" data-toggle="modal" data-target="#large-new">
+                                        Large Modal
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade text-left" id="large-new" tabindex="-1" role="dialog" aria-labelledby="myModalLabel17" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title" id="myModalLabel17">Found Products</h4>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="container-fluid">
+                                                        <div class="row">
+                                                            <div class="col-xs-12 col-lg-2 col-sm-12 col-md-12">
+                                                                <label>Total Units</label>
+                                                                <h3 class="total_units"></h3>
+                                                            </div>
+                                                            <div class="col-xs-12 col-lg-2 col-sm-12 col-md-12">
+                                                                <label>Grand Total</label>
+                                                                <h3 class="total_costs"></h3>
+                                                            </div>
+                                                            <div class="col-xs-12 col-lg-6 col-sm-12 col-md-12 ml-auto mb-2 text-right">
+                                                                <input type="hidden" id="return_id" />
+                                                                <button class="btn btn-success mt-1 return_to_manifest">Return</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Description</th>
+                                                                <th>units</th>
+                                                                <th>unit cost</th>
+                                                                <th>total cost</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="myNewTable">
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
 </div>
 @endsection
 
@@ -496,6 +568,84 @@
         });
     }
 
+    $('.remove_from_products').bind("input change", function(e) {
+        var remove_from_products = $('.remove_from_products').val();
+        getProductList(remove_from_products)
+        $('#return_id').val(remove_from_products)
+        $('.remove_from_products').val('');
+    })
+
+    function getProductList(id) {
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo route('products-for-manifest') ?>',
+            data: {
+                '_token': '<?php echo csrf_token() ?>',
+                'id': id
+            },
+            success: function(data) {
+
+                if (data.code == '201') {
+                    console.log(data);
+                    $('.open-product-model').click();
+                    var table = document.getElementById("myNewTable");
+                    var unit_count = 0;
+                    var total_cost = 0;
+                    table.innerHTML = "";
+
+                    data.data.forEach((manifest) => {
+                        var row = table.insertRow(0);
+                        var cell0 = row.insertCell(0);
+                        var cell1 = row.insertCell(1);
+                        var cell2 = row.insertCell(2);
+                        var cell3 = row.insertCell(3);
+
+                        unit_count += parseInt(manifest.units)
+                        total_cost = parseFloat(total_cost) + parseFloat(manifest.total_cost)
+
+                        cell0.innerHTML = manifest.item_description;
+                        cell1.innerHTML = manifest.units;
+                        cell2.innerHTML = manifest.unit_cost;
+                        cell3.innerHTML = manifest.total_cost;
+
+                    })
+                    $('.total_units').html(unit_count)
+                    $('.total_costs').html(total_cost.toFixed(2))
+
+                } else {
+
+                    var result = confirm("Do you want add this to unknown list?");
+                    if (result) {
+                        $('.uknown-list').html(id)
+                        $('#unknown-field').val(id)
+                        $('#unknown-list').click()
+                    }
+                }
+            }
+        });
+    }
+
+    $('.return_to_manifest').click(function() {
+        var return_id = $('#return_id').val();
+
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo route('remove-scanned-products') ?>',
+            data: {
+                '_token': '<?php echo csrf_token() ?>',
+                'id': return_id
+            },
+            success: function(data) {
+                if (data.code == '201') {
+                    $('#product_code').focus();
+                    $('.close').click()
+                } else {
+                    alert('Error')
+                }
+            }
+        });
+    });
+
     var i = 0;
     $('.add-unknown-id').click(function() {
         var select_id = $('#unknown-field').val();
@@ -542,6 +692,8 @@
                 if (data.code == '201') {
                     $('#product_code').focus();
                     $('.close').click()
+                }else if(data.code == '506'){
+                    
                 } else {
                     alert('Error')
                 }
@@ -555,13 +707,19 @@
         document.getElementById('number').value = i;
         $('.counter').html(document.getElementById('number').value)
 
+        let description = prompt("Please enter claim desription");
+        while (!description) {
+            description = prompt("Please enter claim desription");
+        }
+
         $.ajax({
             type: 'POST',
             url: '<?php echo route('import-scanned-products') ?>',
             data: {
                 '_token': '<?php echo csrf_token() ?>',
                 'id': select_id,
-                'claim_list': true
+                'claim_list': true,
+                'description': description,
             },
             success: function(data) {
                 if (data.code == '201') {

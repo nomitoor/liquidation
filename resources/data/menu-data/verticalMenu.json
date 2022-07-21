@@ -34,7 +34,15 @@
       "url": "claims",
       "name": "View Claims",
       "icon": "home",
-      "slug": "claims"
+      "slug": "claims",
+      "submenu": [
+        {
+          "url": "claims",
+          "name": "View Received Claims",
+          "icon": "home",
+          "slug": "claims"
+        }
+      ]
     },
     {
       "url": "unknown",
