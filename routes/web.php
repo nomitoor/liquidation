@@ -44,13 +44,16 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('all-claim-products', [ManifestController::class, 'allClaims'])->name('all-claim-products');
 
     Route::resource('manifest', ManifestController::class);
-    
+
     Route::post('pallets/delete', [PalletsController::class, 'deletePalletsWithBol']);
     Route::post('pallets/undo', [PalletsController::class, 'undoPallets']);
     Route::resource('pallets', PalletsController::class);
 
     Route::get('unknown', [PalletsController::class, 'unknown']);
     Route::get('claims', [PalletsController::class, 'claims']);
+
+    Route::get('export/scanned/products/{id}', [ManifestController::class, 'exportScannedProducts'])->name('exporScanned');
+    Route::get('export/scanned/products/client/{id}', [ManifestController::class, 'clientExportScannedProducts'])->name('client');
 
     // Route Components
     Route::get('layouts/collapsed-menu', [StaterkitController::class, 'collapsed_menu'])->name('collapsed-menu');

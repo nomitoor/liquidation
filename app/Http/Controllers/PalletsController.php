@@ -235,10 +235,10 @@ class PalletsController extends Controller
         $data = unserialize($pallet->bol_ids);
 
         if (($key = array_search(end($data), $data)) !== false) {
+            ScannedProducts::where('bol', $data[$key])->update(['pallet_id' => NULL]);
             unset($data[$key]);
         }
 
-        ScannedProducts::where('bol', $request->bol_id)->update(['pallet_id' => NULL]);
 
         $total_price = 0;
         $total_units = 0;

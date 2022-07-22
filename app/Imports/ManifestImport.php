@@ -16,6 +16,12 @@ class ManifestImport implements ToModel
     public function model(array $row)
     {
         return new Manifest([
+            'removal_reason' => $row[4],
+            'GLDesc' => $row[15],
+            'asin' => $row[20],
+            'recovery_rate' => $row[35],
+            'unit_recovery' => $row[32],
+            'total_recovery' => $row[34],
             'bol' => $row[6],
             'package_id' => $row[13],
             'item_description' => $row[24],
