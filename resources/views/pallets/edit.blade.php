@@ -65,7 +65,7 @@
                                             <tr>
                                                 <th>
                                                     <div class="elipsis">
-                                                        <img style="width:25px;cursor:pointer" onclick="deletePallet('<?php echo $pallets->id ?>','<?php echo $product->bol ?>')" src="https://eccdatacenter.ae/umeattendance/Images/Close_Rej.jpg">
+                                                        <img style="width:25px;cursor:pointer" onclick="deletePallet('<?php echo $pallets->id ?>','<?php echo $product->bol == '' ? $product->package_id : $product->bol ?>')" src="https://eccdatacenter.ae/umeattendance/Images/Close_Rej.jpg">
                                                     </div>
                                                 </th>
                                                 <th>

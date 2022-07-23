@@ -99,7 +99,7 @@ class PalletsController extends Controller
         $pallet_products = [];
 
         foreach ($bol_ids as $bol_id) {
-            $prd = ScannedProducts::where('bol', $bol_id)->get();
+            $prd = ScannedProducts::where('bol', $bol_id)->orWhere('package_id', $bol_id)->get();
             foreach ($prd as $pd) {
                 array_push($pallet_products, $pd);
             }
@@ -131,7 +131,7 @@ class PalletsController extends Controller
             ['link' => "pallets", 'name' => "Pallets"], ['name' => "Create"]
         ];
 
-        $scanned_products = ScannedProducts::whereIn('bol', unserialize($pallet->bol_ids) ?: [])->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
+        $scanned_products = ScannedProducts::whereIn('bol', unserialize($pallet->bol_ids) ?: [])->orWhereIn('package_id', unserialize($pallet->bol_ids) ?: [])->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
 
         return view('pallets/edit', ['breadcrumbs' => $breadcrumbs, 'pallets' => $pallet, 'scanned_products' => $scanned_products]);
     }
@@ -146,7 +146,10 @@ class PalletsController extends Controller
     public function update(Request $request, Pallets $pallet)
     {
         $products_query = ScannedProducts::where('bol', $request->bol_id)->where('pallet_id', NULL);
+        $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->where('pallet_id', NULL);
+
         $scanned_products = $products_query->get();
+        $scanned_products_with_package_id = $with_package_id->get();
 
         if (count($scanned_products)) {
             $bol_id_array = unserialize($pallet->bol_ids);
@@ -176,6 +179,45 @@ class PalletsController extends Controller
             $products_query->update(['pallet_id' => $pallet->id]);
 
             $updated_scanned_products = ScannedProducts::whereIn('bol', $bol_id_array)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
+
+            $pallet->update([
+                'bol_ids' => serialize($bol_id_array),
+                'total_price' => $new_total_price,
+                'total_unit' => $new_total_units,
+            ]);
+
+            return response()->json(array(
+                'data' => $updated_scanned_products->toArray(),
+                'code' => '201'
+            ));
+        } else if (count($scanned_products_with_package_id)) {
+            $bol_id_array = unserialize($pallet->bol_ids);
+            if ($bol_id_array) {
+                foreach ($bol_id_array as $ids) {
+                    if ($ids == $request->bol_id) {
+                        return response()->json(array('message' => 'Bol already added to this pallet', 'code' => '403'));
+                    }
+                }
+                array_push($bol_id_array, $request->bol_id);
+            } else {
+                $bol_id_array = [];
+                array_push($bol_id_array, $request->bol_id);
+            }
+
+            $total_price = 0;
+            $total_units = 0;
+
+            foreach ($scanned_products_with_package_id as $products) {
+                $total_price += (float) $products->total_cost;
+                $total_units += (int) $products->units;
+            }
+
+            $new_total_price = $pallet->total_price + $total_price;
+            $new_total_units = $pallet->total_unit + $total_units;
+
+            $products_query->update(['pallet_id' => $pallet->id]);
+
+            $updated_scanned_products = ScannedProducts::whereIn('package_id', $bol_id_array)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
 
             $pallet->update([
                 'bol_ids' => serialize($bol_id_array),
@@ -269,7 +311,7 @@ class PalletsController extends Controller
 
         return view('different/unknown', [
             'breadcrumbs' => $breadcrumbs,
-            'unknown' => $unknown
+            // 'unknown' => $unknown
         ]);
     }
 

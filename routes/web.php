@@ -41,6 +41,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('view-scanned-products', [ManifestController::class, 'viewScannedProducts'])->name('view-scanned-products');
     Route::get('all-scanned-products', [ManifestController::class, 'allScannedProducts'])->name('all-scanned-products');
+    Route::get('all-uknown-products', [ManifestController::class, 'allUnknownProducts'])->name('all-uknown-products');
     Route::get('all-claim-products', [ManifestController::class, 'allClaims'])->name('all-claim-products');
 
     Route::resource('manifest', ManifestController::class);

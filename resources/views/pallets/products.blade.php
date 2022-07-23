@@ -98,20 +98,22 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($products as $product)
+                                @if(count($products))
+                                    @foreach($products as $product)
 
-                                <tr>
-                                    <td>
-                                        {{ $product->item_description }}
-                                    </td>
-                                    <td>
-                                        {{ $product->units }}
-                                    </td>
-                                    <td>
-                                        € {{ $product->total_cost }}
-                                    </td>
-                                </tr>
-                                @endforeach
+                                    <tr>
+                                        <td>
+                                            {{ $product->item_description }}
+                                        </td>
+                                        <td>
+                                            {{ $product->units }}
+                                        </td>
+                                        <td>
+                                            € {{ $product->total_cost }}
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                @endif
                             </tbody>
                         </table>
                     </div>
@@ -124,10 +126,7 @@
         <div class="col-xl-3 col-md-4 col-12 invoice-actions mt-md-0 mt-2">
             <div class="card">
                 <div class="card-body">
-                    <a class="btn btn-outline-secondary btn-block mb-75" onclick="print_page()">
-                        Print
-                    </a>
-                    <a class="btn btn-outline-secondary btn-block mb-75" href="{{ url('app/invoice/edit')}}"> Edit </a>
+                    <a class="btn btn-outline-secondary btn-block mb-75" href="{{ route('pallets.edit', $invoice_number) }}"> Edit </a>
                     <a class="btn btn-outline-secondary btn-block mb-75" href="{{ route('exporScanned', ['id' => $invoice_number]) }}"> Export </a>
                     <a class="btn btn-outline-secondary btn-block mb-75" href="{{ route('client', ['id' => $invoice_number])}}"> Export for Client </a>
 
@@ -158,7 +157,7 @@
         mywindow.document.write(document.getElementById('print-able').innerHTML);
         mywindow.document.write('</body></html>');
 
-        mywindow.document.close(); // necessary for IE >= 10
+        // mywindow.document.close(); // necessary for IE >= 10
         mywindow.focus(); // necessary for IE >= 10*/
 
         mywindow.print();

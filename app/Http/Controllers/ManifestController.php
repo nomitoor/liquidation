@@ -218,7 +218,7 @@ class ManifestController extends Controller
 
         $with_package_id = Manifest::where('package_id', $request->id)->get();
         $with_bol_id = Manifest::where('bol', $request->id)->get();
-        $dropshipbin = Manifest::whereRaw('FIND_IN_SET(?, bol)', [$request->id])->where('package_id', 'DROPSHIP_BIN')->get();
+        $dropshipbin = Manifest::whereRaw('FIND_IN_SET(?, bol)', [$request->id])->where('package_id', 'DROPSHIP_BIN')->orWhere('bol_ids', '<>', null)->get();
 
         if (count($with_package_id)) {
             foreach ($with_package_id as $item) {
@@ -275,22 +275,38 @@ class ManifestController extends Controller
                     $package_id = $bin->package_id;
                 }
 
-                Manifest::whereRaw('FIND_IN_SET(?, bol)', [$request->id])->update([
+                Manifest::whereRaw('FIND_IN_SET(?, bol)', [$request->id])->orWhere('bol_ids', '<>', null)->update([
                     'bol' => implode(',', $exploded_bin),
                     'bol_ids' => $string,
                     'package_id' => $package_id,
                 ]);
             }
 
-            // foreach ($id_array as $id) {
-            //     $found_data = Manifest::where('id', $id->$id)->first();
+            $data = Manifest::where('package_id', $package_id)->where('bol', '')->get();
 
-            //     if ($found_data->bol == '' || $found_data->bol == null) {
-            //         Manifest::whereRaw('FIND_IN_SET(?, bol)', [$request->id])->where('package_id', 'DROPSHIP_BIN')->update([
-            //             'package_id' => uniqid(),
-            //         ]);
-            //     }
-            // }
+            if (count($data)) {
+                foreach ($data as $value) {
+                    ScannedProducts::create([
+                        'bol' => $value->bol,
+                        'package_id' => $value->package_id,
+                        'item_description' => $value->item_description,
+                        'units' => $value->units,
+                        'unit_cost' => $value->unit_cost,
+                        'total_cost' => $value->total_cost,
+                        'asin' => $value->asin,
+                        'GLDesc' => $value->GLDesc,
+                        'unit_recovery' => $value->unit_recovery,
+                        'total_recovery' => $value->total_recovery,
+                        'recovery_rate' => $value->recovery_rate,
+                        'removal_reason' => $value->removal_reason
+                    ]);
+
+                    $value->delete();
+                }
+                return response()->json(array('message' => 'Manifest products updated', 'code' => '910', 'package_id' => $package_id));
+            } else {
+                return response()->json(array('message' => 'Manifest products updated', 'code' => '909', 'package_id' => $package_id));
+            }
         } else {
             foreach ($with_bol_id as $item) {
                 if ($request->claim_list) {
@@ -343,6 +359,11 @@ class ManifestController extends Controller
     public function allClaims()
     {
         return response()->json(array('data' => ClaimList::get()));
+    }
+
+    public function allUnknownProducts()
+    {
+        return response()->json(array('data' => ScannedProducts::where('unknown_list', 'yes')->get()));
     }
 
     public function getProducts(Request $request)

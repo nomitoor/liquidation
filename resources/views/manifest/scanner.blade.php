@@ -12,7 +12,7 @@
                 <div class="d-none enter-details">
                     <div class="form-group">
                         <label for="basicInput">Paste Bar code product ID or Bol ID</label>
-                        <input type="text" class="form-control product_code" id="product_code" placeholder="Paste Bar code product ID or Bol ID" />
+                        <input type="text" class="form-control product_code" id="product_code" name="product_code" placeholder="Paste Bar code product ID or Bol ID" />
                     </div>
 
                     <label for="basicInput">Type product ID or Bol ID</label>
@@ -676,6 +676,7 @@
     });
 
     $('.accept_products').click(function() {
+
         var select_id = $('#select_id').val();
         i++;
         document.getElementById('number').value = i;
@@ -689,11 +690,21 @@
                 'id': select_id
             },
             success: function(data) {
+
                 if (data.code == '201') {
                     $('#product_code').focus();
                     $('.close').click()
-                }else if(data.code == '506'){
-                    
+
+                } else if (data.code == '909') {
+                    alert(select_id + ' Scanned successfully, with product ID: ' + data.package_id + " Please copy this to a safe place..");
+                    $('#product_code').focus();
+                    $('.close').click()
+
+                } else if (data.code == '910') {
+                    alert(select_id + ' Scanned last time successfully, with product ID: ' + data.package_id + " Please copy this to a safe place..");
+                    $('#product_code').focus();
+                    $('.close').click()
+
                 } else {
                     alert('Error')
                 }

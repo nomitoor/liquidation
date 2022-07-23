@@ -37,18 +37,6 @@
                                 <th>units</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach($unknown as $un)
-                            <tr>
-                                <th>{{ $un->bol ?? '-' }}</th>
-                                <th>{{ $un->item_description ?? '-' }}</th>
-                                <th>{{ $un->package_id ?? '-' }}</th>
-                                <th>{{ $un->total_cost ?? '-' }}</th>
-                                <th>{{ $un->unit_cost ?? '-' }}</th>
-                                <th>{{ $un->units ?? '-' }}</th>
-                            </tr>
-                            @endforeach
-                        </tbody>
                     </table>
                 </div>
             </div>
@@ -74,39 +62,39 @@
 <!-- <script src="{{ asset(mix('js/scripts/tables/table-datatables-advanced.js')) }}"></script> -->
 
 <script>
-    // var dt_ajax_table = $('.manifest-data');
+    var dt_ajax_table = $('.manifest-data');
 
 
-    // var dt_ajax = dt_ajax_table.dataTable({
-    //     processing: true,
-    //     dom: '<"d-flex justify-content-between align-items-center mx-0 row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"d-flex justify-content-between mx-0 row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-    //     ajax: "{{ route('all-scanned-products') }}",
-    //     columns: [{
-    //             data: 'bol'
-    //         },
-    //         {
-    //             data: 'item_description'
-    //         },
-    //         {
-    //             data: 'package_id'
-    //         },
-    //         {
-    //             data: 'total_cost'
-    //         },
-    //         {
-    //             data: 'unit_cost'
-    //         },
-    //         {
-    //             data: 'units'
-    //         },
-    //     ],
-    //     language: {
-    //         paginate: {
-    //             // remove previous & next text from pagination
-    //             previous: '&nbsp;',
-    //             next: '&nbsp;'
-    //         }
-    //     }
-    // });
+    var dt_ajax = dt_ajax_table.dataTable({
+        processing: true,
+        dom: '<"d-flex justify-content-between align-items-center mx-0 row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"d-flex justify-content-between mx-0 row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        ajax: "{{ route('all-scanned-products') }}",
+        columns: [{
+                data: 'bol'
+            },
+            {
+                data: 'item_description'
+            },
+            {
+                data: 'package_id'
+            },
+            {
+                data: 'total_cost'
+            },
+            {
+                data: 'unit_cost'
+            },
+            {
+                data: 'units'
+            },
+        ],
+        language: {
+            paginate: {
+                // remove previous & next text from pagination
+                previous: '&nbsp;',
+                next: '&nbsp;'
+            }
+        }
+    });
 </script>
 @endsection
