@@ -36,12 +36,21 @@
                         <div class="row">
 
                             <div class="col-md-12 mb-1">
-                                <label>Name</label>
+                                <label>Paste Product ID or Bol Id</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control product_code" placeholder="Enter product ID or Bol ID" />
                                     <span class="input-group-btn">
                                         <button class="btn btn-info" onclick="undoPallet('<?php echo $pallets->id ?>')">
                                             <i class="fa fa-undo" aria-hidden="true"></i>Undo
+                                        </button>
+                                    </span>
+                                </div>
+                                <label>Enter Product ID or Bol Id</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control product_code_manually" placeholder="Enter product ID or Bol ID" />
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-info" onclick="addPalletManually()">
+                                            <i class="fa fa-undo" aria-hidden="true"></i>Add Pallet
                                         </button>
                                     </span>
                                 </div>
@@ -65,7 +74,7 @@
                                             <tr>
                                                 <th>
                                                     <div class="elipsis">
-                                                        <img style="width:25px;cursor:pointer" onclick="deletePallet('<?php echo $pallets->id ?>','<?php echo $product->bol == '' ? $product->package_id : $product->bol ?>')" src="https://eccdatacenter.ae/umeattendance/Images/Close_Rej.jpg">
+                                                        <img style="width:25px;cursor:pointer" onclick="deletePallet('<?php echo $pallets->id ?>','<?php echo $product->package_id ?>', '<?php echo  $product->bol ?>')" src="https://eccdatacenter.ae/umeattendance/Images/Close_Rej.jpg">
                                                     </div>
                                                 </th>
                                                 <th>
@@ -118,6 +127,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 <script>
     $('.product_code').bind("input change", function(e) {
+        e.preventDefault();
         var executed = false;
 
         if (!executed) {
@@ -170,6 +180,60 @@
         }
     })
 
+    function addPalletManually() {
+        event.preventDefault();
+        var executed = false;
+
+        if (!executed) {
+            executed = true;
+            var product_code = $('.product_code_manually').val();
+            $.ajax({
+                type: 'PATCH',
+                url: '<?php echo route('pallets.update', $pallets->id) ?>',
+                data: {
+                    '_token': '<?php echo csrf_token() ?>',
+                    'bol_id': product_code
+                },
+                success: function(data) {
+
+                    if (data.code == '201') {
+                        location.reload()
+                        $('#pallet-added').removeClass('d-none')
+                        $('#pallet-added').addClass('d-block')
+
+                        $('.product_code_manually').val('');
+                        var table = document.getElementById("myTable").getElementsByTagName('tbody')[0];
+                        table.innerHTML = "";
+
+                        data.data.forEach((scanned_product) => {
+                            var row = table.insertRow(0);
+                            var cell0 = row.insertCell(0);
+                            var cell1 = row.insertCell(1);
+                            var cell2 = row.insertCell(2);
+                            var cell3 = row.insertCell(3);
+                            var cell4 = row.insertCell(4);
+                            var cell5 = row.insertCell(5);
+
+                            cell0.innerHTML = scanned_product.bol;
+                            cell1.innerHTML = scanned_product.package_id;
+                            cell2.innerHTML = scanned_product.item_description
+                            cell3.innerHTML = scanned_product.units;
+                            cell4.innerHTML = scanned_product.unit_cost;
+                            cell5.innerHTML = scanned_product.total_cost;
+
+                        })
+
+                    } else if (data.code == '403') {
+                        $('.product_code_manually').val('');
+                        alert(data.message);
+                    } else {
+                        $('.product_code_manually').val('');
+                    }
+                }
+            });
+        }
+    }
+
     function undoPallet(id) {
         var result = confirm("Are your sure you want to remove this product from this pallete?");
         if (result) {
@@ -190,7 +254,7 @@
         }
     }
 
-    function deletePallet(id, bol_id) {
+    function deletePallet(id, package_id, bol_id) {
         var result = confirm("Are your sure you want to remove this product from this pallete?");
         if (result) {
             event.preventDefault();
@@ -200,6 +264,7 @@
                 data: {
                     '_token': '<?php echo csrf_token() ?>',
                     'bol_id': bol_id,
+                    'package_id': package_id,
                     'id': id,
                 },
                 success: function(data) {

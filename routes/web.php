@@ -36,6 +36,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('scanned-manifests', [ManifestController::class, 'getManifest'])->name('scanned-manifests');
     Route::post('products-for-manifest', [ManifestController::class, 'getProducts'])->name('products-for-manifest');
     Route::post('import-scanned-products', [ManifestController::class, 'importToScannedProducts'])->name('import-scanned-products');
+    
+    Route::get('view-bucket', [ManifestController::class, 'viewBucket']);
 
     Route::post('remove-scanned-products', [ManifestController::class, 'removeScannedProducts'])->name('remove-scanned-products');
 
@@ -43,6 +45,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('all-scanned-products', [ManifestController::class, 'allScannedProducts'])->name('all-scanned-products');
     Route::get('all-uknown-products', [ManifestController::class, 'allUnknownProducts'])->name('all-uknown-products');
     Route::get('all-claim-products', [ManifestController::class, 'allClaims'])->name('all-claim-products');
+    Route::get('all-bucket-manifest', [ManifestController::class, 'allBuckets'])->name('allBuckets');
 
     Route::resource('manifest', ManifestController::class);
 

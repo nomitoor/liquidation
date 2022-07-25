@@ -74,7 +74,7 @@ class PalletsController extends Controller
                 $total_units += (int) $products->units;
             }
 
-            ScannedProducts::where('bol', $bol)->update(['pallet_id' => $request->pallet_name]);
+            ScannedProducts::where('bol', $bol)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $request->id]);
         }
 
         Pallets::create([
@@ -176,7 +176,7 @@ class PalletsController extends Controller
             $new_total_price = $pallet->total_price + $total_price;
             $new_total_units = $pallet->total_unit + $total_units;
 
-            $products_query->update(['pallet_id' => $pallet->id]);
+            ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
 
             $updated_scanned_products = ScannedProducts::whereIn('bol', $bol_id_array)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
 
@@ -215,7 +215,7 @@ class PalletsController extends Controller
             $new_total_price = $pallet->total_price + $total_price;
             $new_total_units = $pallet->total_unit + $total_units;
 
-            $products_query->update(['pallet_id' => $pallet->id]);
+            ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
 
             $updated_scanned_products = ScannedProducts::whereIn('package_id', $bol_id_array)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
 
@@ -245,16 +245,16 @@ class PalletsController extends Controller
         $pallet = Pallets::where('id', $request->id)->first();
         $data = unserialize($pallet->bol_ids);
 
-        if (($key = array_search($request->bol_id, $data)) !== false) {
+        if (($key = array_search($request->bol_id, $data)) !== false || ($key = array_search($request->package_id, $data)) !== false) {
             unset($data[$key]);
         }
 
-        ScannedProducts::where('bol', $request->bol_id)->update(['pallet_id' => NULL]);
+        ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->package_id)->update(['pallet_id' => NULL]);
 
         $total_price = 0;
         $total_units = 0;
         foreach ($data as $value) {
-            $products = ScannedProducts::where('bol', $value)->get(['units', 'unit_cost', 'total_cost']);
+            $products = ScannedProducts::where('bol', $value)->orWhere('package_id', $value)->get(['units', 'unit_cost', 'total_cost']);
 
             foreach ($products as $product) {
                 $total_price += (float) $product->total_cost;
@@ -277,7 +277,7 @@ class PalletsController extends Controller
         $data = unserialize($pallet->bol_ids);
 
         if (($key = array_search(end($data), $data)) !== false) {
-            ScannedProducts::where('bol', $data[$key])->update(['pallet_id' => NULL]);
+            ScannedProducts::where('bol', $data[$key])->orWhere('package_id', $data[$key])->update(['pallet_id' => NULL]);
             unset($data[$key]);
         }
 

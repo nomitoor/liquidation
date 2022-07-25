@@ -25,6 +25,12 @@
       "slug": "view-scanned-products"
     },
     {
+      "url": "view-bucket",
+      "name": "Buckets",
+      "icon": "home",
+      "slug": "view-bucket"
+    },
+    {
       "url": "pallets",
       "name": "Create Pallets",
       "icon": "home",

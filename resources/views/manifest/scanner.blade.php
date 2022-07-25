@@ -12,7 +12,7 @@
                 <div class="d-none enter-details">
                     <div class="form-group">
                         <label for="basicInput">Paste Bar code product ID or Bol ID</label>
-                        <input type="text" class="form-control product_code" id="product_code" name="product_code" placeholder="Paste Bar code product ID or Bol ID" />
+                        <input type="text" class="form-control product_code" id="product_code" onblur="this.focus()" name="product_code" placeholder="Paste Bar code product ID or Bol ID" />
                     </div>
 
                     <label for="basicInput">Type product ID or Bol ID</label>
@@ -231,6 +231,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 <script>
     $(function() {
+        $('#product_code').focus();
+
         var App = {
             init: function() {
                 Quagga.init(this.state, function(err) {
@@ -637,8 +639,8 @@
             },
             success: function(data) {
                 if (data.code == '201') {
-                    $('#product_code').focus();
                     $('.close').click()
+                    $('#product_code').focus();
                 } else {
                     alert('Error')
                 }
@@ -666,8 +668,8 @@
             success: function(data) {
                 if (data.code == '201') {
                     alert(data.message);
-                    $('#product_code').focus();
                     $('.close').click()
+                    $('#product_code').focus();
                 } else {
                     alert('Error')
                 }
@@ -692,19 +694,23 @@
             success: function(data) {
 
                 if (data.code == '201') {
-                    $('#product_code').focus();
                     $('.close').click()
+                    $('#product_code').focus();
 
                 } else if (data.code == '909') {
                     alert(select_id + ' Scanned successfully, with product ID: ' + data.package_id + " Please copy this to a safe place..");
-                    $('#product_code').focus();
                     $('.close').click()
+                    $('#product_code').focus();
 
                 } else if (data.code == '910') {
                     alert(select_id + ' Scanned last time successfully, with product ID: ' + data.package_id + " Please copy this to a safe place..");
-                    $('#product_code').focus();
                     $('.close').click()
+                    $('#product_code').focus();
 
+                } else if (data.code == '707') {
+                    alert(data.message);
+                    $('.close').click()
+                    $('#product_code').focus();
                 } else {
                     alert('Error')
                 }
@@ -734,8 +740,8 @@
             },
             success: function(data) {
                 if (data.code == '201') {
-                    $('#product_code').focus();
                     $('.close').click()
+                    $('#product_code').focus();
                 } else {
                     alert('Error')
                 }

@@ -250,6 +250,36 @@ class ManifestController extends Controller
                 }
                 $item->delete();
             }
+        } else if (count($with_bol_id)) {
+            foreach ($with_bol_id as $item) {
+                if ($request->claim_list) {
+                    ClaimList::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
+                        'claim_desription' => $request->description
+                    ]);
+                } else {
+                    ScannedProducts::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
+                        'asin' => $item->asin,
+                        'GLDesc' => $item->GLDesc,
+                        'unit_recovery' => $item->unit_recovery,
+                        'total_recovery' => $item->total_recovery,
+                        'recovery_rate' => $item->recovery_rate,
+                        'removal_reason' => $item->removal_reason
+                    ]);
+                }
+                $item->delete();
+            }
         } else if (count($dropshipbin)) {
 
             $id_array = [];
@@ -266,17 +296,19 @@ class ManifestController extends Controller
                     $string = serialize($request->id);
                 } else {
                     $ids = unserialize($bol_ids);
+                    if (str_contains($request->id, $ids)) {
+                        return response()->json(array('message' => 'Id already scanned', 'code' => '707'));
+                    }
                     $string = serialize($ids . ',' . $request->id);
                 }
 
                 if ($bin->package_id == 'DROPSHIP_BIN') {
-                    $package_id = uniqid();
+                    $package_id = 'Bucket#' . uniqid();
                 } else {
                     $package_id = $bin->package_id;
                 }
 
                 Manifest::whereRaw('FIND_IN_SET(?, bol)', [$request->id])->orWhere('bol_ids', '<>', null)->update([
-                    'bol' => implode(',', $exploded_bin),
                     'bol_ids' => $string,
                     'package_id' => $package_id,
                 ]);
@@ -307,36 +339,6 @@ class ManifestController extends Controller
             } else {
                 return response()->json(array('message' => 'Manifest products updated', 'code' => '909', 'package_id' => $package_id));
             }
-        } else {
-            foreach ($with_bol_id as $item) {
-                if ($request->claim_list) {
-                    ClaimList::create([
-                        'bol' => $item->bol,
-                        'package_id' => $item->package_id,
-                        'item_description' => $item->item_description,
-                        'units' => $item->units,
-                        'unit_cost' => $item->unit_cost,
-                        'total_cost' => $item->total_cost,
-                        'claim_desription' => $request->description
-                    ]);
-                } else {
-                    ScannedProducts::create([
-                        'bol' => $item->bol,
-                        'package_id' => $item->package_id,
-                        'item_description' => $item->item_description,
-                        'units' => $item->units,
-                        'unit_cost' => $item->unit_cost,
-                        'total_cost' => $item->total_cost,
-                        'asin' => $item->asin,
-                        'GLDesc' => $item->GLDesc,
-                        'unit_recovery' => $item->unit_recovery,
-                        'total_recovery' => $item->total_recovery,
-                        'recovery_rate' => $item->recovery_rate,
-                        'removal_reason' => $item->removal_reason
-                    ]);
-                }
-                $item->delete();
-            }
         }
 
         return response()->json(array('message' => 'Manifest products updated', 'code' => '201'));
@@ -359,6 +361,11 @@ class ManifestController extends Controller
     public function allClaims()
     {
         return response()->json(array('data' => ClaimList::get()));
+    }
+
+    public function allBuckets()
+    {
+        return response()->json(array('data' => Manifest::where('bol_ids', '<>', null)->get()));
     }
 
     public function allUnknownProducts()
@@ -388,5 +395,14 @@ class ManifestController extends Controller
     public function clientExportScannedProducts(Request $request)
     {
         return Excel::download(new ScannedProductsClientExport($request->id), 'pallets.xlsx');
+    }
+
+    public function viewBucket()
+    {
+        $breadcrumbs = [
+            ['link' => "view-scanned-products", 'name' => "Products"], ['name' => "Index"]
+        ];
+
+        return view('manifest/bucket', ['breadcrumbs' => $breadcrumbs]);
     }
 }

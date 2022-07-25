@@ -189,6 +189,7 @@ return [
     'Receive Products' => 'Receive Products',
     'Create Pallets' => 'Create Pallets',
     'View Claims' => 'Not Received Claims',
+    'Buckets' => 'Buckets',
     'View Unknown' => 'View Unknown',
     'View Received Claims' => 'Received Claims',
     'All Received Products' => 'Products',
