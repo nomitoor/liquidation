@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'Unknwon Products')
+@section('title', 'Unknown Products')
 
 @section('vendor-style')
 {{-- vendor css files --}}
@@ -21,9 +21,9 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header border-bottom d-none">
+                <div class="card-header border-bottom">
                     <h4 class="card-title">All Products</h4>
-                    <a class="btn btn-primary" href="{{ route('manifest.create') }}">Upload File</a>
+                    <a class="btn btn-primary" onclick="checkManifest()">Check Manifest</a>
                 </div>
                 <div class="card-datatable">
                     <table class="manifest-data table">
@@ -68,7 +68,7 @@
     var dt_ajax = dt_ajax_table.dataTable({
         processing: true,
         dom: '<"d-flex justify-content-between align-items-center mx-0 row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"d-flex justify-content-between mx-0 row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-        ajax: "{{ route('all-scanned-products') }}",
+        ajax: "{{ route('all-uknown-products') }}",
         columns: [{
                 data: 'bol'
             },
@@ -96,5 +96,20 @@
             }
         }
     });
+
+    function checkManifest() {
+        event.preventDefault();
+
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo route('checkManifest') ?>',
+            data: {
+                '_token': '<?php echo csrf_token() ?>',
+            },
+            success: function(data) {
+                alert('done');
+            }
+        });
+    }
 </script>
 @endsection
