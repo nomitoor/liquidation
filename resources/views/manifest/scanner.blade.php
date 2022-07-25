@@ -12,7 +12,7 @@
                 <div class="d-none enter-details">
                     <div class="form-group">
                         <label for="basicInput">Paste Bar code product ID or Bol ID</label>
-                        <input type="text" class="form-control product_code" id="product_code" onblur="this.focus()" name="product_code" placeholder="Paste Bar code product ID or Bol ID" />
+                        <input type="text" class="form-control product_code" id="product_code" name="product_code" placeholder="Paste Bar code product ID or Bol ID" />
                     </div>
 
                     <label for="basicInput">Type product ID or Bol ID</label>
@@ -23,9 +23,11 @@
                         </span>
                     </div>
 
-                    <label for="basicInput">Remove from the product list</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control remove_from_products" id="remove_from_products" placeholder="Type product ID or Bol ID" />
+                    <div class="d-none">
+                        <label for="basicInput">Remove from the product list</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control remove_from_products" id="remove_from_products" placeholder="Type product ID or Bol ID" />
+                        </div>
                     </div>
 
                     <div class="mt-1">
@@ -557,8 +559,13 @@
                     $('.total_units').html(unit_count)
                     $('.total_costs').html(total_cost.toFixed(2))
 
-                } else {
+                } else if (data.code == '215') {
+                    alert('Please scan these with package ID: ' + data.package_id);
+                } else if (data.code == '304') {
+                    $('#return_id').val(id)
+                    getProductList(id)
 
+                } else {
                     var result = confirm("Do you want add this to unknown list?");
                     if (result) {
                         $('.uknown-list').html(id)
@@ -572,7 +579,6 @@
 
     $('.remove_from_products').bind("input change", function(e) {
         var remove_from_products = $('.remove_from_products').val();
-        getProductList(remove_from_products)
         $('#return_id').val(remove_from_products)
         $('.remove_from_products').val('');
     })
