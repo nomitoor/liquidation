@@ -27,6 +27,7 @@ class CreateDailyManifestsTable extends Migration
             $table->string('total_recovery')->nullable();
             $table->string('recovery_rate')->nullable();
             $table->string('removal_reason')->nullable();
+            $table->string('bol_ids')->nullable();
             $table->timestamps();
         });
     }
