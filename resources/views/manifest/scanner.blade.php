@@ -225,12 +225,67 @@
                 </div>
             </div>
     </section>
+
+    <section id="modal-themes">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="demo-inline-spacing">
+
+                            <div class="d-inline-block">
+
+
+                                <div class="modal-size-lg d-inline-block">
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-outline-primary open-product-details-modal d-none" data-toggle="modal" data-target="#product-detail">
+                                        Large Modal
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade text-left" id="product-detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel17" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title" id="myModalLabel17"></h4>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="container-fluid">
+                                                        <div class="row">
+                                                            <div class="col-xs-12 col-lg-12 col-sm-12 col-md-12">
+                                                                <label>Product Details</label>
+                                                                <h4 class="product_details"></h4>
+                                                            </div>
+                                                            <div class="mb-3" id="bar-code-viewer">
+                                                                <svg id="barcode"></svg>
+                                                            </div>
+                                                            <div class="col-xs-12 col-lg-12 col-sm-12 col-md-12 ml-auto mb-2 text-right">
+                                                                <input type="hidden" id="return_id" />
+                                                                <button class="btn btn-success mt-1 download-bar-code" onclick="downloadPng()">Download Bar Code</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
 </div>
 @endsection
 
 @section('page-script')
 <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.4/dist/JsBarcode.all.min.js"></script>
+
 <script>
     $(function() {
         $('#product_code').focus();
@@ -497,7 +552,7 @@
         e.preventDefault();
         $('.enter-details').removeClass('d-none');
         $('.enter-details').addClass('d-block');
-        alert('Seation Started')
+        alert('Session Started')
     });
 
     $('#end_seasion').click(function(e) {
@@ -506,7 +561,7 @@
         $('.enter-details').addClass('d-none');
         document.getElementById('number').value = 0;
         $('.counter').html('')
-        alert('Seation ended')
+        alert('Session ended')
     })
 
     $('.product_code').bind("input change", function(e) {
@@ -560,7 +615,7 @@
                     $('.total_costs').html(total_cost.toFixed(2))
 
                 } else if (data.code == '215') {
-                    alert('Please scan these with package ID: ' + data.package_id);
+                    alert('Please scan this product with package ID: ' + data.package_id);
                 } else if (data.code == '304') {
                     $('#return_id').val(id)
                     getProductList(id)
@@ -704,8 +759,12 @@
                     $('#product_code').focus();
 
                 } else if (data.code == '909') {
-                    alert(select_id + ' Scanned successfully, with product ID: ' + data.package_id + " Please copy this to a safe place..");
                     $('.close').click()
+                    $('.open-product-details-modal').click();
+                    var new_package_id = data.package_id;
+                    $('.product_details').html(select_id + ' Scanned successfully, with product ID: ' + new_package_id + " Please copy this to a safe place..")
+
+                    JsBarcode("#barcode", new_package_id);
                     $('#product_code').focus();
 
                 } else if (data.code == '910') {
@@ -723,6 +782,28 @@
             }
         });
     });
+
+    downloadPng = function() {
+        var img = new Image();
+        img.onload = function() {
+            var canvas = document.createElement("canvas");
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            var ctxt = canvas.getContext("2d");
+            ctxt.fillStyle = "#fff";
+            ctxt.fillRect(0, 0, canvas.width, canvas.height);
+            ctxt.drawImage(img, 0, 0);
+            var a = document.createElement("a");
+            a.href = canvas.toDataURL("image/png");
+            a.download = "image.png"
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        };
+        var innerSvg = document.querySelector("#bar-code-viewer svg");
+        var svgText = (new XMLSerializer()).serializeToString(innerSvg);
+        img.src = "data:image/svg+xml;utf8," + encodeURIComponent(svgText);
+    }
 
     $('.accept_products_to_claim_list').click(function() {
         var select_id = $('#select_id').val();

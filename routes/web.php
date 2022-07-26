@@ -46,6 +46,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('all-uknown-products', [ManifestController::class, 'allUnknownProducts'])->name('all-uknown-products');
     Route::get('all-claim-products', [ManifestController::class, 'allClaims'])->name('all-claim-products');
     Route::get('all-bucket-manifest', [ManifestController::class, 'allBuckets'])->name('allBuckets');
+    Route::get('all-daily-manifests', [ManifestController::class, 'allDailyManifests'])->name('all-daily-manifests');
+    Route::get('manifest/daily/create', [ManifestController::class, 'dailyCreate'])->name('daily-manifest-create');
+    Route::post('manifest/daily/store', [ManifestController::class, 'storeDaily'])->name('daily-manifest-store');
+
+    Route::get('daily-manifest', [ManifestController::class, 'dailyManifest']);
 
     Route::resource('manifest', ManifestController::class);
 

@@ -8,9 +8,15 @@
     },
     {
       "url": "manifest",
-      "name": "Manifest",
+      "name": "Weekly Manifest",
       "icon": "home",
       "slug": "manifest"
+    },
+    {
+      "url": "daily-manifest",
+      "name": "Daily Manifest",
+      "icon": "home",
+      "slug": "daily-manifest"
     },
     {
       "url": "bar-code-scanner",
