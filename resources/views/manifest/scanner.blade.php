@@ -768,8 +768,12 @@
                     $('#product_code').focus();
 
                 } else if (data.code == '910') {
-                    alert(select_id + ' Scanned last time successfully, with product ID: ' + data.package_id + " Please copy this to a safe place..");
                     $('.close').click()
+                    $('.open-product-details-modal').click();
+                    var new_package_id = data.package_id;
+                    $('.product_details').html(select_id + ' Scanned last time successfully, with product ID: ' + new_package_id + " Please copy this to a safe place..")
+
+                    JsBarcode("#barcode", new_package_id);
                     $('#product_code').focus();
 
                 } else if (data.code == '707') {
