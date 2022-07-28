@@ -92,6 +92,9 @@ class ManifestController extends Controller
                 'uploaded_by' => auth()->user()->id
             ]);
 
+            if (\File::exists($filepath)) {
+                unlink($filepath);
+            }
             $breadcrumbs = [
                 ['link' => "manifest", 'name' => "Manifest"], ['name' => "Upload Manfiest"]
             ];
@@ -432,6 +435,7 @@ class ManifestController extends Controller
                     ]);
 
                     $new->delete();
+                    return response()->json(array('message' => 'Manifest products updated', 'code' => '910', 'package_id' => $package_id));
                 }
             }
 
@@ -591,6 +595,7 @@ class ManifestController extends Controller
                     ]);
 
                     $new->delete();
+                    return response()->json(array('message' => 'Manifest products updated', 'code' => '910', 'package_id' => $package_id));
                 }
             }
 
