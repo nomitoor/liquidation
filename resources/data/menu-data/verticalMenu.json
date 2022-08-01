@@ -4,55 +4,88 @@
       "url": "home",
       "name": "Home",
       "icon": "home",
-      "slug": "home"
+      "slug": "home",
+      "role": [
+        "Super-Admin",
+        "User"
+      ]
     },
     {
       "url": "manifest",
       "name": "Weekly Manifest",
       "icon": "home",
-      "slug": "manifest"
+      "slug": "manifest",
+      "role": [
+        "Super-Admin"
+      ]
     },
     {
       "url": "daily-manifest",
       "name": "Daily Manifest",
       "icon": "home",
-      "slug": "daily-manifest"
+      "slug": "daily-manifest",
+      "role": [
+        "Super-Admin"
+      ]
     },
     {
       "url": "bar-code-scanner",
       "name": "Receive Products",
       "icon": "home",
-      "slug": "bar-code-scanner"
+      "slug": "bar-code-scanner",
+      "role": [
+        "Super-Admin",
+        "User"
+      ]
     },
     {
       "url": "view-scanned-products",
       "name": "All Received Products",
       "icon": "home",
-      "slug": "view-scanned-products"
+      "slug": "view-scanned-products",
+      "role": [
+        "Super-Admin",
+        "User"
+      ]
     },
     {
       "url": "view-bucket",
       "name": "Buckets",
       "icon": "home",
-      "slug": "view-bucket"
+      "slug": "view-bucket",
+      "role": [
+        "Super-Admin",
+        "User"
+      ]
     },
     {
       "url": "pallets",
       "name": "Create Pallets",
       "icon": "home",
-      "slug": "pallets"
+      "slug": "pallets",
+      "role": [
+        "Super-Admin",
+        "User"
+      ]
     },
     {
       "url": "claims",
       "name": "View Claims",
       "icon": "home",
       "slug": "claims",
+      "role": [
+        "Super-Admin"
+      ],
       "submenu": [
         {
           "url": "claims",
           "name": "View Received Claims",
           "icon": "home",
-          "slug": "claims"
+          "slug": "claims",
+          "role": [
+            "Super-Admin",
+            "User"
+          ]
         }
       ]
     },
@@ -60,7 +93,11 @@
       "url": "unknown",
       "name": "View Unknown",
       "icon": "home",
-      "slug": "unknown"
+      "slug": "unknown",
+      "role": [
+        "Super-Admin",
+        "User"
+      ]
     }
   ]
 }
