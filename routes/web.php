@@ -5,6 +5,7 @@ use App\Http\Controllers\StaterkitController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ManifestController;
 use App\Http\Controllers\PalletsController;
+use App\Http\Controllers\ContainerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +54,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('daily-manifest', [ManifestController::class, 'dailyManifest']);
 
     Route::resource('manifest', ManifestController::class);
+
+    Route::resource('containers', ContainerController::class);
 
     Route::post('pallets/delete', [PalletsController::class, 'deletePalletsWithBol']);
     Route::post('pallets/undo', [PalletsController::class, 'undoPallets']);

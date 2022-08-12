@@ -98,6 +98,16 @@
         "Super-Admin",
         "User"
       ]
+    },
+    {
+      "url": "containers",
+      "name": "Create Containers",
+      "icon": "home",
+      "slug": "containers",
+      "role": [
+        "Super-Admin",
+        "User"
+      ]
     }
   ]
 }

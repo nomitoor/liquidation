@@ -197,4 +197,5 @@ return [
     "Workers" => "Worker",
     "Warehouses" => "Warehouse",
     "Pallets" => "Pallets",
+    "Create Containers" => "Create Containers",
 ];
