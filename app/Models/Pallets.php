@@ -20,4 +20,9 @@ class Pallets extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function container()
+    {
+        return $this->belongsToMany('App\Models\Container', 'container_pallets', 'pallet_id', 'container_id');
+    }
 }

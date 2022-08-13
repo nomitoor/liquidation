@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePalletTable extends Migration
+class CreateContainerTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,9 @@ class CreatePalletTable extends Migration
      */
     public function up()
     {
-        Schema::create('pallet', function (Blueprint $table) {
+        Schema::create('containers', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('bol_ids');
-            $table->string('total_price');
-            $table->string('total_unit');
+            $table->string('name')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ class CreatePalletTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pallet');
+        Schema::dropIfExists('containers');
     }
 }

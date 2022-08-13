@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Container;
+use App\Models\Pallets;
+use App\Exports\ContainerClientExport;
+use App\Exports\ContainerExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ContainerController extends Controller
 {
@@ -13,15 +18,13 @@ class ContainerController extends Controller
      */
     public function index()
     {
-        // $container = Container::all();
+        $container = Container::with('pallets')->get();
 
         $breadcrumbs = [
             ['link' => "Container", 'name' => "Container"], ['name' => "Index"]
         ];
 
-        return view('container/container', ['breadcrumbs' => $breadcrumbs, 
-        // 'container' => $container
-    ]);
+        return view('container/container', ['breadcrumbs' => $breadcrumbs, 'containers' => $container]);
     }
 
     /**
@@ -31,7 +34,11 @@ class ContainerController extends Controller
      */
     public function create()
     {
-        //
+        $breadcrumbs = [
+            ['link' => "pallets", 'name' => "Pallets"], ['name' => "Create"]
+        ];
+
+        return view('container/create', ['breadcrumbs' => $breadcrumbs]);
     }
 
     /**
@@ -42,7 +49,11 @@ class ContainerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $container = Container::create([
+            'name' => $request->name,
+        ]);
+
+        return redirect('containers/' . $container->id . '/edit');
     }
 
     /**
@@ -62,9 +73,15 @@ class ContainerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Container $container)
     {
-        //
+        $breadcrumbs = [
+            ['link' => "pallets", 'name' => "Pallets"], ['name' => "Create"]
+        ];
+
+        $container = Container::with('pallets')->find($container->id);
+
+        return view('container/edit', ['breadcrumbs' => $breadcrumbs, 'container' => $container]);
     }
 
     /**
@@ -74,9 +91,22 @@ class ContainerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Container $container)
     {
-        //
+        $pallet_id = explode('DE', $request->pallet_id);
+        $trimed_id = ltrim($pallet_id[1], "0");
+
+        // Check if pallet is already a part of container 
+        $container_exits = Container::whereHas('pallets', function ($query) use ($trimed_id) {
+            $query->where('pallet_id', $trimed_id);
+        })->get();
+
+        $container->pallets()->sync($trimed_id, false);
+        // if (is_null($container_exits)) {
+        return response()->json(array('code' => '201', 'message' => 'Added successfully'));
+        // } else {
+        //     return response()->json(array('code' => '204', 'message' => 'This pallet is already part of a continer'));
+        // }
     }
 
     /**
@@ -85,8 +115,20 @@ class ContainerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, Container $container)
     {
-        //
+        $container->pallets()->detach($request->package_id);
+
+        return response()->json(array('code' => '201', 'message' => 'Deleted successfully!'));
+    }
+
+    public function exportContainers(Container $container)
+    {
+        return Excel::download(new ContainerExport($container), 'containers.xlsx');
+    }
+
+    public function exportContainersClient(Container $container)
+    {
+        return Excel::download(new ContainerClientExport($container), 'containers-client.xlsx');
     }
 }

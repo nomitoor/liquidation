@@ -55,6 +55,10 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::resource('manifest', ManifestController::class);
 
+    Route::get('download-containers/{container}', [ContainerController::class, 'downloadContainer'])->name('download-container');
+    Route::get('export-containers/{container}', [ContainerController::class, 'exportContainers'])->name('export-container');
+    Route::get('export-containers/client/{container}', [ContainerController::class, 'exportContainersClient'])->name('export-container-client');
+
     Route::resource('containers', ContainerController::class);
 
     Route::post('pallets/delete', [PalletsController::class, 'deletePalletsWithBol']);

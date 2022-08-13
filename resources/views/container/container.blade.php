@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'All Pallets')
+@section('title', 'All Containers')
 
 @section('vendor-style')
 {{-- vendor css files --}}
@@ -22,34 +22,26 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header border-bottom">
-                    <h4 class="card-title">All Pallets</h4>
-                    <a class="btn btn-primary" href="{{ route('pallets.create') }}">Create Pallets</a>
+                    <h4 class="card-title">All Containers</h4>
+                    <a class="btn btn-primary" href="{{ route('containers.create') }}">Create Containers</a>
                 </div>
                 <div class="card-datatable">
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>pallet id</th>
-                                <th>Category</th>
-                                <th>Total price</th>
-                                <th>Total units</th>
-                                <th>Created At</th>
+                                <th>Container Name</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($pallets as $pallet)
+                            @foreach($containers as $container)
                             <tr>
-                                <td>{{ 'DE'.sprintf("%05d", $pallet->id) }}</td>
-                                <td>{{ $pallet->category->title ?? '-' }}</td>
-                                <td>{{ $pallet->total_price }}</td>
-                                <td>{{ $pallet->total_unit }}</td>
-                                <td>{{ $pallet->created_at }}</td>
+                                <td>{{ $container->name }}</td>
                                 <td>
-                                    <a href="{{ route('pallets.show', $pallet->id) }}" class="btn btn-warning btn-sm">
-                                        View
-                                    </a>
-                                    <a href="{{ route('pallets.edit', $pallet->id) }}" class="btn btn-info btn-sm">
+                                    <a class="btn btn-warning btn-sm" href="{{ route('export-container', ['container' => $container->id]) }}"> Export </a>
+                                    <a class="btn btn-warning btn-sm" href="{{ route('export-container-client', ['container' => $container->id])}}"> Export for Client </a>
+
+                                    <a href="{{ route('containers.edit', $container->id) }}" class="btn btn-info btn-sm">
                                         Edit
                                     </a>
                                 </td>
