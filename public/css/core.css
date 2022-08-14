@@ -160,7 +160,7 @@ a {
   background-color: transparent;
 }
 a:hover {
-  color: #b7802c;
+  color: #004d77;
   text-decoration: none;
 }
 
@@ -3113,7 +3113,7 @@ fieldset:disabled a.btn {
   text-decoration: none;
 }
 .btn-link:hover {
-  color: #b7802c;
+  color: #004d77;
   text-decoration: none;
 }
 .btn-link:focus, .btn-link.focus {
@@ -6152,7 +6152,7 @@ a.close.disabled {
   font-size: 1rem;
   color: #fff;
   background-color: #004d77;
-  border-bottom: 0 solid #b7802c;
+  border-bottom: 0 solid #004d77;
   border-top-left-radius: 0.358rem;
   border-top-right-radius: 0.358rem;
 }
@@ -12412,7 +12412,7 @@ a:not([href]):hover {
 }
 
 .text-body[href]:hover {
-  color: #b7802c !important;
+  color: #004d77 !important;
 }
 
 code {
@@ -16439,7 +16439,7 @@ input:focus ~ .bg-light {
   box-shadow: rgba(204, 142, 49, 0.4) 0px 6px 15px -7px;
 }
 .alert-primary .alert-link {
-  color: #b7802c !important;
+  color: #004d77 !important;
 }
 .alert-primary .close {
   color: #004d77 !important;
@@ -16511,7 +16511,7 @@ input:focus ~ .bg-light {
 }
 .btn-primary:focus, .btn-primary:active, .btn-primary.active {
   color: #fff;
-  background-color: #b7802c !important;
+  background-color: #004d77 !important;
 }
 .btn-primary:hover:not(.disabled):not(:disabled) {
   box-shadow: 0 8px 25px -8px #004d77;
@@ -16548,7 +16548,7 @@ input:focus ~ .bg-light {
   background-color: #d29944;
 }
 .btn-relief-primary:active, .btn-relief-primary.active, .btn-relief-primary:focus {
-  background-color: #b7802c;
+  background-color: #004d77;
 }
 .btn-relief-primary:hover {
   color: #fff;
@@ -16689,35 +16689,35 @@ input:focus ~ .bg-primary {
 }
 
 .text-primary.text-darken-1 {
-  color: #b7802c !important;
+  color: #004d77 !important;
 }
 
 .bg-primary.bg-darken-1 {
-  background-color: #b7802c !important;
+  background-color: #004d77 !important;
 }
 
 .border-primary.border-darken-1 {
-  border: 1px solid #b7802c !important;
+  border: 1px solid #004d77 !important;
 }
 
 .border-top-primary.border-top-darken-1 {
-  border-top: 1px solid #b7802c !important;
+  border-top: 1px solid #004d77 !important;
 }
 
 .border-bottom-primary.border-bottom-darken-1 {
-  border-bottom: 1px solid #b7802c !important;
+  border-bottom: 1px solid #004d77 !important;
 }
 
 .border-left-primary.border-left-darken-1 {
-  border-left: 1px solid #b7802c !important;
+  border-left: 1px solid #004d77 !important;
 }
 
 .border-right-primary.border-right-darken-1 {
-  border-right: 1px solid #b7802c !important;
+  border-right: 1px solid #004d77 !important;
 }
 
 .overlay-primary.overlay-darken-1 {
-  background: #b7802c;
+  background: #004d77;
   /* The Fallback */
   background: rgba(183, 128, 44, 0.6);
 }

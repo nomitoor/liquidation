@@ -13,6 +13,7 @@ class ContainerExport implements FromQuery, WithMapping, WithHeadings, WithColum
 {
 
     use Exportable;
+    protected $pallet_ids = [];
 
     public function __construct($container)
     {
@@ -26,6 +27,9 @@ class ContainerExport implements FromQuery, WithMapping, WithHeadings, WithColum
     {
         $pallets = $this->container->with('pallets')->first();
         $pallet_ids = $pallets->pallets->pluck('id')->toArray();
+        foreach ($pallet_ids as $pallet_id) {
+            $this->pallet_ids[] = 'DE' . sprintf("%05d", $pallet_id);
+        }
 
         return ScannedProducts::whereIn('pallet_id', $pallet_ids);
     }
@@ -44,15 +48,15 @@ class ContainerExport implements FromQuery, WithMapping, WithHeadings, WithColum
             $row->unit_recovery,
             $row->total_recovery,
             $row->recovery_rate,
-            $row->removal_reason
-
+            $row->removal_reason,
+            $this->pallet_ids
         ];
         return $fields;
     }
 
     public function headings(): array
     {
-        return ['BOL', 'PACKAGE ID', 'ITEM DESCRIPTION', 'UNITS', 'UNIT COST', 'TOTAL COST', 'GL DESCRIPTION', 'UNIT RECOVERY', 'TOTAL RECOVERY', 'RECOVERY RATE', 'REMOVAL RATE'];
+        return ['BOL', 'PACKAGE ID', 'ITEM DESCRIPTION', 'UNITS', 'UNIT COST', 'TOTAL COST', 'GL DESCRIPTION', 'UNIT RECOVERY', 'TOTAL RECOVERY', 'RECOVERY RATE', 'REMOVAL RATE', 'PALLET ID'];
     }
 
     public function columnWidths(): array
@@ -68,7 +72,8 @@ class ContainerExport implements FromQuery, WithMapping, WithHeadings, WithColum
             'H' => 20,
             'I' => 20,
             'J' => 20,
-            'K' => 20
+            'K' => 20,
+            'L' => 50,
         ];
     }
 }

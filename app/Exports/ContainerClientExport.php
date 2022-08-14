@@ -13,6 +13,7 @@ class ContainerClientExport implements FromQuery, WithMapping, WithHeadings, Wit
 {
 
     use Exportable;
+    protected $pallet_ids = [];
 
     public function __construct($container)
     {
@@ -26,6 +27,9 @@ class ContainerClientExport implements FromQuery, WithMapping, WithHeadings, Wit
     {
         $pallets = $this->container->with('pallets')->first();
         $pallet_ids = $pallets->pallets->pluck('id')->toArray();
+        foreach ($pallet_ids as $pallet_id) {
+            $this->pallet_ids[] = 'DE'.sprintf("%05d", $pallet_id);
+        }
 
         return ScannedProducts::whereIn('pallet_id', $pallet_ids);
     }
@@ -39,13 +43,14 @@ class ContainerClientExport implements FromQuery, WithMapping, WithHeadings, Wit
             $row->units,
             $row->unit_cost,
             $row->total_cost,
+            $this->pallet_ids
         ];
         return $fields;
     }
 
     public function headings(): array
     {
-        return ['ASIN', 'ITEM DESCRIPTION', 'UNITS', 'UNIT COST', 'TOTAL COST'];
+        return ['ASIN', 'ITEM DESCRIPTION', 'UNITS', 'UNIT COST', 'TOTAL COST', 'PALLET ID'];
     }
 
     public function columnWidths(): array
@@ -56,6 +61,7 @@ class ContainerClientExport implements FromQuery, WithMapping, WithHeadings, Wit
             'C' => 20,
             'D' => 50,
             'E' => 20,
+            'F' => 50,
         ];
     }
 }

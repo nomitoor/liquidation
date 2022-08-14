@@ -1,8 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
 @section('title', 'Import Products')
-
-
 @section('content')
 <div class="card">
     <div class="container-fluid">
@@ -79,7 +77,7 @@
                                     <!-- Modal -->
                                     <div class="modal fade text-left" id="large" tabindex="-1" role="dialog" aria-labelledby="myModalLabel17" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                                            <div class="modal-content">
+                                            <div class="modal-content" style="width: 1080px;">
                                                 <div class="modal-header">
                                                     <h4 class="modal-title" id="myModalLabel17">Found Manifests</h4>
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -108,6 +106,9 @@
                                                         <thead>
                                                             <tr>
                                                                 <th>Description</th>
+                                                                <th>BOL</th>
+                                                                <th>Package ID</th>
+                                                                <th>Recovery Rate</th>
                                                                 <th>units</th>
                                                                 <th>unit cost</th>
                                                                 <th>total cost</th>
@@ -601,14 +602,20 @@
                         var cell1 = row.insertCell(1);
                         var cell2 = row.insertCell(2);
                         var cell3 = row.insertCell(3);
+                        var cell4 = row.insertCell(4);
+                        var cell5 = row.insertCell(5);
+                        var cell6 = row.insertCell(6);
 
                         unit_count += parseInt(manifest.units)
                         total_cost = parseFloat(total_cost) + parseFloat(manifest.total_cost)
 
                         cell0.innerHTML = manifest.item_description;
-                        cell1.innerHTML = manifest.units;
-                        cell2.innerHTML = manifest.unit_cost;
-                        cell3.innerHTML = manifest.total_cost;
+                        cell1.innerHTML = manifest.bol;
+                        cell2.innerHTML = manifest.package_id;
+                        cell3.innerHTML = manifest.recovery_rate;
+                        cell4.innerHTML = manifest.units;
+                        cell5.innerHTML = manifest.unit_cost;
+                        cell6.innerHTML = manifest.total_cost;
 
                     })
                     $('.total_units').html(unit_count)
