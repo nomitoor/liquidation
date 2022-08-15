@@ -36,7 +36,7 @@
                         <div class="row">
 
                             <div class="col-md-12 mb-1">
-                                <label>Paste Product ID or Bol Id</label>
+                                <!-- <label>Paste Product ID or Bol Id</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control product_code" placeholder="Enter product ID or Bol ID" />
                                     <span class="input-group-btn">
@@ -44,7 +44,7 @@
                                             <i class="fa fa-undo" aria-hidden="true"></i>Undo
                                         </button>
                                     </span>
-                                </div>
+                                </div> -->
                                 <label>Enter Product ID or Bol Id</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control product_code_manually" placeholder="Enter product ID or Bol ID" />
