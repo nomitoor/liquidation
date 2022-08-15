@@ -77,7 +77,7 @@
                                     <!-- Modal -->
                                     <div class="modal fade text-left" id="large" tabindex="-1" role="dialog" aria-labelledby="myModalLabel17" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                                            <div class="modal-content" style="width: 1080px;">
+                                            <div class="modal-content" style="width: 1080px;overflow-y:scroll">
                                                 <div class="modal-header">
                                                     <h4 class="modal-title" id="myModalLabel17">Found Manifests</h4>
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
