@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\ClaimList;
 use App\Models\Pallets;
-use App\Models\PalletsProducts;
+use Redirect;
 use App\Models\ScannedProducts;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -96,27 +96,31 @@ class PalletsController extends Controller
     {
         $bol_ids = unserialize($pallet->bol_ids);
 
-        $pallet_products = [];
+        if ($bol_ids) {
+            $pallet_products = [];
 
-        foreach ($bol_ids as $bol_id) {
-            $prd = ScannedProducts::where('bol', $bol_id)->orWhere('package_id', $bol_id)->get();
-            foreach ($prd as $pd) {
-                array_push($pallet_products, $pd);
+            foreach ($bol_ids as $bol_id) {
+                $prd = ScannedProducts::where('bol', $bol_id)->orWhere('package_id', $bol_id)->get();
+                foreach ($prd as $pd) {
+                    array_push($pallet_products, $pd);
+                }
             }
+
+            $breadcrumbs = [
+                ['link' => "pallets", 'name' => "Pallets"], ['name' => "View"]
+            ];
+
+            return view('pallets/products', [
+                'breadcrumbs' => $breadcrumbs,
+                'products' => $pallet_products,
+                'invoice_number' => $pallet->id,
+                'date_issued' => Carbon::parse($pallet->created_at)->format('d-M-Y'),
+                'total_price' => $pallet->total_price,
+                'total_units' => $pallet->total_unit
+            ]);
         }
 
-        $breadcrumbs = [
-            ['link' => "pallets", 'name' => "Pallets"], ['name' => "View"]
-        ];
-
-        return view('pallets/products', [
-            'breadcrumbs' => $breadcrumbs,
-            'products' => $pallet_products,
-            'invoice_number' => $pallet->id,
-            'date_issued' => Carbon::parse($pallet->created_at)->format('d-M-Y'),
-            'total_price' => $pallet->total_price,
-            'total_units' => $pallet->total_unit
-        ]);
+        return Redirect::back()->withErrors(['error' => 'No products added to this pallet']);
     }
 
     /**
@@ -326,5 +330,37 @@ class PalletsController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'unknown' => $claims
         ]);
+    }
+
+    public function destroy($id)
+    {
+        $pallet = Pallets::where('id', $id)->first();
+        ScannedProducts::where('pallet_id', $id)->update(['pallet_id' => NULL]);
+
+        if ($pallet->bol_ids) {
+            $data = unserialize($pallet->bol_ids);
+
+            $total_price = 0;
+            $total_units = 0;
+            foreach ($data as $value) {
+                $products = ScannedProducts::where('bol', $value)->get(['units', 'unit_cost', 'total_cost']);
+
+                foreach ($products as $product) {
+                    $total_price += (float) $product->total_cost;
+                    $total_units += (int) $product->units;
+                }
+            }
+
+            $pallet->update([
+                'bol_ids' => serialize($data),
+                'total_price' => $total_price,
+                'total_unit' => $total_units,
+            ]);
+        }
+
+        Pallets::findorFail($id)->update(['category_id' => null]);
+        $pallet->container()->detach();
+        $pallet->delete();
+        return redirect('/pallets');
     }
 }

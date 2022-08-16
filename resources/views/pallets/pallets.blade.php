@@ -25,6 +25,17 @@
                     <h4 class="card-title">All Pallets</h4>
                     <a class="btn btn-primary" href="{{ route('pallets.create') }}">Create Pallets</a>
                 </div>
+                @if($errors->any())
+
+                <div class="col-12 text-center alert alert-danger mt-2 mb-0" id="pallet-added" role="alert">
+                    <div class="alert-body">
+                        @foreach($errors->all() as $error)
+                        <strong>{{ $error }}</strong>
+                        @endforeach
+                    </div>
+                </div>
+                <br>
+                @endif
                 <div class="card-datatable">
                     <table class="table">
                         <thead>
@@ -34,7 +45,7 @@
                                 <th>Total price</th>
                                 <th>Total units</th>
                                 <th>Created At</th>
-                                <th>Actions</th>
+                                <th style="width: 260px;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -52,6 +63,12 @@
                                     <a href="{{ route('pallets.edit', $pallet->id) }}" class="btn btn-info btn-sm">
                                         Edit
                                     </a>
+
+                                    <form action="{{ url('/pallets', ['pallet' => $pallet->id]) }}" method="post">
+                                        <input class="btn btn-danger btn-sm" type="submit" value="Delete" />
+                                        <input type="hidden" name="_method" value="delete" />
+                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                    </form>
                                 </td>
                             </tr>
                             @endforeach

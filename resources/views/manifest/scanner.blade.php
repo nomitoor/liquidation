@@ -8,10 +8,10 @@
             <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12 col-12 mt-2">
                 <button class="btn btn-primary" id="start_seasion">Start Session</button>
                 <div class="d-none enter-details">
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="basicInput">Paste Bar code product ID or Bol ID</label>
                         <input type="text" class="form-control product_code" id="product_code" name="product_code" placeholder="Paste Bar code product ID or Bol ID" />
-                    </div>
+                    </div> -->
 
                     <label for="basicInput">Type product ID or Bol ID</label>
                     <div class="input-group">
@@ -571,7 +571,13 @@
         $('#select_id').val(product_code)
         $('.product_code').val('');
     })
-
+    
+    var timer = null;
+    $('.product_code_type').keyup(function() {
+        clearTimeout(timer);
+        timer = setTimeout(getData, 1000)
+    });
+    
     function getData() {
         var product_code_type = $('.product_code_type').val();
         getManifest(product_code_type)
