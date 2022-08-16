@@ -44,7 +44,7 @@
                                 <th>Category</th>
                                 <th>Total price</th>
                                 <th>Total units</th>
-                                <th>Created At</th>
+                                <th>Description</th>
                                 <th style="width: 260px;">Actions</th>
                             </tr>
                         </thead>
@@ -55,7 +55,7 @@
                                 <td>{{ $pallet->category->title ?? '-' }}</td>
                                 <td>{{ $pallet->total_price }}</td>
                                 <td>{{ $pallet->total_unit }}</td>
-                                <td>{{ $pallet->created_at }}</td>
+                                <td>{{ $pallet->description }}</td>
                                 <td>
                                     <a href="{{ route('pallets.show', $pallet->id) }}" class="btn btn-warning btn-sm">
                                         View

@@ -576,6 +576,9 @@
         clearTimeout(timer);
         timer = setTimeout(getData, 1000)
     });
+
+
+   
     
     function getData() {
         event.preventDefault();
@@ -713,7 +716,7 @@
             },
             success: function(data) {
                 if (data.code == '201') {
-                    $('.close').click()
+                    $('.close').click();
                     $('#product_code_type').focus();
                 } else {
                     alert('Error')
