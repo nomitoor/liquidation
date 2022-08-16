@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Manifest;
+use App\Models\ManifestRecord;
 use Illuminate\Http\Request;
 
 class StaterkitController extends Controller
@@ -57,5 +59,21 @@ class StaterkitController extends Controller
     {
         $pageConfigs = ['blankPage' => true];
         return view('/content/layout-blank', ['pageConfigs' => $pageConfigs]);
+    }
+
+    public function uploadedManifest()
+    {
+        $record = ManifestRecord::all();
+
+        $breadcrumbs = [
+            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
+        ];
+
+        return view('/manifest/uploaded-manifest', ['breadcrumbs' => $breadcrumbs, 'record' => $record]);
+    }
+
+    public function allUploadedManifest()
+    {
+        return response()->json(array('data' => ManifestRecord::all()));
     }
 }

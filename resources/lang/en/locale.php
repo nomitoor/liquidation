@@ -186,6 +186,7 @@ return [
 
     // My Locale
     "Weekly Manifest" => 'Weekly Manifest',
+    "Uploaded Manifest" => 'Uploaded Manifest',
     "Daily Manifest" => 'Daily Manifest',
     'Receive Products' => 'Receive Products',
     'Create Pallets' => 'Create Pallets',

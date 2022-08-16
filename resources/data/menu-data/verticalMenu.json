@@ -29,6 +29,15 @@
       ]
     },
     {
+      "url": "uploaded-manifest",
+      "name": "Uploaded Manifest",
+      "icon": "home",
+      "slug": "uploaded-manifest",
+      "role": [
+        "Super-Admin"
+      ]
+    },
+    {
       "url": "bar-code-scanner",
       "name": "Receive Products",
       "icon": "home",

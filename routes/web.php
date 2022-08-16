@@ -31,6 +31,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/', [StaterkitController::class, 'home'])->name('home');
     Route::get('home', [StaterkitController::class, 'home'])->name('home');
 
+    Route::get('uploaded-manifest', [StaterkitController::class, 'uploadedManifest'])->name('uploadedManifest');
+    Route::get('all-uploaded-manifest', [StaterkitController::class, 'allUploadedManifest'])->name('allUploadedManifest');
+
     Route::get('get-all', [ManifestController::class, 'getAll'])->name('allManifest');
     Route::get('show-found-products', [ManifestController::class, 'getFoundProducts']);
     Route::get('bar-code-scanner', [ManifestController::class, 'codeScanner']);
