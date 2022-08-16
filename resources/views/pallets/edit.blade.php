@@ -180,6 +180,17 @@
         }
     })
 
+
+    $(document).ready(function() {
+        $(".product_code_manually").focus();
+    })
+    
+    var timer = null;
+    $('.product_code_manually').keyup(function() {
+        clearTimeout(timer);
+        timer = setTimeout(addPalletManually, 1000)
+    });
+
     function addPalletManually() {
         event.preventDefault();
         var executed = false;
