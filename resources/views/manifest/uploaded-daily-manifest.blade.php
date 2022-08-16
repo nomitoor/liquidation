@@ -22,7 +22,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header border-bottom">
-                    <h4 class="card-title">All Uploaded Weekly Manifest</h4>
+                    <h4 class="card-title">All Uploaded Daily Manifest</h4>
                     <a class="btn btn-primary" href="{{ route('manifest.create') }}">Upload Weekly File</a>
                     <a class="btn btn-primary" href="{{ route('daily-manifest-create') }}">Upload Daily File</a>
                 </div>
@@ -65,7 +65,7 @@
     var dt_ajax = dt_ajax_table.dataTable({
         processing: true,
         dom: '<"d-flex justify-content-between align-items-center mx-0 row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"d-flex justify-content-between mx-0 row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-        ajax: "{{ route('allUploadedManifest') }}",
+        ajax: "{{ route('allUploadedDailyManifest') }}",
         columns: [{
                 data: 'file_name'
             },

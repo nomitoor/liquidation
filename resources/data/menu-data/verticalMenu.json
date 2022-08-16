@@ -12,35 +12,56 @@
     },
     {
       "url": "manifest",
-      "name": "Weekly Manifest",
-      "icon": "home",
+      "name": "Manifests",
+      "icon": "file",
       "slug": "manifest",
       "role": [
         "Super-Admin"
+      ],
+      "submenu": [
+        {
+          "url": "manifest",
+          "name": "Weekly Manifest",
+          "icon": "upload",
+          "slug": "manifest",
+          "role": [
+            "Super-Admin"
+          ]
+        },
+        {
+          "url": "daily-manifest",
+          "name": "Daily Manifest",
+          "icon": "upload",
+          "slug": "daily-manifest",
+          "role": [
+            "Super-Admin"
+          ]
+        },
+        {
+          "url": "uploaded-manifest",
+          "name": "Uploaded Weekly Manifests",
+          "icon": "list",
+          "slug": "uploaded-manifest",
+          "role": [
+            "Super-Admin"
+          ]
+        },
+        {
+          "url": "uploaded-daily-manifest",
+          "name": "Uploaded Daily Manifests",
+          "icon": "list",
+          "slug": "uploaded-daily-manifest",
+          "role": [
+            "Super-Admin"
+          ]
+        }
       ]
     },
-    {
-      "url": "daily-manifest",
-      "name": "Daily Manifest",
-      "icon": "home",
-      "slug": "daily-manifest",
-      "role": [
-        "Super-Admin"
-      ]
-    },
-    {
-      "url": "uploaded-manifest",
-      "name": "Uploaded Manifest",
-      "icon": "home",
-      "slug": "uploaded-manifest",
-      "role": [
-        "Super-Admin"
-      ]
-    },
+    
     {
       "url": "bar-code-scanner",
       "name": "Receive Products",
-      "icon": "home",
+      "icon": "maximize",
       "slug": "bar-code-scanner",
       "role": [
         "Super-Admin",
@@ -50,7 +71,7 @@
     {
       "url": "view-scanned-products",
       "name": "All Received Products",
-      "icon": "home",
+      "icon": "package",
       "slug": "view-scanned-products",
       "role": [
         "Super-Admin",
@@ -69,14 +90,37 @@
     },
     {
       "url": "pallets",
-      "name": "Create Pallets",
-      "icon": "home",
+      "name": "Pallets",
+      "icon": "box",
       "slug": "pallets",
       "role": [
-        "Super-Admin",
-        "User"
+        "Super-Admin"
+      ],
+      "submenu": [
+        {
+          "url": "pallets",
+          "name": "Create Pallets",
+          "icon": "file-plus",
+          "slug": "pallets",
+          "role": [
+            "Super-Admin",
+            "User"
+          ]
+        },
+        {
+          "url": "pallets",
+          "name": "View Pallets",
+          "icon": "eye",
+          "slug": "pallets",
+          "role": [
+            "Super-Admin",
+            "User"
+          ]
+        }
       ]
     },
+    
+   
     {
       "url": "claims",
       "name": "View Claims",

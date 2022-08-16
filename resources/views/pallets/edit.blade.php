@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'Edit Pallets')
+@section('title', 'Edit Pallets ')
 
 @section('vendor-style')
     <!-- vendor css files -->
@@ -25,7 +25,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">Please Enter Pallet Details</h4>
+                        <h4 class="card-title">Please Enter Pallet Details </h4>
                         <h4 class="card-title">Total Cost: {{ $pallets->total_price }}</h4>
                         <div class="col-12 text-center alert alert-success mt-2 mb-0 d-none" id="pallet-added"
                             role="alert">

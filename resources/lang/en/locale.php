@@ -185,18 +185,21 @@ return [
     "message" => "Cake sesame snaps cupcake gingerbread danish I love gingerbread. Apple pie pie jujubes chupa chups muffin halvah lollipop. Chocolate cake oat cake tiramisu marzipan sugar plum. Donut sweet pie oat cake dragée fruitcake cotton candy lemon drops.",
 
     // My Locale
-    "Weekly Manifest" => 'Weekly Manifest',
-    "Uploaded Manifest" => 'Uploaded Manifest',
-    "Daily Manifest" => 'Daily Manifest',
+    "Weekly Manifest" => 'Upload Weekly',
+    "Uploaded Weekly Manifests" => 'Weekly Manifest',
+    "Daily Manifest" => 'Upload Daily',
     'Receive Products' => 'Receive Products',
     'Create Pallets' => 'Create Pallets',
     'View Claims' => 'Not Received Claims',
     'Buckets' => 'Buckets',
     'View Unknown' => 'View Unknown',
     'View Received Claims' => 'Received Claims',
-    'All Received Products' => 'Products',
+    'All Received Products' => 'Products List',
     "Workers" => "Worker",
     "Warehouses" => "Warehouse",
     "Pallets" => "Pallets",
     "Create Containers" => "Create Containers",
+    "Manifests" => "Manifests",
+    "Uploaded Daily Manifests" => "Daily Manifests" ,
+    "View Pallets" => "View Pallets"
 ];

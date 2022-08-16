@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Manifest;
 use App\Models\ManifestRecord;
 use Illuminate\Http\Request;
+use App\Models\DailyManifestRecord;
+
 
 class StaterkitController extends Controller
 {
@@ -75,5 +77,22 @@ class StaterkitController extends Controller
     public function allUploadedManifest()
     {
         return response()->json(array('data' => ManifestRecord::all()));
+    }
+
+
+    public function uploadedDailyManifest()
+    {
+        $record = DailyManifestRecord::all();
+
+        $breadcrumbs = [
+            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
+        ];
+
+        return view('/manifest/uploaded-daily-manifest', ['breadcrumbs' => $breadcrumbs, 'record' => $record]);
+    }
+
+    public function allUploadedDailyManifest()
+    {
+        return response()->json(array('data' => DailyManifestRecord::all()));
     }
 }

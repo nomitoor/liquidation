@@ -14,6 +14,7 @@ use App\Imports\ManifestImport;
 use App\Models\ClaimList;
 use App\Models\DailyManifest;
 use App\Models\ScannedProducts;
+use App\Models\DailyManifestRecord;
 
 class ManifestController extends Controller
 {
@@ -118,7 +119,11 @@ class ManifestController extends Controller
             $file->move(public_path($location), $file->getClientOriginalName());
 
             $filepath = public_path($location . "/" . $filename);
-
+            DailyManifestRecord::create([
+                'file_name' => $filename,
+                'number_of_entities' => '1234567', // TODO: Work on count of the records
+                'uploaded_by' => auth()->user()->id
+            ]);
             Excel::import(new DailyManifestImport, $filepath);
 
             $breadcrumbs = [
