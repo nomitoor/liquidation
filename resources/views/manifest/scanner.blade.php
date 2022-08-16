@@ -8,18 +8,17 @@
             <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12 col-12 mt-2">
                 <button class="btn btn-primary" id="start_seasion">Start Session</button>
                 <div class="d-none enter-details">
-                    <!-- <div class="form-group">
-                        <label for="basicInput">Paste Bar code product ID or Bol ID</label>
-                        <input type="text" class="form-control product_code" id="product_code" name="product_code" placeholder="Paste Bar code product ID or Bol ID" />
-                    </div> -->
+                   
+                <form onsubmit="return getData()">
 
                     <label for="basicInput">Type product ID or Bol ID</label>
                     <div class="input-group">
                         <input type="text" class="form-control product_code_type" id="product_code_type" placeholder="Type product ID or Bol ID" />
                         <span class="input-group-btn">
-                            <button class="btn btn-primary" onclick="getData()">Enter</button>
+                            <button class="btn btn-primary" id="submit" type="submit">Enter</button>
                         </span>
                     </div>
+                    </form>
 
                     <div class="d-none">
                         <label for="basicInput">Remove from the product list</label>
@@ -289,7 +288,7 @@
 
 <script>
     $(function() {
-        $('#product_code').focus();
+        $('#product_code_type').focus();
 
         var App = {
             init: function() {
@@ -565,12 +564,12 @@
         alert('Session ended')
     })
 
-    $('.product_code').bind("input change", function(e) {
-        var product_code = $('.product_code').val();
-        getManifest(product_code)
-        $('#select_id').val(product_code)
-        $('.product_code').val('');
-    })
+    // $('.product_code').bind("input change", function(e) {
+    //     var product_code = $('.product_code').val();
+    //     getManifest(product_code)
+    //     $('#select_id').val(product_code)
+    //     $('.product_code').val('');
+    // })
     
     var timer = null;
     $('.product_code_type').keyup(function() {
@@ -579,7 +578,8 @@
     });
     
     function getData() {
-        var product_code_type = $('.product_code_type').val();
+        event.preventDefault();
+                var product_code_type = $('.product_code_type').val();
         getManifest(product_code_type)
         $('#select_id').val(product_code_type)
         $('.product_code_type').val('');
@@ -714,7 +714,7 @@
             success: function(data) {
                 if (data.code == '201') {
                     $('.close').click()
-                    $('#product_code').focus();
+                    $('#product_code_type').focus();
                 } else {
                     alert('Error')
                 }
@@ -743,7 +743,7 @@
                 if (data.code == '201') {
                     alert(data.message);
                     $('.close').click()
-                    $('#product_code').focus();
+                    $('#product_code_type').focus();
                 } else {
                     alert('Error')
                 }
@@ -769,7 +769,7 @@
 
                 if (data.code == '201') {
                     $('.close').click()
-                    $('#product_code').focus();
+                    $('#product_code_type').focus();
 
                 } else if (data.code == '909') {
                     $('.close').click()
@@ -778,7 +778,7 @@
                     $('.product_details').html(select_id + ' Scanned successfully, with product ID: ' + new_package_id + " Please copy this to a safe place..")
 
                     JsBarcode("#barcode", new_package_id);
-                    $('#product_code').focus();
+                    $('#product_code_type').focus();
 
                 } else if (data.code == '910') {
                     $('.close').click()
@@ -787,12 +787,12 @@
                     $('.product_details').html(select_id + ' Scanned last time successfully, with product ID: ' + new_package_id + " Please copy this to a safe place..")
 
                     JsBarcode("#barcode", new_package_id);
-                    $('#product_code').focus();
+                    $('#product_code_type').focus();
 
                 } else if (data.code == '707') {
                     alert(data.message);
                     $('.close').click()
-                    $('#product_code').focus();
+                    $('#product_code_type').focus();
                 } else {
                     alert('Error')
                 }
@@ -845,7 +845,7 @@
             success: function(data) {
                 if (data.code == '201') {
                     $('.close').click()
-                    $('#product_code').focus();
+                    $('#product_code_type').focus();
                 } else {
                     alert('Error')
                 }
