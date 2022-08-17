@@ -4,18 +4,30 @@ namespace App\Imports;
 
 use App\Models\Manifest;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithStartRow;
 
-class ManifestImport implements ToModel
+class ManifestImport implements ToModel, WithStartRow
 {
+
+    public function  __construct($filename)
+    {
+        $this->filename= $filename;
+    }
     /**
      * @param array $row
      *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
 
+    public function startRow(): int
+    {
+        return 2;
+    }
+
     public function model(array $row)
     {
         return new Manifest([
+            'filename' => $this->filename,
             'removal_reason' => $row[4],
             'GLDesc' => $row[15],
             'asin' => $row[20],

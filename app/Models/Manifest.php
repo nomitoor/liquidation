@@ -10,6 +10,6 @@ class Manifest extends Model
     use HasFactory;
 
     protected $fillable = [
-        'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost', 'asin', 'GLDesc', 'unit_recovery', 'total_recovery', 'recovery_rate', 'removal_reason'
+        'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost', 'asin', 'GLDesc', 'unit_recovery', 'total_recovery', 'recovery_rate', 'removal_reason', 'filename'
     ];
 }

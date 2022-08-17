@@ -85,7 +85,7 @@ class ManifestController extends Controller
 
             $filepath = public_path($location . "/" . $filename);
 
-            Excel::import(new ManifestImport, $filepath);
+            Excel::import(new ManifestImport($filename), $filepath);
 
             ManifestRecord::create([
                 'file_name' => $filename,

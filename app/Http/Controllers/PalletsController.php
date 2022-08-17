@@ -137,7 +137,16 @@ class PalletsController extends Controller
 
         $scanned_products = ScannedProducts::whereIn('bol', unserialize($pallet->bol_ids) ?: [])->orWhereIn('package_id', unserialize($pallet->bol_ids) ?: [])->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
 
-        return view('pallets/edit', ['breadcrumbs' => $breadcrumbs, 'pallets' => $pallet, 'scanned_products' => $scanned_products]);
+        $data = unserialize($pallet->bol_ids);
+        if (($key = array_search(end($data), $data)) !== false) {
+            $products = ScannedProducts::where('bol', $data[$key])->get();
+            $total_price = 0;
+            foreach ($products as $product) {
+                $total_price += $product->total_cost;
+            }
+        }
+
+        return view('pallets/edit', ['breadcrumbs' => $breadcrumbs, 'pallets' => $pallet, 'last_total_cost' => $total_price, 'scanned_products' => $scanned_products]);
     }
 
     /**
@@ -229,10 +238,13 @@ class PalletsController extends Controller
                 'total_unit' => $new_total_units,
             ]);
 
-            return response()->json(array(
-                'data' => $updated_scanned_products->toArray(),
-                'code' => '201'
-            ));
+            // return response()->json(array(
+            //     'data' => $updated_scanned_products->toArray(),
+            //     'code' => '201'
+            // ));
+
+            \Redirect::back()->with('message', 'Thanks for registering!'); //is this actually OK?
+
         } else {
             return response()->json(array('message' => 'Bol id not found', 'code' => '403'));
         }
