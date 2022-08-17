@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'Import Products')
+@section('title', 'Receive Products - Scanning')
 @section('content')
 <div class="card">
     <div class="container-fluid">

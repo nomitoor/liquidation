@@ -192,7 +192,7 @@ class ManifestController extends Controller
     public function codeScanner()
     {
         $breadcrumbs = [
-            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
+            ['link' => "view-scanned-products", 'name' => "Products"], ['name' => "Scan Products"]
         ];
 
         return view('manifest/scanner', ['breadcrumbs' => $breadcrumbs]);
@@ -648,7 +648,7 @@ class ManifestController extends Controller
     public function viewScannedProducts()
     {
         $breadcrumbs = [
-            ['link' => "view-scanned-products", 'name' => "Products"], ['name' => "Index"]
+            ['link' => "view-scanned-products", 'name' => "Products"], ['name' => "Scanned List"]
         ];
 
         return view('manifest/products', ['breadcrumbs' => $breadcrumbs]);

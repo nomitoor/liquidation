@@ -22,7 +22,7 @@ class PalletsController extends Controller
         $pallets = Pallets::with('category')->get();
 
         $breadcrumbs = [
-            ['link' => "pallets", 'name' => "Pallets"], ['name' => "Index"]
+            ['link' => "pallets", 'name' => "Pallets"], ['name' => "Available Pallets"]
         ];
 
         return view('pallets/pallets', [
