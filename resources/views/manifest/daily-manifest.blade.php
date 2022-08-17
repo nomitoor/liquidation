@@ -35,6 +35,7 @@
                                 <th>total cost</th>
                                 <th>unit cost</th>
                                 <th>units</th>
+                                <th>Manifest File</th>
                             </tr>
                         </thead>
                     </table>
@@ -85,6 +86,9 @@
             },
             {
                 data: 'units'
+            },
+            {
+                data: 'filename'
             },
         ],
         language: {
