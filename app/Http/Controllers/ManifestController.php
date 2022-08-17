@@ -226,16 +226,18 @@ class ManifestController extends Controller
             return response()->json(array('message' => 'Found with Bol ID', 'data' => $dropshipbin, 'code' => '201'));
         } else if (count($dropshipbin_bucket)) {
             return response()->json(array('message' => 'Found with Bol ID', 'data' => $dropshipbin_bucket, 'code' => '201'));
-        } else if (count($daily_with_package_id)) {
+        } 
+        
+        else if (count($daily_with_package_id)) {
             return response()->json(array('message' => 'Found with Package ID', 'data' => $daily_with_package_id, 'code' => '201'));
         } else if (count($daily_with_bol_id)) {
             return response()->json(array('message' => 'Found with Bol ID', 'data' => $daily_with_bol_id, 'code' => '201'));
         } else if (count($daily_dropshipbin)) {
-            return response()->json(array('message' => 'Found with Package ID', 'code' => '215', 'package_id' => $daily_dropshipbin[0]->package_id));
+            return response()->json(array('message' => 'Found with Bol ID', 'data' => $daily_dropshipbin, 'code' => '201'));
         } else if (count($daily_with_package_id_unknown)) {
             return response()->json(array('message' => 'Found with Package ID', 'code' => '215', 'package_id' => $daily_with_package_id_unknown[0]->package_id));
         } else if (count($daily_with_bol_id_unknown)) {
-            return response()->json(array('message' => 'Found with Bol ID', 'data' => $daily_with_bol_id_unknown, 'code' => '201'));
+            return response()->json(array('message' => 'Found with Package ID', 'code' => '215', 'package_id' => $daily_with_bol_id_unknown[0]->package_id));
         } else if (count($daily_dropshipbin_bucket)) {
             return response()->json(array('message' => 'Found with Bol ID', 'data' => $daily_dropshipbin_bucket, 'code' => '201'));
         } else {
