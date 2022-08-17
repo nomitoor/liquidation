@@ -81,7 +81,7 @@
     {
       "url": "view-bucket",
       "name": "Buckets",
-      "icon": "home",
+      "icon": "bold",
       "slug": "view-bucket",
       "role": [
         "Super-Admin",
@@ -120,11 +120,11 @@
       ]
     },
     
-   
+
     {
       "url": "claims",
-      "name": "View Claims",
-      "icon": "home",
+      "name": "Claims",
+      "icon": "clipboard",
       "slug": "claims",
       "role": [
         "Super-Admin"
@@ -132,20 +132,33 @@
       "submenu": [
         {
           "url": "claims",
-          "name": "View Received Claims",
-          "icon": "home",
+          "name": "Received Claims",
+          "icon": "check",
+          "slug": "claims",
+          "role": [
+            "Super-Admin",
+            "User"
+          ]
+        },
+        {
+          "url": "claims",
+          "name": "Not Received",
+          "icon": "x",
           "slug": "claims",
           "role": [
             "Super-Admin",
             "User"
           ]
         }
+    
       ]
     },
+   
+  
     {
       "url": "unknown",
       "name": "View Unknown",
-      "icon": "home",
+      "icon": "help-circle",
       "slug": "unknown",
       "role": [
         "Super-Admin",
@@ -154,12 +167,25 @@
     },
     {
       "url": "containers",
-      "name": "Create Containers",
-      "icon": "home",
+      "name": "Containers",
+      "icon": "truck",
       "slug": "containers",
       "role": [
         "Super-Admin",
         "User"
+      ],
+      "submenu": [
+        {
+          "url": "containers",
+          "name": "Create Containers",
+          "icon": "plus",
+          "slug": "containers",
+          "role": [
+            "Super-Admin",
+            "User"
+          ]
+        }
+    
       ]
     }
   ]

@@ -201,5 +201,9 @@ return [
     "Create Containers" => "Create Containers",
     "Manifests" => "Manifests",
     "Uploaded Daily Manifests" => "Daily Manifests" ,
-    "View Pallets" => "View Pallets"
+    "View Pallets" => "View Pallets",
+    "Claims" => "Claims",
+    "Received Claims" => "Received Claims",
+    "Not Received" => "Not Received",
+    "Containers" => "Containers"
 ];
