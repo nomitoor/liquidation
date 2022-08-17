@@ -68,7 +68,7 @@ class StaterkitController extends Controller
         $record = ManifestRecord::all();
 
         $breadcrumbs = [
-            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
+            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Weekly File List"]
         ];
 
         return view('/manifest/uploaded-manifest', ['breadcrumbs' => $breadcrumbs, 'record' => $record]);
@@ -85,7 +85,7 @@ class StaterkitController extends Controller
         $record = DailyManifestRecord::all();
 
         $breadcrumbs = [
-            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Index"]
+            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Daily File List"]
         ];
 
         return view('/manifest/uploaded-daily-manifest', ['breadcrumbs' => $breadcrumbs, 'record' => $record]);

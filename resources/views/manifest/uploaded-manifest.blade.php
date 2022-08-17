@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'Uploaded Manifest')
+@section('title', 'Weekly Manifest History')
 
 @section('vendor-style')
 {{-- vendor css files --}}
@@ -30,8 +30,8 @@
                     <table class="manifest-data table">
                         <thead>
                             <tr>
-                                <th>file name</th>
-                                <th>created at</th>
+                                <th>File name</th>
+                                <th>Created at</th>
                             </tr>
                         </thead>
                     </table>

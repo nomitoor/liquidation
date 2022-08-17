@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'Uploaded Manifest')
+@section('title', 'Daily Manifest History')
 
 @section('vendor-style')
 {{-- vendor css files --}}
