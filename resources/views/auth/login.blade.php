@@ -37,10 +37,10 @@
               </g>
             </g>
           </svg>
-          <h2 class="brand-text text-primary ml-1">Liquidation Software</h2>
+          <h2 class="brand-text text-primary ml-1">LIKE-TRADING</h2>
         </a>
 
-        <h4 class="card-title mb-1">Welcome to Amazon Liquidation! 👋</h4>
+       <center> <h4 class="card-title mb-1">Like Trading Liquidation Software!</h4></center>
 
         <form class="auth-login-form mt-2" method="POST" action="{{ route('login') }}">
           @csrf
