@@ -124,7 +124,7 @@ class ManifestController extends Controller
                 'number_of_entities' => '1234567', // TODO: Work on count of the records
                 'uploaded_by' => auth()->user()->id
             ]);
-            Excel::import(new DailyManifestImport, $filepath);
+            Excel::import(new DailyManifestImport($filename), $filepath);
 
             $breadcrumbs = [
                 ['link' => "manifest", 'name' => "Manifest"], ['name' => "Upload Manfiest"]
