@@ -98,10 +98,10 @@
       ],
       "submenu": [
         {
-          "url": "pallets",
+          "url": "pallets/create",
           "name": "Create Pallets",
           "icon": "file-plus",
-          "slug": "pallets",
+          "slug": "pallets/create",
           "role": [
             "Super-Admin",
             "User"
