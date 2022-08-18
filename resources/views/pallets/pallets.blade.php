@@ -66,7 +66,7 @@
                                         Edit
                                     </a>
 
-                                    <form action="{{ url('/pallets', ['pallet' => $pallet->id]) }}" method="post">
+                                    <form onSubmit="return confirm('Do you want to delete this pallet?')" action="{{ url('/pallets', ['pallet' => $pallet->id]) }}" method="post">
                                         <input class="btn btn-danger btn-sm" type="submit" value="Delete" />
                                         <input type="hidden" name="_method" value="delete" />
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">

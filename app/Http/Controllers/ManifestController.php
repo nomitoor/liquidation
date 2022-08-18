@@ -426,22 +426,28 @@ class ManifestController extends Controller
                 sort($array);
                 sort($bol_id);
                 if ($array === $bol_id) {
-                    ScannedProducts::create([
-                        'bol' => $new->bol,
-                        'package_id' => $new->package_id,
-                        'item_description' => $new->item_description,
-                        'units' => $new->units,
-                        'unit_cost' => $new->unit_cost,
-                        'total_cost' => $new->total_cost,
-                        'asin' => $new->asin,
-                        'GLDesc' => $new->GLDesc,
-                        'unit_recovery' => $new->unit_recovery,
-                        'total_recovery' => $new->total_recovery,
-                        'recovery_rate' => $new->recovery_rate,
-                        'removal_reason' => $new->removal_reason
-                    ]);
+                    foreach ($bol_id as $value) {
+                        $related_ids = Manifest::whereRaw("find_in_set('$value',bol)")->get();
 
-                    $new->delete();
+                        foreach ($related_ids as $ids) {
+                            ScannedProducts::create([
+                                'bol' => $ids->bol,
+                                'package_id' => $ids->package_id,
+                                'item_description' => $ids->item_description,
+                                'units' => $ids->units,
+                                'unit_cost' => $ids->unit_cost,
+                                'total_cost' => $ids->total_cost,
+                                'asin' => $ids->asin,
+                                'GLDesc' => $ids->GLDesc,
+                                'unit_recovery' => $ids->unit_recovery,
+                                'total_recovery' => $ids->total_recovery,
+                                'recovery_rate' => $ids->recovery_rate,
+                                'removal_reason' => $ids->removal_reason
+                            ]);
+
+                            $ids->delete();
+                        }
+                    }
                     return response()->json(array('message' => 'Manifest products updated', 'code' => '910', 'package_id' => $package_id));
                 }
             }
@@ -586,22 +592,28 @@ class ManifestController extends Controller
                 sort($array);
                 sort($bol_id);
                 if ($array === $bol_id) {
-                    ScannedProducts::create([
-                        'bol' => $new->bol,
-                        'package_id' => $new->package_id,
-                        'item_description' => $new->item_description,
-                        'units' => $new->units,
-                        'unit_cost' => $new->unit_cost,
-                        'total_cost' => $new->total_cost,
-                        'asin' => $new->asin,
-                        'GLDesc' => $new->GLDesc,
-                        'unit_recovery' => $new->unit_recovery,
-                        'total_recovery' => $new->total_recovery,
-                        'recovery_rate' => $new->recovery_rate,
-                        'removal_reason' => $new->removal_reason
-                    ]);
+                    foreach ($bol_id as $value) {
+                        $related_ids = DailyManifest::whereRaw("find_in_set('$value',bol)")->get();
 
-                    $new->delete();
+                        foreach ($related_ids as $ids) {
+                            ScannedProducts::create([
+                                'bol' => $ids->bol,
+                                'package_id' => $ids->package_id,
+                                'item_description' => $ids->item_description,
+                                'units' => $ids->units,
+                                'unit_cost' => $ids->unit_cost,
+                                'total_cost' => $ids->total_cost,
+                                'asin' => $ids->asin,
+                                'GLDesc' => $ids->GLDesc,
+                                'unit_recovery' => $ids->unit_recovery,
+                                'total_recovery' => $ids->total_recovery,
+                                'recovery_rate' => $ids->recovery_rate,
+                                'removal_reason' => $ids->removal_reason
+                            ]);
+
+                            $ids->delete();
+                        }
+                    }
                     return response()->json(array('message' => 'Manifest products updated', 'code' => '910', 'package_id' => $package_id));
                 }
             }
@@ -668,7 +680,10 @@ class ManifestController extends Controller
 
     public function allBuckets()
     {
-        return response()->json(array('data' => Manifest::where('bol_ids', '<>', null)->get()));
+        $mani = Manifest::where('bol_ids', '<>', null)->get()->toArray();
+        $daily = DailyManifest::where('bol_ids', '<>', null)->get()->toArray();
+
+        return response()->json(array('data' => array_merge($daily,$mani)));
     }
 
     public function allUnknownProducts()

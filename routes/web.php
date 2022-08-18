@@ -42,6 +42,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('scanned-manifests', [ManifestController::class, 'getManifest'])->name('scanned-manifests');
     Route::post('products-for-manifest', [ManifestController::class, 'getProducts'])->name('products-for-manifest');
     Route::post('import-scanned-products', [ManifestController::class, 'importToScannedProducts'])->name('import-scanned-products');
+    Route::post('update-pallet-description', [PalletsController::class, 'updatePalletDescription'])->name('update-pallet-description');
 
     Route::get('view-bucket', [ManifestController::class, 'viewBucket']);
 

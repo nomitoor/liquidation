@@ -25,7 +25,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Please Enter Pallet Details </h4>
+                    <h4 class="card-title">Please Enter Pallet Details --  {{ 'DE'.sprintf("%05d", $pallets->id) }} </h4>
                     <h4 class="card-title">Total Cost: {{ $pallets->total_price }}</h4>
 
                     <h4 class="card-title">Last scan Cost: {{ $last_total_cost }}</h4>
@@ -36,9 +36,17 @@
                     @if(Session::has('message'))
                     <p class="alert alert-info">{{ Session::get('message') }}</p>
                     @endif
-                    <div class="col-12 d-flex justify-content-end">
-                        <button class="btn btn-primary btn-sm">Finish</button>
-                    </div>
+                    <form action="{{ route('update-pallet-description') }}" method="post">
+                        @csrf
+                        <div class="col-12">
+                            <label>Description</label>
+                            <textarea type="text" class="form-control" name="description">{{$pallets->description}}</textarea>
+                        </div>
+                        <input type="hidden" name="pallet_id" value="{{ $pallets->id }}" />
+                        <div class="col-12 d-flex justify-content-end mt-1">
+                            <button class="btn btn-primary btn-sm" >Finish</button>
+                        </div>
+                    </form>
                 </div>
                 <div class="card-body">
                     <form method="POST" enctype="multipart/form-data" id="upload-file" action="{{ route('pallets.store') }}">

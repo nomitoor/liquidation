@@ -257,6 +257,7 @@
                                                             <div class="col-xs-12 col-lg-12 col-sm-12 col-md-12">
                                                                 <label>Product Details</label>
                                                                 <h4 class="product_details"></h4>
+                                                                <h1 class="process_completed" style="color:green"></h1>
                                                             </div>
                                                             <div class="mb-3" id="bar-code-viewer">
                                                                 <svg id="barcode"></svg>
@@ -790,6 +791,7 @@
                     $('.product_details').html(select_id + ' Scanned last time successfully, with product ID: ' + new_package_id + " Please copy this to a safe place..")
 
                     JsBarcode("#barcode", new_package_id);
+                    $('.process_completed').html('COMPLETED');
                     $('#product_code_type').focus();
 
                 } else if (data.code == '707') {

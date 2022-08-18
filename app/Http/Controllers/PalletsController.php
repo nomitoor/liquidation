@@ -378,4 +378,11 @@ class PalletsController extends Controller
         $pallet->delete();
         return redirect('/pallets');
     }
+
+    public function updatePalletDescription(Request $request)
+    {
+        $foundPallet = Pallets::where('id', $request->pallet_id)->update(['description' => $request->description]);
+
+        return redirect('pallets/' . $request->pallet_id . '/edit');
+    }
 }
