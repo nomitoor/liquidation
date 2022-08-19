@@ -707,13 +707,13 @@ class ManifestController extends Controller
     public function exportScannedProducts(Request $request)
     {
         $pallet_name = Pallets::where('id', $request->id)->first();
-        return Excel::download(new ScannedProductsExport($request->id), $pallet_name->description . '-' . 'DE' . sprintf("%05d", $request->id) . '-' . 'admin-pallet.xlsx');
+        return Excel::download(new ScannedProductsExport($request->id),  'DE' . sprintf("%05d", $request->id) . '-' . 'For-Admin.xlsx');
     }
 
     public function clientExportScannedProducts(Request $request)
     {
         $pallet_name = Pallets::where('id', $request->id)->first();
-        return Excel::download(new ScannedProductsClientExport($request->id), $pallet_name->description . '-' . 'DE' . sprintf("%05d", $request->id) . '-' . 'client-pallet.xlsx');
+        return Excel::download(new ScannedProductsClientExport($request->id), 'DE' . sprintf("%05d", $request->id). '.xlsx');
     }
 
     public function viewBucket()

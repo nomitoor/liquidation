@@ -44,7 +44,7 @@
                                         </g>
                                     </g>
                                 </svg>
-                                <h3 class="text-primary invoice-logo">Liquidation</h3>
+                                <h3 class="text-primary invoice-logo">LIKE-TRADING - PALLET</h3>
                             </div>
                         </div>
                         <div class="mt-md-0 mt-2">
@@ -53,7 +53,7 @@
                                 <span class="invoice-number">#{{ $invoice_number }}</span>
                             </h4>
                             <div class="invoice-date-wrapper">
-                                <p class="invoice-date-title">Date Issued:</p>
+                                <p class="invoice-date-title">Date Created:</p>
                                 <p class="invoice-date">{{ $date_issued }}</p>
                             </div>
                         </div>

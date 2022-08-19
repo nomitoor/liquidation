@@ -189,6 +189,7 @@
                         })
 
                     } else if (data.code == '403') {
+                        alert('im here');
                         $('.product_code').val('');
                         alert(data.message);
                     } else {
@@ -248,6 +249,7 @@
                         })
 
                     } else if (data.code == '403') {
+                        alert('im her');
                         $('.product_code_manually').val('');
                         alert(data.message);
                     } else {

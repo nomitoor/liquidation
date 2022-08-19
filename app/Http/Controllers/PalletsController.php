@@ -161,8 +161,8 @@ class PalletsController extends Controller
      */
     public function update(Request $request, Pallets $pallet)
     {
-        $products_query = ScannedProducts::where('bol', $request->bol_id)->where('pallet_id', NULL);
-        $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->where('pallet_id', NULL);
+        $products_query = ScannedProducts::where('bol', $request->bol_id)->whereNull('pallet_id');
+        $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->whereNull('pallet_id');
 
         $scanned_products = $products_query->get();
         $scanned_products_with_package_id = $with_package_id->get();
@@ -172,7 +172,7 @@ class PalletsController extends Controller
             if ($bol_id_array) {
                 foreach ($bol_id_array as $ids) {
                     if ($ids == $request->bol_id) {
-                        return response()->json(array('message' => 'Bol already added to this pallet', 'code' => '403'));
+                        return \Redirect::back()->withErrors(['error' => 'Bol already added to this pallet']);
                     }
                 }
                 array_push($bol_id_array, $request->bol_id);
@@ -208,7 +208,7 @@ class PalletsController extends Controller
             if ($bol_id_array) {
                 foreach ($bol_id_array as $ids) {
                     if ($ids == $request->bol_id) {
-                        return response()->json(array('message' => 'Bol already added to this pallet', 'code' => '403'));
+                        return \Redirect::back()->withErrors(['error' => 'Bol already added to this pallet']);
                     }
                 }
                 array_push($bol_id_array, $request->bol_id);
@@ -240,16 +240,17 @@ class PalletsController extends Controller
 
             return \Redirect::back()->withErrors(['error' => 'Pallet updated Succesfully']);
         } else {
+
             $products_query = ScannedProducts::where('bol', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
             $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
 
             if (!is_null($products_query)) {
                 $pallet_details = Pallets::where('id', $products_query->pallet_id)->first();
 
-                return response()->json(array('message' => 'This BOL ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id), 'code' => '403'));
+                return \Redirect::back()->withErrors(['error' => 'This BOL ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id)]);
             } else {
                 $pallet_details = Pallets::where('id', $with_package_id->pallet_id)->first();
-                return response()->json(array('message' => 'This PACKAGE ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id), 'code' => '403'));
+                return \Redirect::back()->withErrors(['error' => 'This PACKAGE ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id)]);
             }
         }
     }
