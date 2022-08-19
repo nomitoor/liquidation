@@ -25,7 +25,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Please Enter Pallet Details --  {{ 'DE'.sprintf("%05d", $pallets->id) }} </h4>
+                    <h4 class="card-title">Please Enter Pallet Details -- {{ 'DE'.sprintf("%05d", $pallets->id) }} </h4>
                     <h4 class="card-title">Total Cost: {{ $pallets->total_price }}</h4>
 
                     <h4 class="card-title">Last scan Cost: {{ $last_total_cost }}</h4>
@@ -33,8 +33,16 @@
                         <div class="alert-body"><strong>BOL ID added to pallet!</strong></div>
                     </div>
 
-                    @if(Session::has('message'))
-                    <p class="alert alert-info">{{ Session::get('message') }}</p>
+                    @if($errors->any())
+
+                    <div class="col-12 text-center alert alert-success mt-2 mb-0" id="pallet-added" role="alert">
+                        <div class="alert-body">
+                            @foreach($errors->all() as $error)
+                            <strong>{{ $error }}</strong>
+                            @endforeach
+                        </div>
+                    </div>
+                    <br>
                     @endif
                     <form action="{{ route('update-pallet-description') }}" method="post">
                         @csrf
@@ -44,30 +52,22 @@
                         </div>
                         <input type="hidden" name="pallet_id" value="{{ $pallets->id }}" />
                         <div class="col-12 d-flex justify-content-end mt-1">
-                            <button class="btn btn-primary btn-sm" >Finish</button>
+                            <button class="btn btn-primary btn-sm">Finish</button>
                         </div>
                     </form>
                 </div>
                 <div class="card-body">
-                    <form method="POST" enctype="multipart/form-data" id="upload-file" action="{{ route('pallets.store') }}">
+                    <form method="POST" id="upload-file" action="{{ route('pallets.update', $pallets->id) }}">
                         {{ csrf_field() }}
+                        {{ method_field('PATCH') }}
                         <div class="row">
 
                             <div class="col-md-12 mb-1">
-                                <!-- <label>Paste Product ID or Bol Id</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control product_code" placeholder="Enter product ID or Bol ID" />
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-info" onclick="undoPallet('<?php echo $pallets->id; ?>')">
-                                                <i class="fa fa-undo" aria-hidden="true"></i>Undo
-                                            </button>
-                                        </span>
-                                    </div> -->
                                 <label>Enter Product ID or Bol Id</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control product_code_manually" placeholder="Enter product ID or Bol ID" />
+                                    <input type="text" name="bol_id" class="form-control product_code_manually" placeholder="Enter product ID or Bol ID" />
                                     <span class="input-group-btn">
-                                        <button class="btn btn-info" onclick="addPalletManually()">
+                                        <button class="btn btn-info" type="submit">
                                             <i class="fa fa-undo" aria-hidden="true"></i>Add Pallet
                                         </button>
                                     </span>
@@ -204,14 +204,8 @@
         $(".product_code_manually").focus();
     })
 
-    var timer = null;
-    $('.product_code_manually').keyup(function() {
-        clearTimeout(timer);
-        timer = setTimeout(addPalletManually, 1000)
-    });
-
-    function addPalletManually() {
-        event.preventDefault();
+    function addPalletManually(e) {
+        e.preventDefault()
         var executed = false;
 
         if (!executed) {

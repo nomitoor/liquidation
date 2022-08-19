@@ -15,6 +15,7 @@ use App\Models\ClaimList;
 use App\Models\DailyManifest;
 use App\Models\ScannedProducts;
 use App\Models\DailyManifestRecord;
+use App\Models\Pallets;
 
 class ManifestController extends Controller
 {
@@ -226,9 +227,7 @@ class ManifestController extends Controller
             return response()->json(array('message' => 'Found with Bol ID', 'data' => $dropshipbin, 'code' => '201'));
         } else if (count($dropshipbin_bucket)) {
             return response()->json(array('message' => 'Found with Bol ID', 'data' => $dropshipbin_bucket, 'code' => '201'));
-        } 
-        
-        else if (count($daily_with_package_id)) {
+        } else if (count($daily_with_package_id)) {
             return response()->json(array('message' => 'Found with Package ID', 'data' => $daily_with_package_id, 'code' => '201'));
         } else if (count($daily_with_bol_id)) {
             return response()->json(array('message' => 'Found with Bol ID', 'data' => $daily_with_bol_id, 'code' => '201'));
@@ -683,7 +682,7 @@ class ManifestController extends Controller
         $mani = Manifest::where('bol_ids', '<>', null)->get()->toArray();
         $daily = DailyManifest::where('bol_ids', '<>', null)->get()->toArray();
 
-        return response()->json(array('data' => array_merge($daily,$mani)));
+        return response()->json(array('data' => array_merge($daily, $mani)));
     }
 
     public function allUnknownProducts()
@@ -707,12 +706,14 @@ class ManifestController extends Controller
 
     public function exportScannedProducts(Request $request)
     {
-        return Excel::download(new ScannedProductsExport($request->id), 'pallets.xlsx');
+        $pallet_name = Pallets::where('id', $request->id)->first();
+        return Excel::download(new ScannedProductsExport($request->id), $pallet_name->description . '-' . 'DE' . sprintf("%05d", $request->id) . '-' . 'admin-pallet.xlsx');
     }
 
     public function clientExportScannedProducts(Request $request)
     {
-        return Excel::download(new ScannedProductsClientExport($request->id), 'pallets.xlsx');
+        $pallet_name = Pallets::where('id', $request->id)->first();
+        return Excel::download(new ScannedProductsClientExport($request->id), $pallet_name->description . '-' . 'DE' . sprintf("%05d", $request->id) . '-' . 'client-pallet.xlsx');
     }
 
     public function viewBucket()

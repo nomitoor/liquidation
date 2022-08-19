@@ -136,7 +136,7 @@ class PalletsController extends Controller
         ];
 
         $scanned_products = ScannedProducts::whereIn('bol', unserialize($pallet->bol_ids) ?: [])->orWhereIn('package_id', unserialize($pallet->bol_ids) ?: [])->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
-        
+
         $total_price = 0;
         $data = unserialize($pallet->bol_ids);
         if ($data != null && count($data) > 0) {
@@ -202,10 +202,7 @@ class PalletsController extends Controller
                 'total_unit' => $new_total_units,
             ]);
 
-            return response()->json(array(
-                'data' => $updated_scanned_products->toArray(),
-                'code' => '201'
-            ));
+            return \Redirect::back()->withErrors(['error' => 'Pallet updated Succesfully']);
         } else if (count($scanned_products_with_package_id)) {
             $bol_id_array = unserialize($pallet->bol_ids);
             if ($bol_id_array) {
@@ -241,15 +238,19 @@ class PalletsController extends Controller
                 'total_unit' => $new_total_units,
             ]);
 
-            return response()->json(array(
-                'data' => $updated_scanned_products->toArray(),
-                'code' => '201'
-            ));
-
-            // \Redirect::back()->with('message', 'Thanks for registering!'); //is this actually OK?
-
+            return \Redirect::back()->withErrors(['error' => 'Pallet updated Succesfully']);
         } else {
-            return response()->json(array('message' => 'Bol id not found', 'code' => '403'));
+            $products_query = ScannedProducts::where('bol', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
+            $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
+
+            if (!is_null($products_query)) {
+                $pallet_details = Pallets::where('id', $products_query->pallet_id)->first();
+
+                return response()->json(array('message' => 'This BOL ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id), 'code' => '403'));
+            } else {
+                $pallet_details = Pallets::where('id', $with_package_id->pallet_id)->first();
+                return response()->json(array('message' => 'This PACKAGE ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id), 'code' => '403'));
+            }
         }
     }
 
