@@ -18,8 +18,7 @@ class ContainerExport implements FromQuery, WithMapping, WithHeadings, WithColum
 
     use Exportable;
     protected $pallet_ids = [];
-    protected $asin = '';
-
+    
     public function __construct($container)
     {
         $this->container = $container;
@@ -45,7 +44,7 @@ class ContainerExport implements FromQuery, WithMapping, WithHeadings, WithColum
 
         $fields = [
             $row->bol,
-            'AMAZON',
+            'https://www.amazon.de/dp/' . $row->asin,
             $row->package_id,
             $row->item_description,
             $row->units,
@@ -58,8 +57,6 @@ class ContainerExport implements FromQuery, WithMapping, WithHeadings, WithColum
             $row->removal_reason,
             'DE' . sprintf("%05d", Pallets::where('id', $row->pallet_id)->pluck('id')->first())
         ];
-
-        $this->asin = $row->asin;
 
         return $fields;
     }
@@ -93,8 +90,9 @@ class ContainerExport implements FromQuery, WithMapping, WithHeadings, WithColum
         \Excel::extend(static::class, function (ContainerExport $export, Sheet $sheet) {
             foreach ($sheet->getColumnIterator('B') as $row) {
                 foreach ($row->getCellIterator() as $key => $cell) {
-                    if (str_contains($cell->getValue(), 'AMAZON')) {
-                        $cell->setHyperlink(new Hyperlink('https://www.amazon.de/dp/' . $this->asin));
+                    if (str_contains($cell->getValue(), '://')) {
+                        $cell->setHyperlink(new Hyperlink($cell->getValue()));
+                        $cell->setValue(new Hyperlink('AMAZON'));
                     }
                 }
             }

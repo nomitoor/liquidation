@@ -18,7 +18,6 @@ class ContainerClientExport implements FromQuery, WithMapping, WithHeadings, Wit
 
     use Exportable;
     protected $pallet_ids = [];
-    protected $asin = '';
 
     public function __construct($container)
     {
@@ -45,15 +44,13 @@ class ContainerClientExport implements FromQuery, WithMapping, WithHeadings, Wit
     {
         $fields = [
             $row->asin,
-            'AMAZON',
+            'https://www.amazon.de/dp/' . $row->asin,
             $row->item_description,
             $row->units,
             $row->unit_cost,
             $row->total_cost,
             'DE' . sprintf("%05d", Pallets::where('id', $row->pallet_id)->pluck('id')->first())
         ];
-
-        $this->asin = $row->asin;
 
         return $fields;
     }
@@ -80,9 +77,10 @@ class ContainerClientExport implements FromQuery, WithMapping, WithHeadings, Wit
     {
         \Excel::extend(static::class, function (ContainerClientExport $export, Sheet $sheet) {
             foreach ($sheet->getColumnIterator('B') as $row) {
-                foreach ($row->getCellIterator() as $cell) {
-                    if (str_contains($cell->getValue(), 'AMAZON')) {
-                        $cell->setHyperlink(new Hyperlink('https://www.amazon.de/dp/' . $this->asin));
+                foreach ($row->getCellIterator() as $key => $cell) {
+                    if (str_contains($cell->getValue(), '://')) {
+                        $cell->setHyperlink(new Hyperlink($cell->getValue()));
+                        $cell->setValue('AMAZON');
                     }
                 }
             }
