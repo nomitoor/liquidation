@@ -31,6 +31,12 @@ class PalletsController extends Controller
         ]);
     }
 
+    public function allPallets()
+    {
+        $pallets = Pallets::with('category')->paginate(15);
+        return response()->json($pallets);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -85,6 +91,23 @@ class PalletsController extends Controller
 
         return redirect('/pallets');
     }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeAPI(Request $request)
+    {
+        $pallet = Pallets::create([
+            'description' => $request->description,
+            'category_id' => $request->category_id
+        ]);
+
+        return response()->json(array('message' => 'Pallet Created successfully', 'id' => $pallet->id));
+    }
+
 
     /**
      * Display the specified resource.

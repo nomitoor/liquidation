@@ -124,11 +124,11 @@ class ContainerController extends Controller
 
     public function exportContainers(Container $container)
     {
-        return Excel::download(new ContainerExport($container), 'containers.xlsx');
+        return Excel::download(new ContainerExport($container), $container->id . '-' . 'containers.xlsx');
     }
 
     public function exportContainersClient(Container $container)
     {
-        return Excel::download(new ContainerClientExport($container), 'containers-client.xlsx');
+        return Excel::download(new ContainerClientExport($container), $container->id . '-' . 'containers-client.xlsx');
     }
 }

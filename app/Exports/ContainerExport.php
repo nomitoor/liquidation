@@ -2,22 +2,28 @@
 
 namespace App\Exports;
 
+use App\Models\Pallets;
 use App\Models\ScannedProducts;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
+use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Sheet;
+use PhpOffice\PhpSpreadsheet\Cell\Hyperlink;
 
 class ContainerExport implements FromQuery, WithMapping, WithHeadings, WithColumnWidths
 {
 
     use Exportable;
     protected $pallet_ids = [];
+    protected $asin = '';
 
     public function __construct($container)
     {
         $this->container = $container;
+        $this->custom();
     }
 
     /**
@@ -30,15 +36,16 @@ class ContainerExport implements FromQuery, WithMapping, WithHeadings, WithColum
         foreach ($pallet_ids as $pallet_id) {
             $this->pallet_ids[] = 'DE' . sprintf("%05d", $pallet_id);
         }
-
         return ScannedProducts::whereIn('pallet_id', $pallet_ids);
     }
 
     // here you select the row that you want in the file
     public function map($row): array
     {
+
         $fields = [
             $row->bol,
+            'AMAZON',
             $row->package_id,
             $row->item_description,
             $row->units,
@@ -49,21 +56,24 @@ class ContainerExport implements FromQuery, WithMapping, WithHeadings, WithColum
             $row->total_recovery,
             $row->recovery_rate,
             $row->removal_reason,
-            $this->pallet_ids
+            'DE' . sprintf("%05d", Pallets::where('id', $row->pallet_id)->pluck('id')->first())
         ];
+
+        $this->asin = $row->asin;
+
         return $fields;
     }
 
     public function headings(): array
     {
-        return ['BOL', 'PACKAGE ID', 'ITEM DESCRIPTION', 'UNITS', 'UNIT COST', 'TOTAL COST', 'GL DESCRIPTION', 'UNIT RECOVERY', 'TOTAL RECOVERY', 'RECOVERY RATE', 'REMOVAL RATE', 'PALLET ID'];
+        return ['BOL', 'LINK', 'PACKAGE ID', 'ITEM DESCRIPTION', 'UNITS', 'UNIT COST', 'TOTAL COST', 'GL DESCRIPTION', 'UNIT RECOVERY', 'TOTAL RECOVERY', 'RECOVERY RATE', 'REMOVAL RATE', 'PALLET ID'];
     }
 
     public function columnWidths(): array
     {
         return [
             'A' => 20,
-            'B' => 20,
+            'B' => 10,
             'C' => 50,
             'D' => 20,
             'E' => 20,
@@ -73,7 +83,21 @@ class ContainerExport implements FromQuery, WithMapping, WithHeadings, WithColum
             'I' => 20,
             'J' => 20,
             'K' => 20,
-            'L' => 50,
+            'L' => 20,
+            'M' => 50,
         ];
+    }
+
+    public function custom()
+    {
+        \Excel::extend(static::class, function (ContainerExport $export, Sheet $sheet) {
+            foreach ($sheet->getColumnIterator('B') as $row) {
+                foreach ($row->getCellIterator() as $key => $cell) {
+                    if (str_contains($cell->getValue(), 'AMAZON')) {
+                        $cell->setHyperlink(new Hyperlink('https://www.amazon.de/dp/' . $this->asin));
+                    }
+                }
+            }
+        }, AfterSheet::class);
     }
 }
