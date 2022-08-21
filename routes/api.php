@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\PalletsController;
+use App\Http\Controllers\PalletsAPIController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('pallet/store', [PalletsController::class, 'storeAPI']);
-Route::get('pallet/view', [PalletsController::class, 'allPallets']);
-Route::get('manifests/details', [PalletsController::class, 'manifestDetails']);
+Route::post('pallet/store', [PalletsAPIController::class, 'storeAPI']);
+Route::get('pallet/view', [PalletsAPIController::class, 'allPallets']);
+Route::get('pallet/view/{id}', [PalletsAPIController::class, 'getPallet']);
+// Route::get('manifests/details', [PalletsAPIController::class, 'getManifestDetails']);
