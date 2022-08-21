@@ -64,11 +64,11 @@ class PalletsAPIController extends Controller
         } else if (count($scanned_data)) {
             return response()->json(array('code' => 203, 'message' => 'Already received', 'data' => $scanned_data));
         } else if (count($bucket_data)) {
-            return response()->json(array('code' => 203, 'message' => 'This bol id is a part of bucket', 'data' => $bucket_data));
+            return response()->json(array('code' => 204, 'message' => 'This bol id is a part of bucket', 'data' => $bucket_data));
         } else if (count($bucket_scanned_data)) {
-            return response()->json(array('code' => 203, 'message' => 'This bol id is a part of bucket', 'data' => $bucket_scanned_data));
+            return response()->json(array('code' => 205, 'message' => 'This bol id is a part of bucket', 'data' => $bucket_scanned_data));
         } else {
-            return response()->json(array('code' => 205, 'product_id' => $request->manifest_id, 'message' => 'Product Not found do you want this to unknown',));
+            return response()->json(array('code' => 206, 'product_id' => $request->manifest_id, 'message' => 'Product Not found do you want this to unknown',));
         }
     }
 }
