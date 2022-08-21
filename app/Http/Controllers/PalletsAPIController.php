@@ -35,9 +35,12 @@ class PalletsAPIController extends Controller
     public function getPallet(Request $request)
     {
         $pallet = Pallets::with('category')->find($request->id);
-        $scanned_products = ScannedProducts::where('pallet_id', $pallet->id)->get();
-
-        return response()->json(array('code' => '201', 'pallet_data' => $pallet, 'products' => $scanned_products, 'message' => 'Pallet Found'));
+        if (count($pallet)) {
+            $scanned_products = ScannedProducts::where('pallet_id', $pallet->id)->get();
+            return response()->json(array('code' => '201', 'pallet_data' => $pallet, 'products' => $scanned_products, 'message' => 'Pallet Found'));
+        } else {
+            return response()->json(array('code' => '404', 'message' => 'Pallet Not Found'));
+        }
     }
 
     public function getManifestDetails(Request $request)
@@ -45,13 +48,27 @@ class PalletsAPIController extends Controller
         $weekly_data = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->toArray();
         $daily_data = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->toArray();
 
-        $daily_bucket = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->where('package_id', 'DROPSHIP_BIN')->get()->toArray();
-        $weekly_bucket = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->where('package_id', 'DROPSHIP_BIN')->get()->toArray();
-
-        $data = array_merge($weekly_data, $daily_data);
-
         $scanned_data = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->toArray();
 
-        return response()->json(array('message' => 'Found in daily or weekly Manifest', 'data' => $data));
+        $daily_bucket = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->where('package_id', 'DROPSHIP_BIN')->get()->toArray();
+        $weekly_bucket = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->where('package_id', 'DROPSHIP_BIN')->get()->toArray();
+        $bucket_data = array_merge($daily_bucket, $weekly_bucket);
+
+        $daily_bucket_scanned = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->whereNotNull('bol_ids')->get()->toArray();
+        $weekly_bucket_scanned = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->whereNotNull('bol_ids')->get()->toArray();
+        $bucket_scanned_data = array_merge($daily_bucket_scanned, $weekly_bucket_scanned);
+
+        $data = array_merge($weekly_data, $daily_data);
+        if (count($data)) {
+            return response()->json(array('code' => 201, 'message' => 'Found in daily or weekly Manifest', 'data' => $data));
+        } else if (count($scanned_data)) {
+            return response()->json(array('code' => 203, 'message' => 'Already received', 'data' => $scanned_data));
+        } else if (count($bucket_data)) {
+            return response()->json(array('code' => 203, 'message' => 'This bol id is a part of bucket', 'data' => $bucket_data));
+        } else if (count($bucket_scanned_data)) {
+            return response()->json(array('code' => 203, 'message' => 'This bol id is a part of bucket', 'data' => $bucket_scanned_data));
+        } else {
+            return response()->json(array('code' => 205, 'product_id' => $request->manifest_id, 'message' => 'Product Not found do you want this to unknown',));
+        }
     }
 }
