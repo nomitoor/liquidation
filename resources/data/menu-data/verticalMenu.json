@@ -54,10 +54,18 @@
           "role": [
             "Super-Admin"
           ]
+        },
+        {
+          "url": "manifest/compare",
+          "name": "Compare Uploaded Daily Manifests",
+          "icon": "list",
+          "slug": "manifest/compare",
+          "role": [
+            "Super-Admin"
+          ]
         }
       ]
     },
-    
     {
       "url": "bar-code-scanner",
       "name": "Receive Products",
@@ -119,8 +127,6 @@
         }
       ]
     },
-    
-
     {
       "url": "claims",
       "name": "Claims",
@@ -150,11 +156,8 @@
             "User"
           ]
         }
-    
       ]
     },
-   
-  
     {
       "url": "unknown",
       "name": "View Unknown",
@@ -185,7 +188,6 @@
             "User"
           ]
         }
-    
       ]
     }
   ]

@@ -31,9 +31,9 @@ class PalletsController extends Controller
         ]);
     }
 
-    public function allPallets()
+    public function allPallets(Request $request)
     {
-        $pallets = Pallets::with('category')->paginate(15);
+        $pallets = Pallets::with('category')->orderBy('id', 'desc')->paginate($request->per_page ?? 5);
         return response()->json($pallets);
     }
 

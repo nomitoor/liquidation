@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\ScannedProducts;
+use App\Models\ManifestCompare;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -24,7 +25,11 @@ class ScannedProductsExport implements FromQuery, WithMapping, WithHeadings, Wit
      */
     public function query()
     {
-        return ScannedProducts::where('pallet_id', $this->id);
+        if (is_array($this->id)) {
+            return ManifestCompare::whereIn('id', array_values($this->id));
+        } else {
+            return ScannedProducts::where('pallet_id', $this->id);
+        }
     }
 
     // here you select the row that you want in the file

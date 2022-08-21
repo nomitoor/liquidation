@@ -4,18 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Exports\ScannedProductsClientExport;
 use App\Exports\ScannedProductsExport;
+use App\Imports\ManifestCompareImport;
 use App\Imports\DailyManifestImport;
 use App\Models\Manifest;
 use App\Models\ManifestRecord;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ManifestImport;
 use App\Models\ClaimList;
 use App\Models\DailyManifest;
 use App\Models\ScannedProducts;
 use App\Models\DailyManifestRecord;
+use App\Models\ManifestCompare;
 use App\Models\Pallets;
+use Illuminate\Http\Response;
 
 class ManifestController extends Controller
 {
@@ -713,7 +715,7 @@ class ManifestController extends Controller
     public function clientExportScannedProducts(Request $request)
     {
         $pallet_name = Pallets::where('id', $request->id)->first();
-        return Excel::download(new ScannedProductsClientExport($request->id), 'DE' . sprintf("%05d", $request->id). '.xlsx');
+        return Excel::download(new ScannedProductsClientExport($request->id), 'DE' . sprintf("%05d", $request->id) . '.xlsx');
     }
 
     public function viewBucket()
@@ -759,5 +761,35 @@ class ManifestController extends Controller
         }
 
         return redirect()->back();
+    }
+
+
+    public function compareManifest(Request $request)
+    {
+        $breadcrumbs = [
+            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Create"]
+        ];
+
+        return view('manifest/compare', ['breadcrumbs' => $breadcrumbs]);
+    }
+
+    public function downloadUpdatedManifest(Request $request)
+    {
+        if ($request->has('uploaded_file')) {
+            $file = $request->file('uploaded_file');
+            $filename = $file->getClientOriginalName();
+            $location = 'uploads';
+            $file->move(public_path($location), $file->getClientOriginalName());
+            $filepath = public_path($location . "/" . $filename);
+
+            Excel::import(new ManifestCompareImport($filename), $filepath);
+
+            $all_manifest_to_compare = ManifestCompare::pluck('id')->toArray();
+            $all_scanned = ScannedProducts::pluck('id')->toArray();
+
+            $all_to_compare = array_diff($all_manifest_to_compare, $all_scanned);
+            
+            return Excel::download(new ScannedProductsExport($all_to_compare),  'Daily-Weekly-Comparison.xlsx');
+        }
     }
 }

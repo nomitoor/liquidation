@@ -21,3 +21,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('pallet/store', [PalletsController::class, 'storeAPI']);
 Route::get('pallet/view', [PalletsController::class, 'allPallets']);
+Route::get('manifests/details', [PalletsController::class, 'manifestDetails']);

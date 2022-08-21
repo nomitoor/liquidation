@@ -58,6 +58,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('manifest/daily/store', [ManifestController::class, 'storeDaily'])->name('daily-manifest-store');
 
     Route::get('daily-manifest', [ManifestController::class, 'dailyManifest']);
+    Route::get('manifest/compare', [ManifestController::class, 'compareManifest']);
+    Route::post('manifest/compare', [ManifestController::class, 'downloadUpdatedManifest'])->name('downloadUpdatedManifest');
 
     Route::resource('manifest', ManifestController::class);
 
