@@ -79,4 +79,117 @@ class PalletsAPIController extends Controller
             return response()->json(array('code' => 206, 'product_id' => $request->manifest_id, 'message' => 'Product Not found do you want this to unknown',));
         }
     }
+
+
+    public function addToPallet(Request $request, Pallets $pallet)
+    {
+        $products_query = ScannedProducts::where('bol', $request->bol_id)->whereNull('pallet_id');
+        $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->whereNull('pallet_id');
+
+        $scanned_products = $products_query->get();
+        $scanned_products_with_package_id = $with_package_id->get();
+
+        if (count($scanned_products)) {
+            $bol_id_array = unserialize($pallet->bol_ids);
+            if ($bol_id_array) {
+                foreach ($bol_id_array as $ids) {
+                    if ($ids == $request->bol_id) {
+                        return response()->json(['code' => 201, 'message' => 'Bol already added to this pallet']);
+                    }
+                }
+                array_push($bol_id_array, $request->bol_id);
+            } else {
+                $bol_id_array = [];
+                array_push($bol_id_array, $request->bol_id);
+            }
+
+            $total_price = 0;
+            $total_units = 0;
+
+            foreach ($scanned_products as $products) {
+                $total_price += (float) $products->total_cost;
+                $total_units += (int) $products->units;
+            }
+
+            $new_total_price = $pallet->total_price + $total_price;
+            $new_total_units = $pallet->total_unit + $total_units;
+
+            ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
+            ScannedProducts::whereIn('bol', $bol_id_array)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
+
+            $pallet->update([
+                'bol_ids' => serialize($bol_id_array),
+                'total_price' => $new_total_price,
+                'total_unit' => $new_total_units,
+            ]);
+            return response()->json(array('code' => 201, 'message' => 'Pallet updated Succesfully'));
+        } else if (count($scanned_products_with_package_id)) {
+            $bol_id_array = unserialize($pallet->bol_ids);
+            if ($bol_id_array) {
+                foreach ($bol_id_array as $ids) {
+                    if ($ids == $request->bol_id) {
+                        return response()->json(array('code' => 403, 'message' => 'Bol already added to this pallet'));
+                    }
+                }
+                array_push($bol_id_array, $request->bol_id);
+            } else {
+                $bol_id_array = [];
+                array_push($bol_id_array, $request->bol_id);
+            }
+
+            $total_price = 0;
+            $total_units = 0;
+
+            foreach ($scanned_products_with_package_id as $products) {
+                $total_price += (float) $products->total_cost;
+                $total_units += (int) $products->units;
+            }
+
+            $new_total_price = $pallet->total_price + $total_price;
+            $new_total_units = $pallet->total_unit + $total_units;
+
+            ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
+            ScannedProducts::whereIn('package_id', $bol_id_array)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
+
+            $pallet->update([
+                'bol_ids' => serialize($bol_id_array),
+                'total_price' => $new_total_price,
+                'total_unit' => $new_total_units,
+            ]);
+
+            return response()->json(array('code' => 201, 'message' => 'Pallet updated Succesfully'));
+        } else {
+
+            $products_query = ScannedProducts::where('bol', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
+            $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
+
+            if (!is_null($products_query)) {
+                $pallet_details = Pallets::where('id', $products_query->pallet_id)->first();
+                return response()->json(array('code' => 201, 'message' => 'This BOL ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id)));
+            } else {
+                $pallet_details = Pallets::where('id', $with_package_id->pallet_id)->first();
+                return response()->json(array('code' => 201, 'message' => 'This BOL ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id)));
+            }
+        }
+    }
+
+
+    public function addToUknown(Request $request)
+    {
+        if ($request->save_as == 'bol') {
+            $bol_id = $request->id;
+            $package_id = '';
+        } else {
+            $package_id = $request->id;
+            $bol_id = '';
+        }
+
+        ScannedProducts::create([
+            'bol' => $bol_id,
+            'package_id' => $package_id,
+            'unknown_list' => 'yes'
+        ]);
+
+        return response()->json(array('message' => 'Added to unknown list', 'code' => '201'));
+    }
 }
