@@ -60,7 +60,10 @@ class PalletsAPIController extends Controller
         $bucket_scanned_data = array_merge($daily_bucket_scanned, $weekly_bucket_scanned);
 
         if (count($scanned_data)) {
-            return response()->json(array('code' => 203, 'message' => 'Already received', 'data' => $scanned_data));
+            $total_cost = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('total_cost');
+            $unit_cost = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('unit_cost');
+
+            return response()->json(array('code' => 203, 'message' => 'Already received', 'total_cost' => number_format($total_cost, 2), 'unit_cost' => number_format($unit_cost, 2), 'data' => $scanned_data));
         } else if (count($weekly_data)) {
             $total_cost = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('total_cost');
             $unit_cost = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('unit_cost');
