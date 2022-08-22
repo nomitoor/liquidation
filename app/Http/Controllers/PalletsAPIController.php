@@ -35,12 +35,13 @@ class PalletsAPIController extends Controller
     public function getPallet(Request $request)
     {
         $pallet = Pallets::with('category')->find($request->id);
-        if (count($pallet)) {
-            $scanned_products = ScannedProducts::where('pallet_id', $pallet->id)->get();
-            return response()->json(array('code' => '201', 'pallet_data' => $pallet, 'products' => $scanned_products, 'message' => 'Pallet Found'));
-        } else {
-            return response()->json(array('code' => '404', 'message' => 'Pallet Not Found'));
-        }
+        // if (count($pallet)) {
+        //        } else {
+        //     return response()->json(array('code' => '404', 'message' => 'Pallet Not Found'));
+        // }
+        $scanned_products = ScannedProducts::where('pallet_id', $pallet->id)->get();
+        return response()->json(array('code' => '201', 'pallet_data' => $pallet, 'products' => $scanned_products, 'message' => 'Pallet Found'));
+
     }
 
     public function getManifestDetails(Request $request)
