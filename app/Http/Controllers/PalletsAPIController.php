@@ -59,9 +59,16 @@ class PalletsAPIController extends Controller
         $weekly_bucket_scanned = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->whereNotNull('bol_ids')->get()->toArray();
         $bucket_scanned_data = array_merge($daily_bucket_scanned, $weekly_bucket_scanned);
 
-        $data = array_merge($weekly_data, $daily_data);
-        if (count($data)) {
-            return response()->json(array('code' => 201, 'message' => 'Found in daily or weekly Manifest', 'data' => $data));
+        if (count($weekly_data)) {
+            $total_cost = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('total_cost');
+            $unit_cost = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('unit_cost');
+
+            return response()->json(array('code' => 201, 'message' => 'Found in weekly Manifest', 'total_cost' => number_format($total_cost, 2), 'unit_cost' => number_format($unit_cost, 2), 'data' => $weekly_data));
+        } else if (count($daily_data)) {
+            $total_cost = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('total_cost');
+            $unit_cost = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('unit_cost');
+
+            return response()->json(array('code' => 201, 'message' => 'Found in weekly Manifest', 'total_cost' => number_format($total_cost, 2), 'unit_cost' => number_format($unit_cost, 2), 'data' => $daily_data));
         } else if (count($scanned_data)) {
             return response()->json(array('code' => 203, 'message' => 'Already received', 'data' => $scanned_data));
         } else if (count($bucket_data)) {
