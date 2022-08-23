@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClaimList;
 use App\Models\DailyManifest;
 use App\Models\Manifest;
 use App\Models\Pallets;
@@ -41,7 +42,6 @@ class PalletsAPIController extends Controller
         // }
         $scanned_products = ScannedProducts::where('pallet_id', $pallet->id)->get();
         return response()->json(array('code' => '201', 'pallet_data' => $pallet, 'products' => $scanned_products, 'message' => 'Pallet Found'));
-
     }
 
     public function getManifestDetails(Request $request)
@@ -83,7 +83,7 @@ class PalletsAPIController extends Controller
         }
     }
 
-
+    // Add to pallet with bol id and pallet
     public function addToPallet(Request $request, Pallets $pallet)
     {
         $products_query = ScannedProducts::where('bol', $request->bol_id)->whereNull('pallet_id');
@@ -176,7 +176,7 @@ class PalletsAPIController extends Controller
         }
     }
 
-
+    // Add to unknown
     public function addToUknown(Request $request)
     {
         if ($request->save_as == 'bol') {
@@ -194,5 +194,151 @@ class PalletsAPIController extends Controller
         ]);
 
         return response()->json(array('message' => 'Added to unknown list', 'code' => '201'));
+    }
+
+    public function addToScannedAndPallet(Request $request)
+    {
+        $with_package_id = Manifest::where('package_id', $request->bol_id)->get();
+        $with_bol_id = Manifest::where('bol', $request->bol_id)->get();
+
+        $daily_with_package_id = DailyManifest::where('package_id', $request->bol_id)->get();
+        $daily_with_bol_id = DailyManifest::where('bol', $request->bol_id)->get();
+
+        if (count($with_package_id)) {
+            foreach ($with_package_id as $item) {
+                if ($request->claim_list) {
+                    ClaimList::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
+                        'claim_desription' => $request->description
+                    ]);
+                } else {
+                    ScannedProducts::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
+                        'asin' => $item->asin,
+                        'GLDesc' => $item->GLDesc,
+                        'unit_recovery' => $item->unit_recovery,
+                        'total_recovery' => $item->total_recovery,
+                        'recovery_rate' => $item->recovery_rate,
+                        'removal_reason' => $item->removal_reason
+                    ]);
+                }
+                $item->delete();
+            }
+
+            if ($request->has('pallet_id')) {
+                $this->addToPallet($request, Pallets::find($request->pallet_id));
+            }
+        } else if (count($with_bol_id)) {
+            foreach ($with_bol_id as $item) {
+                if ($request->claim_list) {
+                    ClaimList::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
+                        'claim_desription' => $request->description
+                    ]);
+                } else {
+                    ScannedProducts::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
+                        'asin' => $item->asin,
+                        'GLDesc' => $item->GLDesc,
+                        'unit_recovery' => $item->unit_recovery,
+                        'total_recovery' => $item->total_recovery,
+                        'recovery_rate' => $item->recovery_rate,
+                        'removal_reason' => $item->removal_reason
+                    ]);
+                }
+                $item->delete();
+            }
+            if ($request->has('pallet_id')) {
+                $this->addToPallet($request, Pallets::find($request->pallet_id));
+            }
+        } else if (count($daily_with_package_id)) {
+            foreach ($daily_with_package_id as $item) {
+                if ($request->claim_list) {
+                    ClaimList::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
+                        'claim_desription' => $request->description
+                    ]);
+                } else {
+                    ScannedProducts::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
+                        'asin' => $item->asin,
+                        'GLDesc' => $item->GLDesc,
+                        'unit_recovery' => $item->unit_recovery,
+                        'total_recovery' => $item->total_recovery,
+                        'recovery_rate' => $item->recovery_rate,
+                        'removal_reason' => $item->removal_reason
+                    ]);
+                }
+                $item->delete();
+            }
+            if ($request->has('pallet_id')) {
+                $this->addToPallet($request, Pallets::find($request->pallet_id));
+            }
+        } else if (count($daily_with_bol_id)) {
+            foreach ($daily_with_bol_id as $item) {
+                if ($request->claim_list) {
+                    ClaimList::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
+                        'claim_desription' => $request->description
+                    ]);
+                } else {
+                    ScannedProducts::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
+                        'asin' => $item->asin,
+                        'GLDesc' => $item->GLDesc,
+                        'unit_recovery' => $item->unit_recovery,
+                        'total_recovery' => $item->total_recovery,
+                        'recovery_rate' => $item->recovery_rate,
+                        'removal_reason' => $item->removal_reason
+                    ]);
+                }
+                $item->delete();
+            }
+            if ($request->has('pallet_id')) {
+                $this->addToPallet($request, Pallets::find($request->pallet_id));
+            }
+        }
+
+        return response()->json(array('message' => 'Manifest products updated', 'code' => '201'));
     }
 }
