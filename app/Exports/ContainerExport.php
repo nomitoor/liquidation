@@ -92,7 +92,7 @@ class ContainerExport implements FromQuery, WithMapping, WithHeadings, WithColum
                 foreach ($row->getCellIterator() as $key => $cell) {
                     if (str_contains($cell->getValue(), '://')) {
                         $cell->setHyperlink(new Hyperlink($cell->getValue()));
-                        $cell->setValue(new Hyperlink('AMAZON'));
+                        $cell->setValue('AMAZON');
                     }
                 }
             }

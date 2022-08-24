@@ -20,14 +20,22 @@ class PalletsController extends Controller
     public function index()
     {
         $pallets = Pallets::with('category')->get();
-
+        
+        foreach ($pallets as $key => $pallet) {
+            $rec = 0;
+            $recovery = ScannedProducts::where('pallet_id', $pallet->id)->get();
+            foreach ($recovery as $recov) {
+                $rec += $recov->total_recovery;
+            }
+            $pallets[$key]['recovery'] = $rec;
+        }
         $breadcrumbs = [
             ['link' => "pallets", 'name' => "Pallets"], ['name' => "Available Pallets"]
         ];
 
         return view('pallets/pallets', [
             'breadcrumbs' => $breadcrumbs,
-            'pallets' => $pallets
+            'pallets' => $pallets,
         ]);
     }
 

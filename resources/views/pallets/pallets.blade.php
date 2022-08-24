@@ -44,6 +44,7 @@
                                 <th>Category</th>
                                 <th>Total price</th>
                                 <th>Total units</th>
+                                <th>Total Recovery</th>
                                 <th>Description</th>
                                 <th>Createt at</th>
                                 <th style="width: 260px;">Actions</th>
@@ -56,6 +57,7 @@
                                 <td>{{ $pallet->category->title ?? '-' }}</td>
                                 <td>{{ $pallet->total_price }}</td>
                                 <td>{{ $pallet->total_unit }}</td>
+                                <td>{{ $pallet->recovery }}</td>
                                 <td>{{ $pallet->description }}</td>
                                 <td>{{ $pallet->created_at }}</td>
                                 <td>
