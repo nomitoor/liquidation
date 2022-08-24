@@ -341,4 +341,35 @@ class PalletsAPIController extends Controller
 
         return response()->json(array('message' => 'Manifest products updated', 'code' => '201'));
     }
+
+    public function removePallets(Request $request)
+    {
+        $pallet = Pallets::where('id', $request->id)->first();
+        $data = unserialize($pallet->bol_ids);
+
+        if (($key = array_search($request->bol_id, $data)) !== false || ($key = array_search($request->package_id, $data)) !== false) {
+            unset($data[$key]);
+        }
+
+        ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->package_id)->update(['pallet_id' => NULL]);
+
+        $total_price = 0;
+        $total_units = 0;
+        foreach ($data as $value) {
+            $products = ScannedProducts::where('bol', $value)->orWhere('package_id', $value)->get(['units', 'unit_cost', 'total_cost']);
+
+            foreach ($products as $product) {
+                $total_price += (float) $product->total_cost;
+                $total_units += (int) $product->units;
+            }
+        }
+
+        $pallet->update([
+            'bol_ids' => serialize($data),
+            'total_price' => $total_price,
+            'total_unit' => $total_units,
+        ]);
+
+        return response()->json(array('code' => '201', 'message' => 'Pallet removed from the list'));
+    }
 }

@@ -27,3 +27,4 @@ Route::post('manifests/details', [PalletsAPIController::class, 'getManifestDetai
 Route::post('pallets/update/{pallet}', [PalletsAPIController::class, 'addToPallet']);
 Route::post('manifest/add-to-unknown', [PalletsAPIController::class, 'addToUknown']);
 Route::post('manifest/addToScannedAndPallet', [PalletsAPIController::class, 'addToScannedAndPallet']);
+Route::post('manifest/removePallets', [PalletsAPIController::class, 'removePallets']);
