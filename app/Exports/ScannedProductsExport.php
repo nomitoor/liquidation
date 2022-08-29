@@ -9,7 +9,9 @@ use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
-
+use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Sheet;
+use PhpOffice\PhpSpreadsheet\Cell\Hyperlink;
 class ScannedProductsExport implements FromQuery, WithMapping, WithHeadings, WithColumnWidths
 {
 
@@ -18,6 +20,7 @@ class ScannedProductsExport implements FromQuery, WithMapping, WithHeadings, Wit
     public function __construct($id)
     {
         $this->id = $id;
+        $this->custom();
     }
 
     /**
@@ -37,6 +40,7 @@ class ScannedProductsExport implements FromQuery, WithMapping, WithHeadings, Wit
     {
         $fields = [
             $row->bol,
+            'https://www.amazon.de/dp/' . $row->asin,
             $row->package_id,
             $row->item_description,
             $row->units,
@@ -72,5 +76,19 @@ class ScannedProductsExport implements FromQuery, WithMapping, WithHeadings, Wit
             'J' => 20,
             'K' => 20
         ];
+    }
+
+    public function custom()
+    {
+        \Excel::extend(static::class, function (ScannedProductsExport $export, Sheet $sheet) {
+            foreach ($sheet->getColumnIterator('B') as $row) {
+                foreach ($row->getCellIterator() as $key => $cell) {
+                    if (str_contains($cell->getValue(), '://')) {
+                        $cell->setHyperlink(new Hyperlink($cell->getValue()));
+                        $cell->setValue('AMAZON');
+                    }
+                }
+            }
+        }, AfterSheet::class);
     }
 }
