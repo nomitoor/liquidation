@@ -58,7 +58,7 @@ class ScannedProductsExport implements FromQuery, WithMapping, WithHeadings, Wit
 
     public function headings(): array
     {
-        return ['BOL', 'PACKAGE ID', 'ITEM DESCRIPTION', 'UNITS', 'UNIT COST', 'TOTAL COST', 'GL DESCRIPTION', 'UNIT RECOVERY', 'TOTAL RECOVERY', 'RECOVERY RATE', 'REMOVAL RATE'];
+        return ['BOL','LINK', 'PACKAGE ID', 'ITEM DESCRIPTION', 'UNITS', 'UNIT COST', 'TOTAL COST', 'GL DESCRIPTION', 'UNIT RECOVERY', 'TOTAL RECOVERY', 'RECOVERY RATE', 'REMOVAL RATE'];
     }
 
     public function columnWidths(): array

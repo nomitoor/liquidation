@@ -45,7 +45,7 @@ class ScannedProductsClientExport implements FromQuery, WithMapping, WithHeading
 
     public function headings(): array
     {
-        return ['ASIN', 'ITEM DESCRIPTION', 'UNITS', 'UNIT COST', 'TOTAL COST'];
+        return ['ASIN', 'LINK', 'ITEM DESCRIPTION', 'UNITS', 'UNIT COST', 'TOTAL COST'];
     }
 
     public function columnWidths(): array
