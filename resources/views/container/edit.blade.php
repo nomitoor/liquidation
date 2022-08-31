@@ -33,7 +33,7 @@
                 <div class="card-body">
                     <div class="mt-1 mb-1">
                         @foreach($pallets as $pallet)
-                            <button class="btn btn-success btn-sm" onclick="push_pallet_id_to_input('{{ 'DE' . sprintf('%05d', $pallet->id) }}')">{{ 'DE' . sprintf("%05d", $pallet->id) }}</button>
+                            <button class="btn btn-success btn-sm my-1" onclick="push_pallet_id_to_input('{{ 'DE' . sprintf('%05d', $pallet->id) }}')">{{ 'DE' . sprintf("%05d", $pallet->id) }}</button>
                         @endforeach
                     </div>
                     <form method="POST" enctype="multipart/form-data" id="upload-file" action="{{ route('pallets.store') }}">
