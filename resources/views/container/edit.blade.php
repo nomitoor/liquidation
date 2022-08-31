@@ -31,6 +31,11 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <div class="mt-1 mb-1">
+                        @foreach($pallets as $pallet)
+                            <button class="btn btn-success btn-sm" onclick="push_pallet_id_to_input('{{ 'DE' . sprintf('%05d', $pallet->id) }}')">{{ 'DE' . sprintf("%05d", $pallet->id) }}</button>
+                        @endforeach
+                    </div>
                     <form method="POST" enctype="multipart/form-data" id="upload-file" action="{{ route('pallets.store') }}">
                         {{ csrf_field() }}
                         <div class="row">
@@ -54,12 +59,14 @@
                                         </button>
                                     </span>
                                 </div>
+                                
                                 <div class="">
                                     <label>Added BOL IDs</label>
                                     <table class="table" id="myTable">
                                         <thead>
                                             <tr>
                                                 <th>#</th>
+                                                <th>Pallet ID</th>
                                                 <th class="elipsis">Description</th>
                                                 <th class="elipsis">Total Cost</th>
                                                 <th class="elipsis">Unit Cost</th>
@@ -74,6 +81,7 @@
                                                         <img style="width:25px;cursor:pointer" onclick="deletePallet('<?php echo $container->id ?>','<?php echo $product->id ?>')" src="https://eccdatacenter.ae/umeattendance/Images/Close_Rej.jpg">
                                                     </div>
                                                 </th>
+                                                <th>{{ 'DE' . sprintf("%05d", $product->id) }}</th>
                                                 <th>
                                                     <div class="elipsis">{{$product->description}}</div>
                                                 </th>
@@ -169,6 +177,11 @@
             });
         }
     })
+
+    function push_pallet_id_to_input(received_pallet_id){
+        $('.pallet_id_manually').val(received_pallet_id)
+        this.addPalletManually()
+    }
 
     function addPalletManually() {
         event.preventDefault();

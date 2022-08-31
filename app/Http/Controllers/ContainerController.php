@@ -80,8 +80,10 @@ class ContainerController extends Controller
         ];
 
         $container = Container::with('pallets')->find($container->id);
+        
+        $pallets = Pallets::all();
 
-        return view('container/edit', ['breadcrumbs' => $breadcrumbs, 'container' => $container]);
+        return view('container/edit', ['breadcrumbs' => $breadcrumbs, 'container' => $container, 'pallets' => $pallets ]);
     }
 
     /**
