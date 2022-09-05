@@ -2,7 +2,6 @@
 
 namespace App\Exports;
 
-use App\Models\Container;
 use App\Models\Pallets;
 use App\Models\ScannedProducts;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -19,7 +18,7 @@ class ContainerExport implements FromQuery, WithMapping, WithHeadings, WithColum
 
     use Exportable;
     protected $pallet_ids = [];
-
+    
     public function __construct($container)
     {
         $this->container = $container;
@@ -31,13 +30,13 @@ class ContainerExport implements FromQuery, WithMapping, WithHeadings, WithColum
      */
     public function query()
     {
-        $pallet_id = $this->container->id;
-        $pallets = Container::whereHas('pallets', function ($query) use ($pallet_id) {
-            $query->where('pallet_id', $pallet_id);
-        })->first();
-        $pallet_ids = $pallets->pallets->pluck('id')->toArray();
-        foreach ($pallet_ids as $pallet_id) {
-            $this->pallet_ids[] = 'DE' . sprintf("%05d", $pallet_id);
+        $pallets = $this->container->with('pallets')->first();
+        $pallet_ids = [];
+        if (!is_null($pallets)) {
+            $pallet_ids = $pallets->pallets->pluck('id')->toArray();
+            foreach ($pallet_ids as $pallet_id) {
+                $this->pallet_ids[] = 'DE' . sprintf("%05d", $pallet_id);
+            }
         }
         return ScannedProducts::whereIn('pallet_id', $pallet_ids);
     }

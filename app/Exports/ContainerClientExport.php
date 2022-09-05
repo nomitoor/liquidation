@@ -35,9 +35,12 @@ class ContainerClientExport implements FromQuery, WithMapping, WithHeadings, Wit
         $pallets = Container::whereHas('pallets', function ($query) use ($pallet_id) {
             $query->where('pallet_id', $pallet_id);
         })->first();
-        $pallet_ids = $pallets->pallets->pluck('id')->toArray();
-        foreach ($pallet_ids as $pallet_id) {
-            $this->pallet_ids[] = 'DE' . sprintf("%05d", $pallet_id);
+        $pallet_ids = [];
+        if (!is_null($pallets)) {
+            $pallet_ids = $pallets->pallets->pluck('id')->toArray();
+            foreach ($pallet_ids as $pallet_id) {
+                $this->pallet_ids[] = 'DE' . sprintf("%05d", $pallet_id);
+            }
         }
 
         return ScannedProducts::whereIn('pallet_id', $pallet_ids);
