@@ -33,7 +33,7 @@ class ContainerExport implements FromQuery, WithMapping, WithHeadings, WithColum
     {
         $pallet_id = $this->container->id;
         $pallets = Container::whereHas('pallets', function ($query) use ($pallet_id) {
-            $query->where('pallet_id', $pallet_id);
+            $query->where('container_id', $pallet_id);
         })->first();
 
         $pallet_ids = [];
