@@ -776,6 +776,8 @@ class ManifestController extends Controller
     public function downloadUpdatedManifest(Request $request)
     {
         if ($request->has('uploaded_file')) {
+            \DB::table('manifest_compares')->truncate();
+            
             $file = $request->file('uploaded_file');
             $filename = $file->getClientOriginalName();
             $location = 'uploads';
