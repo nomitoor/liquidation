@@ -801,8 +801,6 @@ class ManifestController extends Controller
                         $found_from_scanned = ScannedProducts::where('package_id', $found->package_id)->first();
 
                         if (!is_null($found_from_scanned)) {
-                            $all_to_compare[$key] = $found_from_scanned->bol;
-                        } else {
                             unset($all_to_compare[$key]);
                         }
                     }
