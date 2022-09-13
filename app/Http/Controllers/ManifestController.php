@@ -792,7 +792,7 @@ class ManifestController extends Controller
             $all_scanned = ScannedProducts::pluck('bol')->toArray();
 
             $all_to_compare = array_diff($all_manifest_to_compare, $all_scanned);
-            
+
             return Excel::download(new ScannedProductsExport($all_to_compare),  'Daily-Weekly-Comparison.xlsx');
         }
     }
