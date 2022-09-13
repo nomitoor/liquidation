@@ -797,14 +797,15 @@ class ManifestController extends Controller
                 if (str_contains($compare, '+')) {
 
                     $found = ManifestCompare::where('id', $key + 1)->first();
-                    $found_from_scanned = ScannedProducts::where('package_id', $found->package_id)->first();
-                    
-                    if(!is_null($found_from_scanned)){
-                        $all_to_compare[$key] = $found_from_scanned->bol;
-                    }else{
-                        unset($all_to_compare[$key]);
-                    }
+                    if (is_null($found->package_id)) {
+                        $found_from_scanned = ScannedProducts::where('package_id', $found->package_id)->first();
 
+                        if (!is_null($found_from_scanned)) {
+                            $all_to_compare[$key] = $found_from_scanned->bol;
+                        } else {
+                            unset($all_to_compare[$key]);
+                        }
+                    }
                 }
             }
 
