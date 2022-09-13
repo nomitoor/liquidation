@@ -29,12 +29,12 @@ class ScannedProductsExport implements FromQuery, WithMapping, WithHeadings, Wit
     public function query()
     {
         if (is_array($this->id)) {
-            $first_id = array_values($this->id)[0];
-            $count = count(array_values($this->id));
-            $last_id = array_values($this->id)[$count-1];
+//             $first_id = array_values($this->id)[0];
+//             $count = count(array_values($this->id));
+//             $last_id = array_values($this->id)[$count-1];
 
             // dd($first_id, $last_id);
-            return ManifestCompare::whereBetween('bol', [$first_id, $last_id]);
+            return ManifestCompare::whereIn('bol', $this->id);
         } else {
             return ScannedProducts::where('pallet_id', $this->id);
         }
