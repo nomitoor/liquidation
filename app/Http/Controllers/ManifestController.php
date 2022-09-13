@@ -777,7 +777,7 @@ class ManifestController extends Controller
     {
         if ($request->has('uploaded_file')) {
             \DB::table('manifest_compares')->truncate();
-            
+
             $file = $request->file('uploaded_file');
             $filename = $file->getClientOriginalName();
             $location = 'uploads';
@@ -787,11 +787,27 @@ class ManifestController extends Controller
             Excel::import(new ManifestCompareImport($filename), $filepath);
 
             unlink($filepath);
-            
+
             $all_manifest_to_compare = ManifestCompare::pluck('bol')->toArray();
             $all_scanned = ScannedProducts::pluck('bol')->toArray();
 
             $all_to_compare = array_diff($all_manifest_to_compare, $all_scanned);
+
+            foreach ($all_to_compare as $key => $compare) {
+                if (str_contains($compare, '+')) {
+
+                    $found = ManifestCompare::where('id', $key + 1)->first();
+                    $found_from_scanned = ScannedProducts::where('package_id', $found->package_id)->first();
+                    
+                    if(!is_null($found_from_scanned)){
+                        $all_to_compare[$key] = $found_from_scanned->bol;
+                    }else{
+                        unset($all_to_compare[$key]);
+                    }
+
+                }
+            }
+
 
             return Excel::download(new ScannedProductsExport($all_to_compare),  'Daily-Weekly-Comparison.xlsx');
         }
