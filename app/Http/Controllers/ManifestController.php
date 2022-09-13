@@ -788,8 +788,8 @@ class ManifestController extends Controller
 
             unlink($filepath);
             
-            $all_manifest_to_compare = ManifestCompare::pluck('id')->toArray();
-            $all_scanned = ScannedProducts::pluck('id')->toArray();
+            $all_manifest_to_compare = ManifestCompare::pluck('bol')->toArray();
+            $all_scanned = ScannedProducts::pluck('bol')->toArray();
 
             $all_to_compare = array_diff($all_manifest_to_compare, $all_scanned);
             
