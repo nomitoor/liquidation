@@ -791,7 +791,8 @@ class ManifestController extends Controller
 
             $all_manifest_to_compare = ManifestCompare::pluck('bol')->toArray();
 
-           
+            $all_manifest_to_comparex = ManifestCompare::pluck('bol')->toArray();
+
 
             foreach ($all_manifest_to_compare as $key => $compare) {
                 if (str_contains($compare, '+')) {
@@ -810,13 +811,19 @@ class ManifestController extends Controller
             }
 
 
-            $containsScanned = ScannedProducts::where('bol', 'NOT LIKE', '%+%')->pluck('bol')->toArray();
+            // $containsScanned = ScannedProducts::where('bol', 'NOT LIKE', '%+%')->pluck('bol')->toArray();
 
-            $all_to_compare = array_diff($all_manifest_to_compare, $containsScanned);
+            $containsScanned = ScannedProducts::where('bol', 'LIKE', '%+%')->pluck('bol')->toArray();
+            $allbolids = ScannedProducts::pluck('bol')->toArray();
+
+            $allneeded = array_diff($allbolids, $containsScanned);
+
+
+            $all_to_compare = array_diff($all_manifest_to_compare, $allneeded);
 
 
            
-          //  dd($all_to_compare);
+          //  dd($all_to_compare,$allneeded);
 
 
            // dd($all_manifest_to_compare,$all_scanned,$all_to_compare);
