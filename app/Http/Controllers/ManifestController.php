@@ -789,14 +789,12 @@ class ManifestController extends Controller
 
             unlink($filepath);
 
-            $wrongBolIds = ManifestCompare::where('bol', 'LIKE', '%+%')->pluck('bol')->toArray();
+            $wrongBolIds = ManifestCompare::where('bol', 'LIKE', '%+%')->pluck('package_id')->toArray();
 
 
             foreach ($wrongBolIds as $key => $compare) {
-                if (str_contains($compare, '+')) {
-                    
-                    $found = ManifestCompare::where('id', $key + 1)->first();
-                    
+                    $found = ManifestCompare::where('package_id', $compare)->first();
+                
                     if (!is_null($found->package_id)) {
                         $found_from_scanned = ScannedProducts::where('package_id', $found->package_id)->first();
                         
@@ -804,7 +802,7 @@ class ManifestController extends Controller
                             ManifestCompare::where('package_id', $found->package_id)->delete();
                         }
                     }
-                }
+               
             }
 
 
