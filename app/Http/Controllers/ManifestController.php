@@ -796,7 +796,7 @@ class ManifestController extends Controller
                 
                         $found_from_scanned = ScannedProducts::where('package_id', $compare)->first();
                         if (!is_null($found_from_scanned)) {
-                            ManifestCompare::where('package_id', $found->package_id)->delete();
+                            ManifestCompare::where('package_id', $compare)->delete();
                         }
                
                
