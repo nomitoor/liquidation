@@ -814,7 +814,7 @@ class ManifestController extends Controller
             $all_to_compare = array_diff($all_manifest_to_compare, $allneeded);
 
     
-            dd($all_manifest_to_compare,$all_to_compare,$allneeded);
+           // dd($all_manifest_to_compare,$all_to_compare,$allneeded);
 
             return Excel::download(new ScannedProductsExport($all_to_compare),  'Daily-Weekly-Comparison.xlsx');
         }
