@@ -791,8 +791,6 @@ class ManifestController extends Controller
 
             $all_manifest_to_compare = ManifestCompare::pluck('bol')->toArray();
 
-            $all_manifest_to_comparex = ManifestCompare::pluck('bol')->toArray();
-
 
             foreach ($all_manifest_to_compare as $key => $compare) {
                 if (str_contains($compare, '+')) {
@@ -823,7 +821,7 @@ class ManifestController extends Controller
 
 
            
-          //  dd($all_to_compare,$allneeded);
+          //  dd($all_to_compare,$allneeded,$containsScanned);
 
 
            // dd($all_manifest_to_compare,$all_scanned,$all_to_compare);
