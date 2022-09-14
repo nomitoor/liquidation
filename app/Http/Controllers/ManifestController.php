@@ -793,9 +793,8 @@ class ManifestController extends Controller
 
 
             foreach ($wrongBolIds as $key => $compare) {
-                    $found = ManifestCompare::where('package_id', $compare)->first();
                 
-                        $found_from_scanned = ScannedProducts::where('package_id', $found->package_id)->first();
+                        $found_from_scanned = ScannedProducts::where('package_id', $compare)->first();
                         if (!is_null($found_from_scanned)) {
                             ManifestCompare::where('package_id', $found->package_id)->delete();
                         }
