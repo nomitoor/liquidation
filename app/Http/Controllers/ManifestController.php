@@ -791,15 +791,15 @@ class ManifestController extends Controller
             $all_manifest_to_compare = ManifestCompare::pluck('bol')->toArray();
             $all_scanned = ScannedProducts::pluck('bol')->toArray();
 
-            $all_to_compare = array_diff($all_manifest_to_compare, $all_scanned);
-
-            foreach ($all_to_compare as $key => $compare) {
+            
+            foreach ($all_manifest_to_compare as $key => $compare) {
                 if (str_contains($compare, '+')) {
-
+                    
                     $found = ManifestCompare::where('id', $key + 1)->first();
+                    
                     if (!is_null($found->package_id)) {
                         $found_from_scanned = ScannedProducts::where('package_id', $found->package_id)->first();
-
+                        
                         if (!is_null($found_from_scanned)) {
                             unset($all_to_compare[$key]);
                         }
@@ -807,6 +807,7 @@ class ManifestController extends Controller
                 }
             }
 
+            $all_to_compare = array_diff($all_manifest_to_compare, $all_scanned);
 
             return Excel::download(new ScannedProductsExport($all_to_compare),  'Daily-Weekly-Comparison.xlsx');
         }
