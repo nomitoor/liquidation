@@ -801,7 +801,7 @@ class ManifestController extends Controller
                         $found_from_scanned = ScannedProducts::where('package_id', $found->package_id)->first();
                         
                         if (!is_null($found_from_scanned)) {
-                            unset($all_to_compare[$key]);
+                            unset($all_manifest_to_compare[$key]);
                         }
                     }
                 }
