@@ -789,12 +789,11 @@ class ManifestController extends Controller
 
             unlink($filepath);
 
-            $all_manifest_to_compare = ManifestCompare::pluck('bol')->toArray();
+            $wrongBolIds = ManifestCompare::where('bol', 'LIKE', '%+%')->pluck('bol')->toArray();
 
 
-            foreach ($all_manifest_to_compare as $key => $compare) {
+            foreach ($wrongBolIds as $key => $compare) {
                 if (str_contains($compare, '+')) {
-                    
                     
                     $found = ManifestCompare::where('id', $key + 1)->first();
                     
@@ -802,14 +801,14 @@ class ManifestController extends Controller
                         $found_from_scanned = ScannedProducts::where('package_id', $found->package_id)->first();
                         
                         if (!is_null($found_from_scanned)) {
-                            unset($all_manifest_to_compare[$key]);
+                            ManifestCompare::where('package_id', $found->package_id)->delete();
                         }
                     }
                 }
             }
 
 
-            // $containsScanned = ScannedProducts::where('bol', 'NOT LIKE', '%+%')->pluck('bol')->toArray();
+            $all_manifest_to_compare = ManifestCompare::pluck('bol')->toArray();
 
             $containsScanned = ScannedProducts::where('bol', 'LIKE', '%+%')->pluck('bol')->toArray();
             $allbolids = ScannedProducts::pluck('bol')->toArray();
@@ -819,13 +818,8 @@ class ManifestController extends Controller
 
             $all_to_compare = array_diff($all_manifest_to_compare, $allneeded);
 
-            array_unshift($all_to_compare, null);
-            unset($all_to_compare[0]);
-           
-          //  dd($all_to_compare,$allneeded,$containsScanned);
-
-
-           dd($all_manifest_to_compare,$all_to_compare,$allneeded);
+    
+            dd($all_manifest_to_compare,$all_to_compare,$allneeded);
 
             return Excel::download(new ScannedProductsExport($all_to_compare),  'Daily-Weekly-Comparison.xlsx');
         }
