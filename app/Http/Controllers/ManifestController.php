@@ -789,15 +789,13 @@ class ManifestController extends Controller
 
             unlink($filepath);
 
+            $forLoop = ManifestCompare::where('bol', 'LIKE', '%+%')->pluck('bol')->toArray();
             $all_manifest_to_compare = ManifestCompare::pluck('bol')->toArray();
 
 
-            foreach ($all_manifest_to_compare as $key => $compare) {
+            foreach ($forLoop as $key => $compare) {
                 if (str_contains($compare, '+')) {
-                    
-                    
                     $found = ManifestCompare::where('id', $key + 1)->first();
-                    
                     if (!is_null($found->package_id)) {
                         $found_from_scanned = ScannedProducts::where('package_id', $found->package_id)->first();
                         
@@ -807,9 +805,6 @@ class ManifestController extends Controller
                     }
                 }
             }
-
-
-            // $containsScanned = ScannedProducts::where('bol', 'NOT LIKE', '%+%')->pluck('bol')->toArray();
 
             $containsScanned = ScannedProducts::where('bol', 'LIKE', '%+%')->pluck('bol')->toArray();
             $allbolids = ScannedProducts::pluck('bol')->toArray();
