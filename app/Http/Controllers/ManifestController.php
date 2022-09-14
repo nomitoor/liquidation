@@ -819,7 +819,8 @@ class ManifestController extends Controller
 
             $all_to_compare = array_diff($all_manifest_to_compare, $allneeded);
 
-
+            array_unshift($all_to_compare, null);
+            unset($all_to_compare[0]);
            
           //  dd($all_to_compare,$allneeded,$containsScanned);
 
