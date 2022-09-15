@@ -60,6 +60,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('daily-manifest', [ManifestController::class, 'dailyManifest']);
     Route::get('manifest/compare', [ManifestController::class, 'compareManifest']);
     Route::post('manifest/compare', [ManifestController::class, 'downloadUpdatedManifest'])->name('downloadUpdatedManifest');
+    Route::get('manifest/lpn-file', [ManifestController::class, 'uploadLpn']);
+    Route::post('manifest/lpn-file', [ManifestController::class, 'importLPN'])->name('importLPN');
 
     Route::resource('manifest', ManifestController::class);
 
