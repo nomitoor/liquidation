@@ -48,6 +48,7 @@ class PalletsAPIController extends Controller
     {
         $weekly_data = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->toArray();
         $daily_data = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->toArray();
+        $with_lpn = Manifest::where('lpn', $request->id)->get();
 
         $scanned_data = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->toArray();
 
@@ -64,6 +65,8 @@ class PalletsAPIController extends Controller
             $unit_cost = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('units');
 
             return response()->json(array('code' => 203, 'message' => 'Already received', 'unit_cost' => number_format($total_cost, 2), 'total_cost' => number_format($unit_cost, 2), 'data' => $scanned_data));
+        } else if (count($with_lpn)) {
+            return response()->json(array('message' => 'Found with LPN', 'data' => $with_lpn, 'code' => '201'));
         } else if (count($weekly_data)) {
             $total_cost = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('total_cost');
             $unit_cost = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('units');
