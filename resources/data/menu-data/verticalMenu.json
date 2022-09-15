@@ -63,6 +63,15 @@
           "role": [
             "Super-Admin"
           ]
+        },
+        {
+          "url": "manifest/lpn-file",
+          "name": "Upload LPN File",
+          "icon": "list",
+          "slug": "manifest/lpn-file",
+          "role": [
+            "Super-Admin"
+          ]
         }
       ]
     },
