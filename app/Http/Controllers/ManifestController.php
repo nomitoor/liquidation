@@ -6,6 +6,7 @@ use App\Exports\ScannedProductsClientExport;
 use App\Exports\ScannedProductsExport;
 use App\Imports\ManifestCompareImport;
 use App\Imports\DailyManifestImport;
+use App\Imports\LPNImport;
 use App\Models\Manifest;
 use App\Models\ManifestRecord;
 use Illuminate\Http\Request;
@@ -205,6 +206,7 @@ class ManifestController extends Controller
     {
         $with_package_id = Manifest::where('package_id', $request->id)->get();
         $with_bol_id = Manifest::where('bol', $request->id)->get();
+        $with_lpn = Manifest::where('lpn', $request->id)->get();
         $dropshipbin = Manifest::whereRaw("find_in_set('$request->id',bol)")->where('package_id', 'DROPSHIP_BIN')->get();
         $with_package_id_unknown = Manifest::whereRaw("find_in_set('$request->id',bol)")->where('package_id', '<>', 'DROPSHIP_BIN')->where('bol_ids', null)->get();
         $with_bol_id_unknown = Manifest::whereRaw("find_in_set('$request->id',bol)")->where('package_id', '<>', 'DROPSHIP_BIN')->where('bol_ids', null)->get();
@@ -219,6 +221,8 @@ class ManifestController extends Controller
 
         if (count($with_package_id)) {
             return response()->json(array('message' => 'Found with Package ID', 'data' => $with_package_id, 'code' => '201'));
+        }else if(count($with_lpn)){
+            return response()->json(array('message' => 'Found with LPN', 'data' => $with_lpn, 'code' => '201'));            
         } else if (count($with_bol_id)) {
             return response()->json(array('message' => 'Found with Bol ID', 'data' => $with_bol_id, 'code' => '201'));
         } else if (count($with_package_id_unknown)) {
@@ -818,5 +822,27 @@ class ManifestController extends Controller
 
             return Excel::download(new ScannedProductsExport($all_to_compare),  'Daily-Weekly-Comparison.xlsx');
         }
+    }
+
+    public function uploadLpn(Request $request)
+    {
+        $breadcrumbs = [
+            ['link' => "manifest", 'name' => "Manifest"], ['name' => "Create"]
+        ];
+
+        return view('manifest/lpn', ['breadcrumbs' => $breadcrumbs]);
+    }
+
+    public function importLPN(Request $request)
+    {
+        $file = $request->file('uploaded_file');
+        $filename = $file->getClientOriginalName();
+        $location = 'uploads';
+        $file->move(public_path($location), $file->getClientOriginalName());
+        $filepath = public_path($location . "/" . $filename);
+    
+        Excel::import(new LPNImport($filename), $filepath);    
+    
+        return back();
     }
 }
