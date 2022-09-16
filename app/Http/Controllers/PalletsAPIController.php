@@ -46,9 +46,8 @@ class PalletsAPIController extends Controller
 
     public function getManifestDetails(Request $request)
     {
-        $weekly_data = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->toArray();
-        $daily_data = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->toArray();
-        $with_lpn = Manifest::where('lpn', $request->manifest_id)->get()->toArray();
+        $weekly_data = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->get()->toArray();
+        $daily_data = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->get()->toArray();
 
         $scanned_data = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->toArray();
 
@@ -65,8 +64,6 @@ class PalletsAPIController extends Controller
             $unit_cost = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('units');
 
             return response()->json(array('code' => 203, 'message' => 'Already received', 'unit_cost' => number_format($total_cost, 2), 'total_cost' => number_format($unit_cost, 2), 'data' => $scanned_data));
-        } else if (count($with_lpn)) {
-            return response()->json(array('message' => 'Found with LPN', 'data' => $with_lpn, 'code' => '201'));
         } else if (count($weekly_data)) {
             $total_cost = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('total_cost');
             $unit_cost = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('units');
@@ -76,7 +73,7 @@ class PalletsAPIController extends Controller
             $total_cost = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('total_cost');
             $unit_cost = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('units');
 
-            return response()->json(array('code' => 201, 'message' => 'Found in weekly Manifest', 'unit_cost' => number_format($total_cost, 2), 'total_cost' => number_format($unit_cost, 2), 'data' => $daily_data));
+            return response()->json(array('code' => 201, 'message' => 'Found in daily Manifest', 'unit_cost' => number_format($total_cost, 2), 'total_cost' => number_format($unit_cost, 2), 'data' => $daily_data));
         } else if (count($bucket_data)) {
             return response()->json(array('code' => 204, 'message' => 'This bol id is a part of bucket', 'data' => $bucket_data));
         } else if (count($bucket_scanned_data)) {
