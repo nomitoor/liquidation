@@ -48,7 +48,7 @@ class PalletsAPIController extends Controller
     {
         $weekly_data = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->toArray();
         $daily_data = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->toArray();
-        $with_lpn = Manifest::where('lpn', $request->id)->get()->toArray();
+        $with_lpn = Manifest::where('lpn', $request->manifest_id)->get()->toArray();
 
         $scanned_data = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->toArray();
 
