@@ -37,6 +37,7 @@ class DailyManifestImport implements ToModel, WithStartRow
             'units' => $row[25],
             'unit_cost' => $row[30],
             'total_cost' => $row[33],
+            'lpn' => '',
         ]);
     }
 }
