@@ -50,7 +50,8 @@ class ScannedProductsExport implements FromQuery, WithMapping, WithHeadings, Wit
             $row->unit_recovery,
             $row->total_recovery,
             $row->recovery_rate,
-            $row->removal_reason
+            $row->removal_reason,
+            $row->asin,
 
         ];
         return $fields;
@@ -58,7 +59,7 @@ class ScannedProductsExport implements FromQuery, WithMapping, WithHeadings, Wit
 
     public function headings(): array
     {
-        return ['BOL','LINK', 'PACKAGE ID', 'ITEM DESCRIPTION', 'UNITS', 'UNIT COST', 'TOTAL COST', 'GL DESCRIPTION', 'UNIT RECOVERY', 'TOTAL RECOVERY', 'RECOVERY RATE', 'REMOVAL RATE'];
+        return ['BOL','LINK', 'PACKAGE ID', 'ITEM DESCRIPTION', 'UNITS', 'UNIT COST', 'TOTAL COST', 'GL DESCRIPTION', 'UNIT RECOVERY', 'TOTAL RECOVERY', 'RECOVERY RATE', 'REMOVAL RATE', 'ASIN'];
     }
 
     public function columnWidths(): array
@@ -74,7 +75,8 @@ class ScannedProductsExport implements FromQuery, WithMapping, WithHeadings, Wit
             'H' => 20,
             'I' => 20,
             'J' => 20,
-            'K' => 20
+            'K' => 20,
+            'L' => 20,
         ];
     }
 
