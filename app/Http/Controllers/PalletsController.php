@@ -19,7 +19,7 @@ class PalletsController extends Controller
      */
     public function index()
     {
-        $pallets = Pallets::with('category')->get();
+        $pallets = Pallets::with('category')->orderBy('id', 'DESC')->paginate(5);
         
         foreach ($pallets as $key => $pallet) {
             $rec = 0;
