@@ -6,6 +6,7 @@ use App\Models\ClaimList;
 use App\Models\DailyManifest;
 use App\Models\Manifest;
 use App\Models\Pallets;
+use App\Models\LPN;
 use App\Models\ScannedProducts;
 use Illuminate\Http\Request;
 
@@ -372,4 +373,17 @@ class PalletsAPIController extends Controller
 
         return response()->json(array('code' => '201', 'message' => 'Pallet removed from the list'));
     }
+
+
+    public function findBolFromLpn(Request $request)
+    {
+        try {
+            $data = LPN::where('lpn',$request->lpn)->get(['bol','package_id']);
+            return response()->json(array('message' => 'Data found against LPN', 'data' =>$data,  'code' => '201'));
+        } catch (\Throwable $th) {
+            return response()->json(array('message' => 'Not found', 'code' => '404'));            
+        }
+
+    }
+
 }

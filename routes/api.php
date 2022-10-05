@@ -28,3 +28,4 @@ Route::post('pallets/update/{pallet}', [PalletsAPIController::class, 'addToPalle
 Route::post('manifest/add-to-unknown', [PalletsAPIController::class, 'addToUknown']);
 Route::post('manifest/addToScannedAndPallet', [PalletsAPIController::class, 'addToScannedAndPallet']);
 Route::post('manifest/removePallets', [PalletsAPIController::class, 'removePallets']);
+Route::get('manifest/getByLPN', [PalletsAPIController::class, 'findBolFromLpn']);
