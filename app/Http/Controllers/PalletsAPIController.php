@@ -379,7 +379,11 @@ class PalletsAPIController extends Controller
     {
         try {
             $data = LPN::where('lpn',$request->lpn)->get(['bol','package_id']);
-            return response()->json(array('message' => 'Data found against LPN', 'data' =>$data,  'code' => '201'));
+            if(count($data)>0){
+                return response()->json(array('message' => 'Data found against LPN', 'data' =>$data,  'code' => '201'));
+            }else{
+                return response()->json(array('message' => 'No LPN Found', 'data' =>[],  'code' => '404'));
+            }
         } catch (\Throwable $th) {
             return response()->json(array('message' => 'Not found', 'code' => '404'));            
         }
