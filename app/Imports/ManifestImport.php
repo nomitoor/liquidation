@@ -35,6 +35,7 @@ class ManifestImport implements ToModel, WithStartRow
             'unit_recovery' => $row[32],
             'total_recovery' => $row[34],
             'bol' => $row[6],
+            'lqin' => $row[12],
             'package_id' => $row[13],
             'item_description' => $row[24],
             'units' => $row[25],
