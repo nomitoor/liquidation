@@ -35,18 +35,19 @@ class ScannedProductsClientExport implements FromQuery, WithMapping, WithHeading
         $fields = [
             $row->asin,
             'https://www.amazon.de/dp/' . $row->asin,
-            $row->item_description,
             $row->GLDesc,
             $row->units,
             $row->unit_cost,
             $row->total_cost,
+            $row->item_description,
+
         ];
         return $fields;
     }
 
     public function headings(): array
     {
-        return ['ASIN', 'LINK', 'ITEM DESCRIPTION', 'GL Description', 'UNITS', 'UNIT COST', 'TOTAL COST'];
+        return ['ASIN', 'LINK', 'ITEM DESCRIPTION', 'UNITS', 'UNIT COST', 'TOTAL COST', 'GL Description'];
     }
 
     public function columnWidths(): array

@@ -53,11 +53,12 @@ class ContainerClientExport implements FromQuery, WithMapping, WithHeadings, Wit
             $row->asin,
             'https://www.amazon.de/dp/' . $row->asin,
             $row->item_description,
-            $row->GLDesc,
             $row->units,
             $row->unit_cost,
             $row->total_cost,
-            'DE' . sprintf("%05d", Pallets::where('id', $row->pallet_id)->pluck('id')->first())
+            'DE' . sprintf("%05d", Pallets::where('id', $row->pallet_id)->pluck('id')->first()),
+            $row->GLDesc,
+
         ];
 
         return $fields;
@@ -65,7 +66,7 @@ class ContainerClientExport implements FromQuery, WithMapping, WithHeadings, Wit
 
     public function headings(): array
     {
-        return ['ASIN', 'LINK', 'ITEM DESCRIPTION','GL Description', 'UNITS', 'UNIT COST', 'TOTAL COST', 'PALLET ID'];
+        return ['ASIN', 'LINK', 'ITEM DESCRIPTION', 'UNITS', 'UNIT COST', 'TOTAL COST', 'PALLET ID','GL Description'];
     }
 
     public function columnWidths(): array
