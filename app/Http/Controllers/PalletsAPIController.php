@@ -30,7 +30,8 @@ class PalletsAPIController extends Controller
 
     public function allPallets(Request $request)
     {
-        $pallets = Pallets::with('category')->orderBy('id', 'desc')->paginate($request->per_page ?? 5);
+        // $pallets = Pallets::with('category')->orderBy('id', 'desc')->paginate($request->per_page ?? 5);
+        $pallets = Pallets::with('category')->orderBy('id', 'desc')->paginate(25);
         return response()->json($pallets);
     }
 
