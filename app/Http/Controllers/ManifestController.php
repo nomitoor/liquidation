@@ -224,9 +224,9 @@ class ManifestController extends Controller
         if (count($with_package_id)) {
             return response()->json(array('message' => 'Found with Package ID', 'data' => $with_package_id, 'code' => '201'));
         }
-        // else if(count($with_lqin)){
-        //     return response()->json(array('message' => 'Found with LQIN', 'data' => $with_lqin, 'code' => '201'));            
-        // } 
+        else if(count($with_lqin)){
+            return response()->json(array('message' => 'Found with LQIN', 'data' => $with_lqin, 'code' => '201'));            
+        } 
         else if(count($with_lpn)){
             return response()->json(array('message' => 'Found with LPN', 'data' => $with_lpn, 'code' => '201'));            
         } else if (count($with_bol_id)) {
@@ -244,9 +244,9 @@ class ManifestController extends Controller
         } else if (count($daily_with_bol_id)) {
             return response()->json(array('message' => 'Found with Bol ID', 'data' => $daily_with_bol_id, 'code' => '201'));
         }
-        // else if (count($daily_with_lqin)) {
-        //     return response()->json(array('message' => 'Found with LQIN ID', 'data' => $daily_with_lqin, 'code' => '201'));
-        // }
+        else if (count($daily_with_lqin)) {
+            return response()->json(array('message' => 'Found with LQIN ID', 'data' => $daily_with_lqin, 'code' => '201'));
+        }
         else if (count($daily_dropshipbin)) {
             return response()->json(array('message' => 'Found with Bol ID', 'data' => $daily_dropshipbin, 'code' => '201'));
         } else if (count($daily_with_package_id_unknown)) {
