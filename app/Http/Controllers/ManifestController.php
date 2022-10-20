@@ -259,10 +259,13 @@ class ManifestController extends Controller
         } else {
             $with_package_id = ScannedProducts::where('package_id', $request->id)->get();
             $with_bol_id = ScannedProducts::where('bol', $request->id)->get();
+            $with_lqin = ScannedProducts::where('lqin', $request->id)->get();
 
             if (count($with_package_id)) {
                 return response()->json(array('message' => 'Found in scanned productss', 'code' => '304'));
             } else if (count($with_bol_id)) {
+                return response()->json(array('message' => 'Found in scanned productss', 'code' => '304'));
+            } else if (count($with_lqin)) {
                 return response()->json(array('message' => 'Found in scanned productss', 'code' => '304'));
             } else {
                 return response()->json(array('message' => 'not found', 'code' => '404'));
@@ -331,7 +334,8 @@ class ManifestController extends Controller
                         'unit_recovery' => $item->unit_recovery,
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
-                        'removal_reason' => $item->removal_reason
+                        'removal_reason' => $item->removal_reason,
+                        'lqin' => $item->lqin
                     ]);
                 }
                 $item->delete();
@@ -361,7 +365,8 @@ class ManifestController extends Controller
                         'unit_recovery' => $item->unit_recovery,
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
-                        'removal_reason' => $item->removal_reason
+                        'removal_reason' => $item->removal_reason,
+                        'lqin' => $item->lqin
                     ]);
                 }
                 $item->delete();
@@ -391,7 +396,8 @@ class ManifestController extends Controller
                         'unit_recovery' => $item->unit_recovery,
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
-                        'removal_reason' => $item->removal_reason
+                        'removal_reason' => $item->removal_reason,
+                        'lqin' => $item->lqin
                     ]);
                 }
                 $item->delete();
@@ -527,7 +533,8 @@ class ManifestController extends Controller
                         'unit_recovery' => $item->unit_recovery,
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
-                        'removal_reason' => $item->removal_reason
+                        'removal_reason' => $item->removal_reason,
+                        'lqin' => $item->lqin
                     ]);
                 }
                 $item->delete();
@@ -557,7 +564,8 @@ class ManifestController extends Controller
                         'unit_recovery' => $item->unit_recovery,
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
-                        'removal_reason' => $item->removal_reason
+                        'removal_reason' => $item->removal_reason,
+                        'lqin' => $item->lqin
                     ]);
                 }
                 $item->delete();
@@ -587,7 +595,9 @@ class ManifestController extends Controller
                         'unit_recovery' => $item->unit_recovery,
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
-                        'removal_reason' => $item->removal_reason
+                        'removal_reason' => $item->removal_reason,
+                        'lqin' => $item->lqin
+
                     ]);
                 }
                 $item->delete();
@@ -707,9 +717,22 @@ class ManifestController extends Controller
     {
         $with_package_id = ScannedProducts::where('package_id', $request->id)->get();
         $with_bol_id = ScannedProducts::where('bol', $request->id)->get();
+        $with_lqin = ScannedProducts::where('lqin', $request->id)->get();
 
         if (count($with_package_id)) {
             foreach ($with_package_id as $item) {
+                Manifest::create([
+                    'bol' => $item->bol,
+                    'package_id' => $item->package_id,
+                    'item_description' => $item->item_description,
+                    'units' => $item->units,
+                    'unit_cost' => $item->unit_cost,
+                    'total_cost' => $item->total_cost,
+                ]);
+                $item->delete();
+            }
+        } else if(count($with_lqin)) {
+            foreach ($with_lqin as $item) {
                 Manifest::create([
                     'bol' => $item->bol,
                     'package_id' => $item->package_id,
@@ -774,11 +797,14 @@ class ManifestController extends Controller
     {
         $with_package_id = ScannedProducts::where('package_id', $request->id)->get();
         $with_bol_id = ScannedProducts::where('bol', $request->id)->get();
+        $with_lqin = ScannedProducts::where('lqin', $request->id)->get();
 
         if (count($with_package_id)) {
             return response()->json(array('message' => 'Found with Package ID', 'data' => $with_package_id, 'code' => '201'));
         } else if (count($with_bol_id)) {
             return response()->json(array('message' => 'Found with Bol ID', 'data' => $with_bol_id, 'code' => '201'));
+        } else if (count($with_lqin)) {
+            return response()->json(array('message' => 'Found with Bol ID', 'data' => $with_lqin, 'code' => '201'));
         } else {
             return response()->json(array('message' => 'not found', 'code' => '404'));
         }
