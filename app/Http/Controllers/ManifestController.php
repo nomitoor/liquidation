@@ -293,6 +293,7 @@ class ManifestController extends Controller
 
         $with_package_id = Manifest::where('package_id', $request->id)->get();
         $with_bol_id = Manifest::where('bol', $request->id)->get();
+        $with_lqin = Manifest::where('lqin', $request->id)->get();
         $dropshipbin = Manifest::whereRaw("find_in_set('$request->id',bol)")->where('package_id', 'DROPSHIP_BIN')->get();
         $dropshipbin_bucket = Manifest::whereRaw("find_in_set('$request->id',bol)")->where('bol_ids', '<>', null)->get();
 
@@ -300,7 +301,8 @@ class ManifestController extends Controller
         $daily_with_bol_id = DailyManifest::where('bol', $request->id)->get();
         $daily_dropshipbin = DailyManifest::whereRaw("find_in_set('$request->id',bol)")->where('package_id', 'DROPSHIP_BIN')->get();
         $daily_dropshipbin_bucket = DailyManifest::whereRaw("find_in_set('$request->id',bol)")->where('bol_ids', '<>', null)->get();
-
+        $daily_with_lqin =  DailyManifest::where('lqin', $request->id)->get();
+    
 
         if (count($with_package_id)) {
             foreach ($with_package_id as $item) {
@@ -334,6 +336,36 @@ class ManifestController extends Controller
             }
         } else if (count($with_bol_id)) {
             foreach ($with_bol_id as $item) {
+                if ($request->claim_list) {
+                    ClaimList::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
+                        'claim_desription' => $request->description
+                    ]);
+                } else {
+                    ScannedProducts::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
+                        'asin' => $item->asin,
+                        'GLDesc' => $item->GLDesc,
+                        'unit_recovery' => $item->unit_recovery,
+                        'total_recovery' => $item->total_recovery,
+                        'recovery_rate' => $item->recovery_rate,
+                        'removal_reason' => $item->removal_reason
+                    ]);
+                }
+                $item->delete();
+            }
+        } else if (count($with_lqin)) {
+            foreach ($with_lqin as $item) {
                 if ($request->claim_list) {
                     ClaimList::create([
                         'bol' => $item->bol,
@@ -500,6 +532,36 @@ class ManifestController extends Controller
             }
         } else if (count($daily_with_bol_id)) {
             foreach ($daily_with_bol_id as $item) {
+                if ($request->claim_list) {
+                    ClaimList::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
+                        'claim_desription' => $request->description
+                    ]);
+                } else {
+                    ScannedProducts::create([
+                        'bol' => $item->bol,
+                        'package_id' => $item->package_id,
+                        'item_description' => $item->item_description,
+                        'units' => $item->units,
+                        'unit_cost' => $item->unit_cost,
+                        'total_cost' => $item->total_cost,
+                        'asin' => $item->asin,
+                        'GLDesc' => $item->GLDesc,
+                        'unit_recovery' => $item->unit_recovery,
+                        'total_recovery' => $item->total_recovery,
+                        'recovery_rate' => $item->recovery_rate,
+                        'removal_reason' => $item->removal_reason
+                    ]);
+                }
+                $item->delete();
+            }
+        } else if (count($daily_with_lqin)) {
+            foreach ($daily_with_lqin as $item) {
                 if ($request->claim_list) {
                     ClaimList::create([
                         'bol' => $item->bol,
