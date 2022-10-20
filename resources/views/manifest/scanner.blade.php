@@ -598,7 +598,6 @@
                 'id': id
             },
             success: function(data) {
-                alert(data.code);
                 if (data.code == '201') {
                     $('.open-modal').click();
                     var table = document.getElementById("myTable");
