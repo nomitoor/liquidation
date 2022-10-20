@@ -12,7 +12,8 @@ class AddLqinToTheScannedProducts extends Migration
      * @return void
      */
     public function up()
-    {
+    {  
+        
         Schema::table('scanned_products', function (Blueprint $table) {
             $table->string('lqin')->nullable();
         });
