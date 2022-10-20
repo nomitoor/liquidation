@@ -584,8 +584,7 @@
     function getData() {
         event.preventDefault();
                 var product_code_type = $('.product_code_type').val();
-        var response =getManifest(product_code_type)
-        alert(response);
+        getManifest(product_code_type)
         $('#select_id').val(product_code_type)
         $('.product_code_type').val('');
     }
@@ -599,7 +598,7 @@
                 'id': id
             },
             success: function(data) {
-
+                alert(data.code);
                 if (data.code == '201') {
                     $('.open-modal').click();
                     var table = document.getElementById("myTable");
