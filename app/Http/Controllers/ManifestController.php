@@ -207,7 +207,7 @@ class ManifestController extends Controller
         $with_package_id = Manifest::where('package_id', $request->id)->get();
         $with_bol_id = Manifest::where('bol', $request->id)->get();
         $with_lpn = Manifest::where('lpn', $request->id)->get();
-       // $with_lqin = Manifest::where('lqin', $request->id)->get();
+        $with_lqin = Manifest::where('lqin', $request->id)->get();
         $dropshipbin = Manifest::whereRaw("find_in_set('$request->id',bol)")->where('package_id', 'DROPSHIP_BIN')->get();
         $with_package_id_unknown = Manifest::whereRaw("find_in_set('$request->id',bol)")->where('package_id', '<>', 'DROPSHIP_BIN')->where('bol_ids', null)->get();
         $with_bol_id_unknown = Manifest::whereRaw("find_in_set('$request->id',bol)")->where('package_id', '<>', 'DROPSHIP_BIN')->where('bol_ids', null)->get();
@@ -219,7 +219,7 @@ class ManifestController extends Controller
         $daily_with_package_id_unknown = DailyManifest::whereRaw("find_in_set('$request->id',bol)")->where('package_id', '<>', 'DROPSHIP_BIN')->where('bol_ids', null)->get();
         $daily_with_bol_id_unknown = DailyManifest::whereRaw("find_in_set('$request->id',bol)")->where('package_id', '<>', 'DROPSHIP_BIN')->where('bol_ids', null)->get();
         $daily_dropshipbin_bucket = DailyManifest::whereRaw("find_in_set('$request->id',bol)")->where('bol_ids', '<>', null)->get();
-       // $daily_with_lqin = DailyManifest::where('lqin', $request->id)->get();
+        $daily_with_lqin = DailyManifest::where('lqin', $request->id)->get();
 
         if (count($with_package_id)) {
             return response()->json(array('message' => 'Found with Package ID', 'data' => $with_package_id, 'code' => '201'));
