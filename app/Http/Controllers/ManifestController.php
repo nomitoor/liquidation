@@ -305,7 +305,6 @@ class ManifestController extends Controller
         $daily_with_lqin =  DailyManifest::where('lqin', $request->id)->get();
     
 
-        dd(count($daily_with_lqin),count($with_lqin));
 
         if (count($with_package_id)) {
             foreach ($with_package_id as $item) {

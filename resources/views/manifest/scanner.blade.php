@@ -584,7 +584,8 @@
     function getData() {
         event.preventDefault();
                 var product_code_type = $('.product_code_type').val();
-        getManifest(product_code_type)
+        var response =getManifest(product_code_type)
+        alert(response);
         $('#select_id').val(product_code_type)
         $('.product_code_type').val('');
     }
