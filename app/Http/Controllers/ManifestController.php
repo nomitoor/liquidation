@@ -220,6 +220,7 @@ class ManifestController extends Controller
         $daily_with_bol_id_unknown = DailyManifest::whereRaw("find_in_set('$request->id',bol)")->where('package_id', '<>', 'DROPSHIP_BIN')->where('bol_ids', null)->get();
         $daily_dropshipbin_bucket = DailyManifest::whereRaw("find_in_set('$request->id',bol)")->where('bol_ids', '<>', null)->get();
         $daily_with_lqin = DailyManifest::where('lqin', $request->id)->get();
+        dd(count($with_lqin));
 
         if (count($with_package_id)) {
             return response()->json(array('message' => 'Found with Package ID', 'data' => $with_package_id, 'code' => '201'));
