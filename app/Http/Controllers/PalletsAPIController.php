@@ -48,13 +48,13 @@ class PalletsAPIController extends Controller
 
     public function getManifestDetails(Request $request)
     {
-         $weekly_data = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->toArray();
-      // $weekly_data = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->get()->toArray();
+       // $weekly_data = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->toArray();
+       $weekly_data = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->get()->toArray();
  
-        $daily_data = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->toArray();
-       //$daily_data = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->get()->toArray();
+       //$daily_data = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->toArray();
+       $daily_data = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->get()->toArray();
         
-        $scanned_data = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->toArray();
+        $scanned_data = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->toArray();
 
         $daily_bucket = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->where('package_id', 'DROPSHIP_BIN')->get()->toArray();
         $weekly_bucket = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->where('package_id', 'DROPSHIP_BIN')->get()->toArray();
@@ -65,18 +65,18 @@ class PalletsAPIController extends Controller
         $bucket_scanned_data = array_merge($daily_bucket_scanned, $weekly_bucket_scanned);
 
         if (count($scanned_data)) {
-            $total_cost = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('total_cost');
-            $unit_cost = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('units');
+            $total_cost = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('total_cost');
+            $unit_cost = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->get()->sum('units');
 
             return response()->json(array('code' => 203, 'message' => 'Already received', 'unit_cost' => number_format($total_cost, 2), 'total_cost' => number_format($unit_cost, 2), 'data' => $scanned_data));
         } else if (count($weekly_data)) {
-            $total_cost = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('total_cost');
-            $unit_cost = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('units');
+            $total_cost = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->get()->sum('total_cost');
+            $unit_cost = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->get()->sum('units');
 
             return response()->json(array('code' => 201, 'message' => 'Found in weekly Manifest', 'unit_cost' => number_format($total_cost, 2), 'total_cost' => number_format($unit_cost, 2), 'data' => $weekly_data));
         } else if (count($daily_data)) {
-            $total_cost = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('total_cost');
-            $unit_cost = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('units');
+            $total_cost = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->get()->sum('total_cost');
+            $unit_cost = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->get()->sum('units');
 
             return response()->json(array('code' => 201, 'message' => 'Found in daily Manifest', 'unit_cost' => number_format($total_cost, 2), 'total_cost' => number_format($unit_cost, 2), 'data' => $daily_data));
         } else if (count($bucket_data)) {
@@ -93,11 +93,9 @@ class PalletsAPIController extends Controller
     {
         $products_query = ScannedProducts::where('bol', $request->bol_id)->whereNull('pallet_id');
         $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->whereNull('pallet_id');
-        $with_lqin = ScannedProducts::where('lqin', $request->bol_id)->whereNull('pallet_id');
 
         $scanned_products = $products_query->get();
         $scanned_products_with_package_id = $with_package_id->get();
-        $scanned_products_with_lqin = $with_lqin->get();
 
         if (count($scanned_products)) {
             $bol_id_array = unserialize($pallet->bol_ids);
@@ -168,41 +166,6 @@ class PalletsAPIController extends Controller
             ]);
 
             return response()->json(array('code' => 201, 'message' => 'Pallet updated Succesfully'));
-        } else if (count($scanned_products_with_lqin)) {
-            $bol_id_array = unserialize($pallet->bol_ids);
-            if ($bol_id_array) {
-                foreach ($bol_id_array as $ids) {
-                    if ($ids == $request->bol_id) {
-                        return response()->json(array('code' => 403, 'message' => 'Bol already added to this pallet'));
-                    }
-                }
-                array_push($bol_id_array, $request->bol_id);
-            } else {
-                $bol_id_array = [];
-                array_push($bol_id_array, $request->bol_id);
-            }
-
-            $total_price = 0;
-            $total_units = 0;
-
-            foreach ($scanned_products_with_lqin as $products) {
-                $total_price += (float) $products->total_cost;
-                $total_units += (int) $products->units;
-            }
-
-            $new_total_price = $pallet->total_price + $total_price;
-            $new_total_units = $pallet->total_unit + $total_units;
-
-            ScannedProducts::where('bol', $request->bol_id)->orWhere('lqin', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
-            ScannedProducts::whereIn('lqin', $bol_id_array)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
-
-            $pallet->update([
-                'bol_ids' => serialize($bol_id_array),
-                'total_price' => $new_total_price,
-                'total_unit' => $new_total_units,
-            ]);
-
-            return response()->json(array('code' => 201, 'message' => 'Pallet updated Succesfully'));
         } else {
 
             $products_query = ScannedProducts::where('bol', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
@@ -242,11 +205,9 @@ class PalletsAPIController extends Controller
     {
         $with_package_id = Manifest::where('package_id', $request->bol_id)->get();
         $with_bol_id = Manifest::where('bol', $request->bol_id)->get();
-        $with_lqin = Manifest::where('lqin', $request->bol_id)->get();
 
         $daily_with_package_id = DailyManifest::where('package_id', $request->bol_id)->get();
         $daily_with_bol_id = DailyManifest::where('bol', $request->bol_id)->get();
-        $daily_with_lqin = DailyManifest::where('lqin', $request->bol_id)->get();
 
         if (count($with_package_id)) {
             foreach ($with_package_id as $item) {
@@ -273,8 +234,7 @@ class PalletsAPIController extends Controller
                         'unit_recovery' => $item->unit_recovery,
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
-                        'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
+                        'removal_reason' => $item->removal_reason
                     ]);
                 }
                 $item->delete();
@@ -308,42 +268,7 @@ class PalletsAPIController extends Controller
                         'unit_recovery' => $item->unit_recovery,
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
-                        'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
-                    ]);
-                }
-                $item->delete();
-            }
-            if ($request->has('pallet_id')) {
-                $this->addToPallet($request, Pallets::find($request->pallet_id));
-            }
-        } else if (count($with_lqin)) {
-            foreach ($with_lqin as $item) {
-                if ($request->claim_list) {
-                    ClaimList::create([
-                        'bol' => $item->bol,
-                        'package_id' => $item->package_id,
-                        'item_description' => $item->item_description,
-                        'units' => $item->units,
-                        'unit_cost' => $item->unit_cost,
-                        'total_cost' => $item->total_cost,
-                        'claim_desription' => $request->description
-                    ]);
-                } else {
-                    ScannedProducts::create([
-                        'bol' => $item->bol,
-                        'package_id' => $item->package_id,
-                        'item_description' => $item->item_description,
-                        'units' => $item->units,
-                        'unit_cost' => $item->unit_cost,
-                        'total_cost' => $item->total_cost,
-                        'asin' => $item->asin,
-                        'GLDesc' => $item->GLDesc,
-                        'unit_recovery' => $item->unit_recovery,
-                        'total_recovery' => $item->total_recovery,
-                        'recovery_rate' => $item->recovery_rate,
-                        'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
+                        'removal_reason' => $item->removal_reason
                     ]);
                 }
                 $item->delete();
@@ -376,42 +301,7 @@ class PalletsAPIController extends Controller
                         'unit_recovery' => $item->unit_recovery,
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
-                        'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
-                    ]);
-                }
-                $item->delete();
-            }
-            if ($request->has('pallet_id')) {
-                $this->addToPallet($request, Pallets::find($request->pallet_id));
-            }
-        } else if (count($daily_with_lqin)) {
-            foreach ($daily_with_lqin as $item) {
-                if ($request->claim_list) {
-                    ClaimList::create([
-                        'bol' => $item->bol,
-                        'package_id' => $item->package_id,
-                        'item_description' => $item->item_description,
-                        'units' => $item->units,
-                        'unit_cost' => $item->unit_cost,
-                        'total_cost' => $item->total_cost,
-                        'claim_desription' => $request->description
-                    ]);
-                } else {
-                    ScannedProducts::create([
-                        'bol' => $item->bol,
-                        'package_id' => $item->package_id,
-                        'item_description' => $item->item_description,
-                        'units' => $item->units,
-                        'unit_cost' => $item->unit_cost,
-                        'total_cost' => $item->total_cost,
-                        'asin' => $item->asin,
-                        'GLDesc' => $item->GLDesc,
-                        'unit_recovery' => $item->unit_recovery,
-                        'total_recovery' => $item->total_recovery,
-                        'recovery_rate' => $item->recovery_rate,
-                        'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
+                        'removal_reason' => $item->removal_reason
                     ]);
                 }
                 $item->delete();
@@ -444,8 +334,7 @@ class PalletsAPIController extends Controller
                         'unit_recovery' => $item->unit_recovery,
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
-                        'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
+                        'removal_reason' => $item->removal_reason
                     ]);
                 }
                 $item->delete();
