@@ -109,7 +109,7 @@ class PalletsController extends Controller
             $pallet_products = [];
 
             foreach ($bol_ids as $bol_id) {
-                $prd = ScannedProducts::where('bol', $bol_id)->orWhere('package_id', $bol_id)->get();
+                $prd = ScannedProducts::where('bol', $bol_id)->orWhere('package_id', $bol_id)->orWhere('lqin', $bol_id)->get();
                 foreach ($prd as $pd) {
                     array_push($pallet_products, $pd);
                 }
