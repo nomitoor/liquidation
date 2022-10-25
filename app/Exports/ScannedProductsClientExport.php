@@ -30,8 +30,8 @@ class ScannedProductsClientExport implements FromQuery, WithMapping, WithHeading
     {   
         $all_bol_ids = Pallets::where('id', $this->id)->get(['bol_ids']);
         $bol_ids = unserialize($all_bol_ids[0]->bol_ids);
-        $data = ScannedProducts::whereIn('bol', $bol_ids);
-   //   $data = ScannedProducts::where('pallet_id', $this->id);
+        $data = ScannedProducts::whereIn('bol', $bol_ids)->orWhereIn('package_id', $bol_ids );
+        //   $data = ScannedProducts::where('pallet_id', $this->id);
    //   $data = DB::table('scanned_products')->whereIn('bol', $bol_ids);
 
       // dd($data);
