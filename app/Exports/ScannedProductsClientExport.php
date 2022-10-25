@@ -1,6 +1,7 @@
 <?php
 namespace App\Exports;
 use App\Models\ScannedProducts;
+use App\Models\Pallets;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -9,6 +10,7 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Sheet;
 use PhpOffice\PhpSpreadsheet\Cell\Hyperlink;
+use Illuminate\Support\Facades\DB;
 
 class ScannedProductsClientExport implements FromQuery, WithMapping, WithHeadings, WithColumnWidths
 {
@@ -25,8 +27,17 @@ class ScannedProductsClientExport implements FromQuery, WithMapping, WithHeading
      * @return \Illuminate\Support\Collection
      */
     public function query()
-    {
-        return ScannedProducts::where('pallet_id', $this->id);
+    {   
+        $all_bol_ids = Pallets::where('id', $this->id)->get(['bol_ids']);
+        $bol_ids = unserialize($all_bol_ids[0]->bol_ids);
+        $data = ScannedProducts::whereIn('bol', $bol_ids);
+   //   $data = ScannedProducts::where('pallet_id', $this->id);
+   //   $data = DB::table('scanned_products')->whereIn('bol', $bol_ids);
+
+      // dd($data);
+
+       //  dd(0);
+        return $data;
     }
 
     // here you select the row that you want in the file
