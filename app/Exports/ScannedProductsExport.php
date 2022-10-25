@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Exports;
+use App\Models\Pallets;
 
 use App\Models\ScannedProducts;
 use App\Models\ManifestCompare;
