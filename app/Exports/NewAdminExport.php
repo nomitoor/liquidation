@@ -87,7 +87,7 @@ class ScannedProductsExportNew implements FromQuery, WithMapping, WithHeadings, 
 
     public function custom()
     {
-        \Excel::extend(static::class, function (ScannedProductsExport $export, Sheet $sheet) {
+        \Excel::extend(static::class, function (ScannedProductsExportNew $export, Sheet $sheet) {
             foreach ($sheet->getColumnIterator('B') as $row) {
                 foreach ($row->getCellIterator() as $key => $cell) {
                     if (str_contains($cell->getValue(), '://')) {
