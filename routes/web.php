@@ -83,6 +83,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('export/scanned/products/{id}', [ManifestController::class, 'exportScannedProducts'])->name('exporScanned');
     Route::get('export/scanned/products/client/{id}', [ManifestController::class, 'clientExportScannedProducts'])->name('client');
 
+
+    Route::get('export/scanned/products/new/{id}', [ManifestController::class, 'exportScannedProductsNew'])->name('exporScannednew');
+    Route::get('export/scanned/products/new/client/{id}', [ManifestController::class, 'clientExportScannedProductsNew'])->name('clientnew');
+
+
     // Route Components
     Route::get('layouts/collapsed-menu', [StaterkitController::class, 'collapsed_menu'])->name('collapsed-menu');
     Route::get('layouts/full', [StaterkitController::class, 'layout_full'])->name('layout-full');

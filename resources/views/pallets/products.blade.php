@@ -108,7 +108,10 @@
                     <a class="btn btn-outline-secondary btn-block mb-75" href="{{ route('pallets.edit', $invoice_number) }}"> Edit </a>
                     <a class="btn btn-outline-secondary btn-block mb-75" href="{{ route('exporScanned', ['id' => $invoice_number]) }}"> Export </a>
                     <a class="btn btn-outline-secondary btn-block mb-75" href="{{ route('client', ['id' => $invoice_number])}}"> Export for Client </a>
-
+                    <br>
+                    <br>
+                    <a class="btn btn-outline-secondary btn-block mb-75" href="{{ route('exporScannednew', ['id' => $invoice_number]) }}"> Admin - Emergency </a>
+                    <a class="btn btn-outline-secondary btn-block mb-75" href="{{ route('clientnew', ['id' => $invoice_number])}}"> Client - Emergency</a>
                 </div>
             </div>
         </div>

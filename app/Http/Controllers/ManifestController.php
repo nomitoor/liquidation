@@ -945,4 +945,18 @@ class ManifestController extends Controller
     
         return back();
     }
+
+
+
+    public function exportScannedProductsNew(Request $request)
+    {
+        $pallet_name = Pallets::where('id', $request->id)->first();
+        return Excel::download(new ScannedProductsExportNew($request->id),  'DE' . sprintf("%05d", $request->id) . '-' . 'For-Admin.xlsx');
+    }
+
+    public function clientExportScannedProductsNew(Request $request)
+    {
+        $pallet_name = Pallets::where('id', $request->id)->first();
+        return Excel::download(new ScannedProductsClientExportNew($request->id), 'DE' . sprintf("%05d", $request->id) . '.xlsx');
+    }
 }
