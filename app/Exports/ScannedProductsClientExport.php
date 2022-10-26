@@ -36,7 +36,7 @@ class ScannedProductsClientExport implements FromQuery, WithMapping, WithHeading
 
       // dd($data);
 
-      print_r(count($data));
+      print_r(count($bol_ids));
 
          dd(0);
         return $data;
