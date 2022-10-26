@@ -1,8 +1,19 @@
 <?php
 
-namespace App\Exports;
 
-use Maatwebsite\Excel\Concerns\FromCollection;
+namespace App\Exports;
+use App\Models\Pallets;
+
+use App\Models\ScannedProducts;
+use App\Models\ManifestCompare;
+use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
+use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Sheet;
+use PhpOffice\PhpSpreadsheet\Cell\Hyperlink;
 
 class NewClientExports implements FromQuery, WithMapping, WithHeadings, WithColumnWidths
 {
