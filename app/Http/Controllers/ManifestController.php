@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Exports\ScannedProductsClientExport;
 use App\Exports\ScannedProductsExport;
+use App\Exports\ScannedProductsExportNew;
+use App\Exports\ScannedProductsClientExportNew;
 use App\Imports\ManifestCompareImport;
 use App\Imports\DailyManifestImport;
 use App\Imports\LPNImport;
