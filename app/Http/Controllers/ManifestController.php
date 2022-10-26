@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ScannedProductsClientExport;
-use App\Exports\ScannedProductsExport;
-use App\Exports\ScannedProductsExportNew;
+use App\Exports\NewAdminExports;
+use App\Exports\NewClientExports;
 use App\Exports\ScannedProductsClientExportNew;
 use App\Imports\ManifestCompareImport;
 use App\Imports\DailyManifestImport;
@@ -953,12 +953,12 @@ class ManifestController extends Controller
     public function exportScannedProductsNew(Request $request)
     {
         $pallet_name = Pallets::where('id', $request->id)->first();
-        return Excel::download(new ScannedProductsExportNew($request->id),  'DE' . sprintf("%05d", $request->id) . '-' . 'For-Admin.xlsx');
+        return Excel::download(new NewAdminExports($request->id),  'DE' . sprintf("%05d", $request->id) . '-' . 'For-Admin.xlsx');
     }
 
     public function clientExportScannedProductsNew(Request $request)
     {
         $pallet_name = Pallets::where('id', $request->id)->first();
-        return Excel::download(new ScannedProductsClientExportNew($request->id), 'DE' . sprintf("%05d", $request->id) . '.xlsx');
+        return Excel::download(new NewClientExports($request->id), 'DE' . sprintf("%05d", $request->id) . '.xlsx');
     }
 }
