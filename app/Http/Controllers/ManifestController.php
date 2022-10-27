@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ScannedProductsExport;
 use App\Exports\ScannedProductsClientExport;
 use App\Exports\NewAdminExports;
 use App\Exports\NewClientExports;
