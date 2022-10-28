@@ -23,14 +23,19 @@ class PalletsController extends Controller
         
         foreach ($pallets as $key => $pallet) {
             $rec = 0;
-            //$recovery = ScannedProducts::where('pallet_id', $pallet->id)->get();
-            $all_bol_ids = Pallets::where('id', $pallet->id)->get(['bol_ids']);
+            try {
+                $all_bol_ids = Pallets::where('id', $pallet->id)->get(['bol_ids']);
             $bol_ids = unserialize($all_bol_ids[0]->bol_ids);
             $recovery = ScannedProducts::whereIn('bol', $bol_ids)->orWhereIn('package_id',$bol_ids )->orWhereIn('lqin',$bol_ids )->get();
             foreach ($recovery as $recov) {
                 $rec += $recov->total_recovery;
             }
             $pallets[$key]['recovery'] = $rec;
+            } catch (Throwable $e) {
+                
+            }
+            //$recovery = ScannedProducts::where('pallet_id', $pallet->id)->get();
+            
         }
         $breadcrumbs = [
             ['link' => "pallets", 'name' => "Pallets"], ['name' => "Available Pallets"]
