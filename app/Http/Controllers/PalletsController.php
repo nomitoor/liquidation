@@ -32,7 +32,7 @@ class PalletsController extends Controller
             }
             $pallets[$key]['recovery'] = $rec;
             } catch (Throwable $e) {
-                
+                $rec = 0;
             }
             //$recovery = ScannedProducts::where('pallet_id', $pallet->id)->get();
             
