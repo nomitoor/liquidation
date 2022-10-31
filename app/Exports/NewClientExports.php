@@ -79,7 +79,7 @@ class NewClientExports implements FromQuery, WithMapping, WithHeadings, WithColu
 
     public function custom()
     {
-        \Excel::extend(static::class, function (ScannedProductsClientExportNew $export, Sheet $sheet) {
+        \Excel::extend(static::class, function (NewClientExports $export, Sheet $sheet) {
             foreach ($sheet->getColumnIterator('B') as $row) {
                 foreach ($row->getCellIterator() as $key => $cell) {
                     if (str_contains($cell->getValue(), '://')) {
