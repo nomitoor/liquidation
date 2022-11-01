@@ -18,6 +18,9 @@ class PalletsAPIController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
+
+
     public function storeAPI(Request $request)
     {
         $pallet = Pallets::create([
@@ -28,12 +31,18 @@ class PalletsAPIController extends Controller
         return response()->json(array('message' => 'Pallet Created successfully', 'id' => $pallet->id));
     }
 
+
+
+
     public function allPallets(Request $request)
     {
         // $pallets = Pallets::with('category')->orderBy('id', 'desc')->paginate($request->per_page ?? 5);
         $pallets = Pallets::with('category')->orderBy('id', 'desc')->paginate(25);
         return response()->json($pallets);
     }
+
+
+
 
     public function getPallet(Request $request)
     {
@@ -46,49 +55,64 @@ class PalletsAPIController extends Controller
         return response()->json(array('code' => '201', 'pallet_data' => $pallet, 'products' => $scanned_products, 'message' => 'Pallet Found'));
     }
 
+
+
+    // Searching inside weekly & Daily.
+    // Search on base of Packageid, LQIN, Bol
     public function getManifestDetails(Request $request)
     {
-         $weekly_data = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->toArray();
-      // $weekly_data = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->get()->toArray();
- 
-        $daily_data = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->toArray();
-       //$daily_data = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->get()->toArray();
+       if($request->manifest_id !=null && trim($request->manifest_id,' ')!=''){
+         
         
-        $scanned_data = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->toArray();
+          $weekly_data = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->toArray();
+          $daily_data = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->toArray();
+          $scanned_data = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->toArray();
+  
+          $daily_bucket = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->where('package_id', 'DROPSHIP_BIN')->get()->toArray();
+          $weekly_bucket = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->where('package_id', 'DROPSHIP_BIN')->get()->toArray();
+          $bucket_data = array_merge($daily_bucket, $weekly_bucket);
+  
+          $daily_bucket_scanned = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->whereNotNull('bol_ids')->get()->toArray();
+          $weekly_bucket_scanned = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->whereNotNull('bol_ids')->get()->toArray();
+          $bucket_scanned_data = array_merge($daily_bucket_scanned, $weekly_bucket_scanned);
+  
+          if (count($scanned_data)) {
+              $total_cost = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('total_cost');
+              $unit_cost = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('units');
+              $total_recovery = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('total_recovery');
 
-        $daily_bucket = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->where('package_id', 'DROPSHIP_BIN')->get()->toArray();
-        $weekly_bucket = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->where('package_id', 'DROPSHIP_BIN')->get()->toArray();
-        $bucket_data = array_merge($daily_bucket, $weekly_bucket);
+              return response()->json(array('code' => 203, 'message' => 'Already received', 'unit_cost' => number_format($total_cost, 2), 'total_cost' => number_format($unit_cost, 2),'total_recovery' => number_format($total_recovery, 2),  'data' => $scanned_data));
+          } else if (count($weekly_data)) {
+              $total_cost = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('total_cost');
+              $unit_cost = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('units');
+              $total_recovery = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('total_recovery');
 
-        $daily_bucket_scanned = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->whereNotNull('bol_ids')->get()->toArray();
-        $weekly_bucket_scanned = DailyManifest::whereRaw("find_in_set('$request->manifest_id',bol)")->whereNotNull('bol_ids')->get()->toArray();
-        $bucket_scanned_data = array_merge($daily_bucket_scanned, $weekly_bucket_scanned);
+              return response()->json(array('code' => 201, 'message' => 'Found in weekly Manifest', 'unit_cost' => number_format($total_cost, 2), 'total_cost' => number_format($unit_cost, 2),'total_recovery' => number_format($total_recovery, 2),  'data' => $weekly_data));
+          } else if (count($daily_data)) {
+              $total_cost = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('total_cost');
+              $unit_cost = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('units');
+              $total_recovery = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('total_recovery');
 
-        if (count($scanned_data)) {
-            $total_cost = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('total_cost');
-            $unit_cost = ScannedProducts::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('units');
+              return response()->json(array('code' => 201, 'message' => 'Found in daily Manifest - Checked', 'unit_cost' => number_format($total_cost, 2), 'total_cost' => number_format($unit_cost, 2),'total_recovery' => number_format($total_recovery, 2), 'data' => $daily_data));
+          } else if (count($bucket_data)) {
+              return response()->json(array('code' => 204, 'message' => 'This bol id is a part of bucket', 'data' => $bucket_data));
+          } else if (count($bucket_scanned_data)) {
+              return response()->json(array('code' => 205, 'message' => 'This bol id is a part of bucket', 'data' => $bucket_scanned_data));
+          } else {
+              return response()->json(array('code' => 206, 'product_id' => $request->manifest_id, 'message' => 'Product Not found do you want this to unknown',));
+          }
+       }
+       else{
+        return response()->json(array('code' => 500, 'message' => 'Please Input Something',));
 
-            return response()->json(array('code' => 203, 'message' => 'Already received', 'unit_cost' => number_format($total_cost, 2), 'total_cost' => number_format($unit_cost, 2), 'data' => $scanned_data));
-        } else if (count($weekly_data)) {
-            $total_cost = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('total_cost');
-            $unit_cost = Manifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('units');
-
-            return response()->json(array('code' => 201, 'message' => 'Found in weekly Manifest', 'unit_cost' => number_format($total_cost, 2), 'total_cost' => number_format($unit_cost, 2), 'data' => $weekly_data));
-        } else if (count($daily_data)) {
-            $total_cost = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('total_cost');
-            $unit_cost = DailyManifest::where('bol', $request->manifest_id)->orWhere('package_id', $request->manifest_id)->orWhere('lpn', $request->manifest_id)->orWhere('lqin', $request->manifest_id)->get()->sum('units');
-
-            return response()->json(array('code' => 201, 'message' => 'Found in daily Manifest', 'unit_cost' => number_format($total_cost, 2), 'total_cost' => number_format($unit_cost, 2), 'data' => $daily_data));
-        } else if (count($bucket_data)) {
-            return response()->json(array('code' => 204, 'message' => 'This bol id is a part of bucket', 'data' => $bucket_data));
-        } else if (count($bucket_scanned_data)) {
-            return response()->json(array('code' => 205, 'message' => 'This bol id is a part of bucket', 'data' => $bucket_scanned_data));
-        } else {
-            return response()->json(array('code' => 206, 'product_id' => $request->manifest_id, 'message' => 'Product Not found do you want this to unknown',));
-        }
+       }
     }
 
-    // Add to pallet with bol id and pallet
+
+
+
+    // Add to pallet with bol id and pallet.
+    // Used in Scanned & Add to Pallet As Well.
     public function addToPallet(Request $request, Pallets $pallet)
     {
         $products_query = ScannedProducts::where('bol', $request->bol_id)->whereNull('pallet_id');
@@ -115,24 +139,31 @@ class PalletsAPIController extends Controller
 
             $total_price = 0;
             $total_units = 0;
+            $total_recovery = 0;
 
             foreach ($scanned_products as $products) {
                 $total_price += (float) $products->total_cost;
                 $total_units += (int) $products->units;
+                $total_recovery += (float) $products->total_recovery;
             }
 
             $new_total_price = $pallet->total_price + $total_price;
             $new_total_units = $pallet->total_unit + $total_units;
+            $new_total_recovery = $pallet->total_recovery + $total_recovery;
 
+
+            // ASK From Goldeee
             ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
-            ScannedProducts::whereIn('bol', $bol_id_array)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
+       //     ScannedProducts::whereIn('bol', $bol_id_array)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
 
             $pallet->update([
                 'bol_ids' => serialize($bol_id_array),
                 'total_price' => $new_total_price,
                 'total_unit' => $new_total_units,
+                'total_recovery' => $new_total_recovery
             ]);
             return response()->json(array('code' => 201, 'message' => 'Pallet updated Succesfully'));
+
         } else if (count($scanned_products_with_package_id)) {
             $bol_id_array = unserialize($pallet->bol_ids);
             if ($bol_id_array) {
@@ -149,22 +180,28 @@ class PalletsAPIController extends Controller
 
             $total_price = 0;
             $total_units = 0;
+            $total_recovery = 0;
 
             foreach ($scanned_products_with_package_id as $products) {
                 $total_price += (float) $products->total_cost;
                 $total_units += (int) $products->units;
+                $total_recovery += (float) $products->total_recovery;
+
             }
 
             $new_total_price = $pallet->total_price + $total_price;
             $new_total_units = $pallet->total_unit + $total_units;
+            $new_total_recovery = $pallet->total_recovery + $total_recovery;
 
-            ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
-            ScannedProducts::whereIn('package_id', $bol_id_array)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
+            // ASK From Goldees
+           ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
+      //      ScannedProducts::whereIn('package_id', $bol_id_array)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
 
             $pallet->update([
                 'bol_ids' => serialize($bol_id_array),
                 'total_price' => $new_total_price,
                 'total_unit' => $new_total_units,
+                'total_recovery' => $new_total_recovery
             ]);
 
             return response()->json(array('code' => 201, 'message' => 'Pallet updated Succesfully'));
@@ -184,22 +221,28 @@ class PalletsAPIController extends Controller
 
             $total_price = 0;
             $total_units = 0;
+            $total_recovery = 0;
 
-            foreach ($scanned_products_with_lqin as $products) {
+            foreach ($scanned_products_with_package_id as $products) {
                 $total_price += (float) $products->total_cost;
                 $total_units += (int) $products->units;
+                $total_recovery += (float) $products->total_recovery;
+
             }
 
             $new_total_price = $pallet->total_price + $total_price;
             $new_total_units = $pallet->total_unit + $total_units;
+            $new_total_recovery = $pallet->total_recovery + $total_recovery;
 
-            ScannedProducts::where('bol', $request->bol_id)->orWhere('lqin', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
-            ScannedProducts::whereIn('lqin', $bol_id_array)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
+            // ASK From Goldees
+          ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
+      //      ScannedProducts::whereIn('package_id', $bol_id_array)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
 
             $pallet->update([
                 'bol_ids' => serialize($bol_id_array),
                 'total_price' => $new_total_price,
                 'total_unit' => $new_total_units,
+                'total_recovery' => $new_total_recovery
             ]);
 
             return response()->json(array('code' => 201, 'message' => 'Pallet updated Succesfully'));
@@ -217,6 +260,10 @@ class PalletsAPIController extends Controller
             }
         }
     }
+
+
+
+
 
     // Add to unknown
     public function addToUknown(Request $request)
@@ -238,6 +285,9 @@ class PalletsAPIController extends Controller
         return response()->json(array('message' => 'Added to unknown list', 'code' => '201'));
     }
 
+
+
+
     public function addToScannedAndPallet(Request $request)
     {
         $with_package_id = Manifest::where('package_id', $request->bol_id)->get();
@@ -247,6 +297,7 @@ class PalletsAPIController extends Controller
         $daily_with_package_id = DailyManifest::where('package_id', $request->bol_id)->get();
         $daily_with_bol_id = DailyManifest::where('bol', $request->bol_id)->get();
         $daily_with_lqin = DailyManifest::where('lqin', $request->bol_id)->get();
+
 
         if (count($with_package_id)) {
             foreach ($with_package_id as $item) {
@@ -274,7 +325,8 @@ class PalletsAPIController extends Controller
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
                         'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
+                        'lqin' => $item->lqin,
+                        'file_name' => $item->filename
                     ]);
                 }
                 $item->delete();
@@ -309,7 +361,8 @@ class PalletsAPIController extends Controller
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
                         'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
+                        'lqin' => $item->lqin,
+                        'file_name' => $item->filename
                     ]);
                 }
                 $item->delete();
@@ -343,7 +396,8 @@ class PalletsAPIController extends Controller
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
                         'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
+                        'lqin' => $item->lqin,
+                        'file_name' => $item->filename
                     ]);
                 }
                 $item->delete();
@@ -377,7 +431,8 @@ class PalletsAPIController extends Controller
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
                         'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
+                        'lqin' => $item->lqin,
+                        'file_name' => $item->filename
                     ]);
                 }
                 $item->delete();
@@ -411,7 +466,8 @@ class PalletsAPIController extends Controller
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
                         'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
+                        'lqin' => $item->lqin,
+                        'file_name' => $item->filename
                     ]);
                 }
                 $item->delete();
@@ -445,7 +501,8 @@ class PalletsAPIController extends Controller
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
                         'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
+                        'lqin' => $item->lqin,
+                        'file_name' => $item->filename
                     ]);
                 }
                 $item->delete();
@@ -457,6 +514,9 @@ class PalletsAPIController extends Controller
 
         return response()->json(array('message' => 'Manifest products updated', 'code' => '201'));
     }
+
+
+
 
     public function removePallets(Request $request)
     {

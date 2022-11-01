@@ -35,6 +35,7 @@
                                 <th>total cost</th>
                                 <th>unit cost</th>
                                 <th>units</th>
+                                <th>File-From</th>
                             </tr>
                         </thead>
                     </table>
@@ -86,6 +87,9 @@
             },
             {
                 data: 'units'
+            },
+            {
+                data: 'file_name'
             },
         ],
         language: {

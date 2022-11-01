@@ -13,7 +13,7 @@ class Pallets extends Model
     protected $table = 'pallet';
 
     protected $fillable = [
-        'category_id', 'description', 'bol_ids', 'total_price', 'total_unit'
+        'category_id', 'description', 'bol_ids', 'total_price', 'total_unit','total_recovery'
     ];
 
     public function category()
