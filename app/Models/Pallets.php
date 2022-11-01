@@ -25,4 +25,9 @@ class Pallets extends Model
     {
         return $this->belongsToMany('App\Models\Container', 'container_pallets', 'pallet_id', 'container_id');
     }
+
+    public function palletProducts()
+    {
+        return $this->belongsToMany('App\Models\ScannedProducts', 'product_pallet_relation', 'pallet_id', 'scanned_prodcts_id');
+    }
 }

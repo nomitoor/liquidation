@@ -35,7 +35,9 @@
                                 <th>total cost</th>
                                 <th>unit cost</th>
                                 <th>units</th>
-                                <th>Manifest File</th>
+                                <th>LIQN</th>
+                                <th>File</th>
+
                             </tr>
                         </thead>
                     </table>
@@ -86,6 +88,9 @@
             },
             {
                 data: 'units'
+            },
+            {
+                data: 'lqin'
             },
             {
                 data: 'filename'
