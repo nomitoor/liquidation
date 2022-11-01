@@ -25,17 +25,20 @@ class PalletsController extends Controller
             $rec = 0;
             try {
                 $all_bol_ids = Pallets::where('id', $pallet->id)->get(['bol_ids']);
-            $bol_ids = unserialize($all_bol_ids[0]->bol_ids);
-            $recovery = ScannedProducts::whereIn('bol', $bol_ids)->orWhereIn('package_id',$bol_ids )->orWhereIn('lqin',$bol_ids )->get();
-            foreach ($recovery as $recov) {
-                $rec += $recov->total_recovery;
-            }
-            $pallets[$key]['recovery'] = $rec;
+                if( $all_bol_ids[0]->bol_ids != null){
+                    $bol_ids = unserialize($all_bol_ids[0]->bol_ids);
+                    $recovery = ScannedProducts::whereIn('bol', $bol_ids)->orWhereIn('package_id',$bol_ids )->orWhereIn('lqin',$bol_ids )->get();
+                    foreach ($recovery as $recov) {
+                        $rec += $recov->total_recovery;
+                    }
+                }
+            
             } catch (Throwable $e) {
                 $rec = 0;
 
                 //sdfsd
             }
+            $pallets[$key]['recovery'] = $rec;
             //$recovery = ScannedProducts::where('pallet_id', $pallet->id)->get();
             
         }
