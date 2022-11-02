@@ -87,7 +87,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if ($pallets->bol_ids !== null)
+                                            @if (count($scanned_products) > 0)
                                             @foreach ($scanned_products as $product)
                                             <tr>
                                                 <th>

@@ -159,21 +159,38 @@ class PalletsController extends Controller
             ['link' => "pallets", 'name' => "Pallets"], ['name' => "Create"]
         ];
 
-        $scanned_products = ScannedProducts::whereIn('bol', unserialize($pallet->bol_ids) ?: [])->orWhereIn('package_id', unserialize($pallet->bol_ids) ?: [])->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
+        $bol_ids_data = PalletProductRelation::select('scanned_products_id')->where('pallet_id', $pallet->id)->get();
+        $scanned_products = [];
 
-        $total_price = 0;
-        $data = unserialize($pallet->bol_ids);
-        if ($data != null && count($data) > 0) {
-            if (($key = array_search(end($data), $data)) !== false) {
-                $products = ScannedProducts::where('bol', $data[$key])->get();
-                foreach ($products as $product) {
-                    $total_price += $product->total_cost;
-                }
+        if (count($bol_ids_data)) {
+
+            $bol_ids=$bol_ids_data->toArray();
+
+            foreach ($bol_ids as $product_unique_id) {
+                $prd = ScannedProducts::where('id', $product_unique_id)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
+                array_push($scanned_products, $prd[0]);
             }
-        }
+
+        }    
+
+        
+
+        // $scanned_products = ScannedProducts::whereIn('bol', unserialize($pallet->bol_ids) ?: [])->orWhereIn('package_id', unserialize($pallet->bol_ids) ?: [])
+        // ->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
+
+        // $total_price = 0;
+        // $data = unserialize($pallet->bol_ids);
+        // if ($data != null && count($data) > 0) {
+        //     if (($key = array_search(end($data), $data)) !== false) {
+        //         $products = ScannedProducts::where('bol', $data[$key])->get();
+        //         foreach ($products as $product) {
+        //             $total_price += $product->total_cost;
+        //         }
+        //     }
+        // }
 
 
-        return view('pallets/edit', ['breadcrumbs' => $breadcrumbs, 'pallets' => $pallet, 'last_total_cost' => $total_price, 'scanned_products' => $scanned_products]);
+        return view('pallets/edit', ['breadcrumbs' => $breadcrumbs, 'pallets' => $pallet, 'last_total_cost' => 'NAN', 'scanned_products' => $scanned_products]);
     }
 
     /**
