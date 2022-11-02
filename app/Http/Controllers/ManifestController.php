@@ -786,9 +786,51 @@ class ManifestController extends Controller
         return view('manifest/products', ['breadcrumbs' => $breadcrumbs]);
     }
 
-    public function allScannedProducts()
+    public function allScannedProducts(Request $request)
     {
-        return response()->json(array('data' => ScannedProducts::get()));
+        $draw = $request->get('draw');
+        $start = $request->get("start");
+        $rowperpage = $request->get("length"); // Rows display per page
+
+        $columnIndex_arr = $request->get('order');
+        $columnName_arr = $request->get('columns');
+        $order_arr = $request->get('order');
+        $search_arr = $request->get('search');
+
+        $columnIndex = $columnIndex_arr[0]['column']; // Column index
+        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
+        $searchValue = $search_arr['value']; // Search value
+
+        // Total records
+        $totalRecords = ScannedProducts::select('count(*) as allcount')->count();
+        $totalRecordswithFilter = ScannedProducts::select('count(*) as allcount')->where('bol', 'like', '%' .$searchValue . '%')->count();
+
+        // Fetch records
+        $records = ScannedProducts::orderBy($columnName,$columnSortOrder)
+            ->where('bol', 'like', '%' .$searchValue . '%')
+            ->select('scanned_products.*')
+            ->skip($start)
+            ->take($rowperpage)
+            ->get()->toArray();
+
+        $data_arr = array();
+        $sno = $start+1;
+        foreach($records as $record){
+         
+            $data_arr[] = $record;
+        }
+
+        $response = array(
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordswithFilter,
+            "aaData" => $data_arr
+        ); 
+
+     //   return response()->json(array('data' => ScannedProducts::get()));
+     echo json_encode($response);
+     exit;
     }
 
     public function allClaims()
