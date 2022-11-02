@@ -6,6 +6,7 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ManifestController;
 use App\Http\Controllers\PalletsController;
 use App\Http\Controllers\ContainerController;
+use App\Http\Controllers\PalletsAPIController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,7 +72,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::resource('containers', ContainerController::class);
 
-    Route::post('pallets/delete', [PalletsController::class, 'deletePalletsWithBol']);
+    Route::post('pallets/delete', [PalletsAPIController::class, 'removePallets'])->name('delete-product-from-pallet');
     Route::post('pallets/undo', [PalletsController::class, 'undoPallets']);
     Route::resource('pallets', PalletsController::class);
 

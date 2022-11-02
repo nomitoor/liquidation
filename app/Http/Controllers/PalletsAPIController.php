@@ -525,6 +525,7 @@ class PalletsAPIController extends Controller
     public function removePallets(Request $request)
     {
 
+
         $bol_ids_data = PalletProductRelation::select('scanned_products_id')->where('pallet_id', $request->id)
         ->where(function($q) use($request){ 
             $q->Where('bol_id', $request->package_id )
@@ -542,7 +543,7 @@ class PalletsAPIController extends Controller
             foreach ($dataCalculate as $product) {
                     $total_price += (float) $product->total_cost;
                     $total_units += (int) $product->units;
-                    $total_recovery += (int) $product->total_recovery;
+                    $total_recovery += (float) $product->total_recovery;
     
                 }
         

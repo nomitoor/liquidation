@@ -338,7 +338,8 @@ class ManifestController extends Controller
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
                         'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
+                        'lqin' => $item->lqin,
+                        'file_name' => $item->filename
                     ]);
                 }
                 $item->delete();
@@ -369,7 +370,8 @@ class ManifestController extends Controller
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
                         'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
+                        'lqin' => $item->lqin,
+                        'file_name' => $item->filename
                     ]);
                 }
                 $item->delete();
@@ -400,7 +402,9 @@ class ManifestController extends Controller
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
                         'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
+                        'lqin' => $item->lqin,
+                        'lqin' => $item->lqin,
+                        'file_name' => $item->filename
                     ]);
                 }
                 $item->delete();
@@ -500,7 +504,8 @@ class ManifestController extends Controller
                                 'unit_recovery' => $ids->unit_recovery,
                                 'total_recovery' => $ids->total_recovery,
                                 'recovery_rate' => $ids->recovery_rate,
-                                'removal_reason' => $ids->removal_reason
+                                'removal_reason' => $ids->removal_reason,
+                                'file_name' => $item->filename
                             ]);
 
                             $ids->delete();
@@ -537,7 +542,8 @@ class ManifestController extends Controller
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
                         'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
+                        'lqin' => $item->lqin,
+                        'file_name' => $item->filename
                     ]);
                 }
                 $item->delete();
@@ -568,7 +574,8 @@ class ManifestController extends Controller
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
                         'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
+                        'lqin' => $item->lqin,
+                        'file_name' => $item->filename
                     ]);
                 }
                 $item->delete();
@@ -599,7 +606,8 @@ class ManifestController extends Controller
                         'total_recovery' => $item->total_recovery,
                         'recovery_rate' => $item->recovery_rate,
                         'removal_reason' => $item->removal_reason,
-                        'lqin' => $item->lqin
+                        'lqin' => $item->lqin,
+                        'file_name' => $item->filename
 
                     ]);
                 }
@@ -700,7 +708,8 @@ class ManifestController extends Controller
                                 'unit_recovery' => $ids->unit_recovery,
                                 'total_recovery' => $ids->total_recovery,
                                 'recovery_rate' => $ids->recovery_rate,
-                                'removal_reason' => $ids->removal_reason
+                                'removal_reason' => $ids->removal_reason,
+                                'file_name' => $item->filename
                             ]);
 
                             $ids->delete();

@@ -80,32 +80,33 @@ class PalletsController extends Controller
     {
         $pallet = Pallets::create([
             'description' => $request->description,
-            'category_id' => $request->category_id
+            'category_id' => $request->category_id,
         ]);
 
         return redirect('pallets/' . $pallet->id . '/edit');
 
-        $total_price = 0;
-        $total_units = 0;
+        // $total_price = 0;
+        // $total_units = 0;
+        // $total_recovery = 0;
 
-        foreach ($request->bol as $bol) {
-            $scanned_products = ScannedProducts::where('bol', $bol)->get();
+        // foreach ($request->bol as $bol) {
+        //     $scanned_products = ScannedProducts::where('bol', $bol)->get();
 
-            foreach ($scanned_products as $products) {
-                $total_price += (float) $products->total_cost;
-                $total_units += (int) $products->units;
-            }
+        //     foreach ($scanned_products as $products) {
+        //         $total_price += (float) $products->total_cost;
+        //         $total_units += (int) $products->units;
+        //     }
 
-            ScannedProducts::where('bol', $bol)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $request->id]);
-        }
+        //     ScannedProducts::where('bol', $bol)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $request->id]);
+        // }
 
-        Pallets::create([
-            'bol_ids' => json_encode($request->bol),
-            'total_price' => $total_price,
-            'total_unit' => $total_units
-        ]);
+        // Pallets::create([
+        //     'bol_ids' => json_encode($request->bol),
+        //     'total_price' => $total_price,
+        //     'total_unit' => $total_units
+        // ]);
 
-        return redirect('/pallets');
+        // return redirect('/pallets');
     }
 
 
@@ -202,98 +203,160 @@ class PalletsController extends Controller
      */
     public function update(Request $request, Pallets $pallet)
     {
-        $products_query = ScannedProducts::where('bol', $request->bol_id)->whereNull('pallet_id');
-        $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->whereNull('pallet_id');
+
+
+        $relationCheck = PalletProductRelation::where('bol_id', $request->bol_id)->get();
+
+        if (count($relationCheck) > 0) {
+            $pallet_id_of_package = $relationCheck[0]->pallet_id;
+            return \Redirect::back()->withErrors(['error' => '^^^^^^^^   - Bol already added to pallet -> DE' . sprintf("%05d", $pallet_id_of_package)]);
+
+        } else {
+
+
+        $products_query = ScannedProducts::where('bol', $request->bol_id);
+        $with_package_id = ScannedProducts::where('package_id', $request->bol_id);
+        $with_lqin = ScannedProducts::where('lqin', $request->bol_id);
 
         $scanned_products = $products_query->get();
         $scanned_products_with_package_id = $with_package_id->get();
+        $scanned_products_with_lqin = $with_lqin->get();
 
+      
         if (count($scanned_products)) {
-            $bol_id_array = unserialize($pallet->bol_ids);
-            if ($bol_id_array) {
-                foreach ($bol_id_array as $ids) {
-                    if ($ids == $request->bol_id) {
-                        return \Redirect::back()->withErrors(['error' => 'Bol already added to this pallet']);
-                    }
-                }
-                array_push($bol_id_array, $request->bol_id);
-            } else {
-                $bol_id_array = [];
-                array_push($bol_id_array, $request->bol_id);
-            }
-
+            
             $total_price = 0;
             $total_units = 0;
+            $total_recovery = 0;
 
             foreach ($scanned_products as $products) {
                 $total_price += (float) $products->total_cost;
                 $total_units += (int) $products->units;
+                $total_recovery += (float) $products->total_recovery;
             }
 
             $new_total_price = $pallet->total_price + $total_price;
             $new_total_units = $pallet->total_unit + $total_units;
+            $new_total_recovery = $pallet->total_recovery + $total_recovery;
 
-            ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
-
-            $updated_scanned_products = ScannedProducts::whereIn('bol', $bol_id_array)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
+            foreach ($scanned_products as $scannedids) {
+                PalletProductRelation::Create([
+                    'pallet_id' => $pallet->id,
+                    'scanned_products_id' => $scannedids->id,
+                    'bol_id' => $request->bol_id,
+                    'type' => 'BOL-ID'
+                ]);
+            }
 
             $pallet->update([
-                'bol_ids' => serialize($bol_id_array),
                 'total_price' => $new_total_price,
                 'total_unit' => $new_total_units,
+                'total_recovery' => $new_total_recovery
             ]);
 
+            ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
             return \Redirect::back()->withErrors(['error' => 'Pallet updated Succesfully']);
+
+
+
         } else if (count($scanned_products_with_package_id)) {
-            $bol_id_array = unserialize($pallet->bol_ids);
-            if ($bol_id_array) {
-                foreach ($bol_id_array as $ids) {
-                    if ($ids == $request->bol_id) {
-                        return \Redirect::back()->withErrors(['error' => 'Bol already added to this pallet']);
-                    }
-                }
-                array_push($bol_id_array, $request->bol_id);
-            } else {
-                $bol_id_array = [];
-                array_push($bol_id_array, $request->bol_id);
-            }
+           
 
             $total_price = 0;
             $total_units = 0;
+            $total_recovery = 0;
+
 
             foreach ($scanned_products_with_package_id as $products) {
                 $total_price += (float) $products->total_cost;
                 $total_units += (int) $products->units;
+                $total_recovery += (float) $products->total_recovery;
             }
 
             $new_total_price = $pallet->total_price + $total_price;
             $new_total_units = $pallet->total_unit + $total_units;
+            $new_total_recovery = $pallet->total_recovery + $total_recovery;
 
-            ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
-
-            $updated_scanned_products = ScannedProducts::whereIn('package_id', $bol_id_array)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
-
+            foreach ($scanned_products_with_package_id as $scannedids) {
+                PalletProductRelation::Create([
+                    'pallet_id' => $pallet->id,
+                    'scanned_products_id' => $scannedids->id,
+                    'bol_id' => $request->bol_id,
+                    'type' => 'PACKAGE-ID'
+                ]);
+            }
             $pallet->update([
-                'bol_ids' => serialize($bol_id_array),
                 'total_price' => $new_total_price,
                 'total_unit' => $new_total_units,
+                'total_recovery' => $new_total_recovery
             ]);
+            ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
+
 
             return \Redirect::back()->withErrors(['error' => 'Pallet updated Succesfully']);
-        } else {
 
-            $products_query = ScannedProducts::where('bol', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
-            $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
 
-            if (!is_null($products_query)) {
-                $pallet_details = Pallets::where('id', $products_query->pallet_id)->first();
+        }  else if (count($scanned_products_with_lqin)) {
+           
 
-                return \Redirect::back()->withErrors(['error' => 'This BOL ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id)]);
-            } else {
-                $pallet_details = Pallets::where('id', $with_package_id->pallet_id)->first();
-                return \Redirect::back()->withErrors(['error' => 'This PACKAGE ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id)]);
+            $total_price = 0;
+            $total_units = 0;
+            $total_recovery = 0;
+
+            foreach ($scanned_products_with_lqin as $products) {
+                $total_price += (float) $products->total_cost;
+                $total_units += (int) $products->units;
+                $total_recovery += (float) $products->total_recovery;
             }
+
+            $new_total_price = $pallet->total_price + $total_price;
+            $new_total_units = $pallet->total_unit + $total_units;
+            $new_total_recovery = $pallet->total_recovery + $total_recovery;
+
+            foreach ($scanned_products_with_lqin as $scannedids) {
+                PalletProductRelation::Create([
+                    'pallet_id' => $pallet->id,
+                    'scanned_products_id' => $scannedids->id,
+                    'bol_id' => $request->bol_id,
+                    'type' => 'LQIN-ID'
+                ]);
+            }
+            $pallet->update([
+                'total_price' => $new_total_price,
+                'total_unit' => $new_total_units,
+                'total_recovery' => $new_total_recovery
+            ]);
+
+            ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
+            return \Redirect::back()->withErrors(['error' => 'Pallet updated Succesfully']);
         }
+        else{
+            return \Redirect::back()->withErrors(['error' => 'Nothing Found Against Searched ID']);
+        }
+        
+        // else {
+
+        //     $products_query = ScannedProducts::where('bol', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
+        //     $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
+
+        //     if (!is_null($products_query)) {
+        //         $pallet_details = Pallets::where('id', $products_query->pallet_id)->first();
+
+        //         return \Redirect::back()->withErrors(['error' => 'This BOL ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id)]);
+        //     } else {
+        //         $pallet_details = Pallets::where('id', $with_package_id->pallet_id)->first();
+        //         return \Redirect::back()->withErrors(['error' => 'This PACKAGE ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id)]);
+        //     }
+        // }
+
+
+
+
+        }
+
+
+
+
     }
 
     /**
@@ -302,67 +365,71 @@ class PalletsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function deletePalletsWithBol(Request $request)
-    {
-        $pallet = Pallets::where('id', $request->id)->first();
-        $data = unserialize($pallet->bol_ids);
+    // public function deletePalletsWithBol(Request $request)
+    // {
 
-        if (($key = array_search($request->bol_id, $data)) !== false || ($key = array_search($request->package_id, $data)) !== false) {
-            unset($data[$key]);
-        }
-
-        ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->package_id)->update(['pallet_id' => NULL]);
-
-        $total_price = 0;
-        $total_units = 0;
-        foreach ($data as $value) {
-            $products = ScannedProducts::where('bol', $value)->orWhere('package_id', $value)->get(['units', 'unit_cost', 'total_cost']);
-
-            foreach ($products as $product) {
-                $total_price += (float) $product->total_cost;
-                $total_units += (int) $product->units;
-            }
-        }
-
-        $pallet->update([
-            'bol_ids' => serialize($data),
-            'total_price' => $total_price,
-            'total_unit' => $total_units,
-        ]);
-
-        return response()->json(array('code' => '201', 'message' => 'done'));
-    }
-
-    public function undoPallets(Request $request)
-    {
-        $pallet = Pallets::where('id', $request->id)->first();
-        $data = unserialize($pallet->bol_ids);
-
-        if (($key = array_search(end($data), $data)) !== false) {
-            ScannedProducts::where('bol', $data[$key])->orWhere('package_id', $data[$key])->update(['pallet_id' => NULL]);
-            unset($data[$key]);
-        }
+        
 
 
-        $total_price = 0;
-        $total_units = 0;
-        foreach ($data as $value) {
-            $products = ScannedProducts::where('bol', $value)->get(['units', 'unit_cost', 'total_cost']);
+    //     $pallet = Pallets::where('id', $request->id)->first();
+    //     $data = unserialize($pallet->bol_ids);
 
-            foreach ($products as $product) {
-                $total_price += (float) $product->total_cost;
-                $total_units += (int) $product->units;
-            }
-        }
+    //     if (($key = array_search($request->bol_id, $data)) !== false || ($key = array_search($request->package_id, $data)) !== false) {
+    //         unset($data[$key]);
+    //     }
 
-        $pallet->update([
-            'bol_ids' => serialize($data),
-            'total_price' => $total_price,
-            'total_unit' => $total_units,
-        ]);
+    //     ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->package_id)->update(['pallet_id' => NULL]);
 
-        return response()->json(array('code' => '201', 'message' => 'done'));
-    }
+    //     $total_price = 0;
+    //     $total_units = 0;
+    //     foreach ($data as $value) {
+    //         $products = ScannedProducts::where('bol', $value)->orWhere('package_id', $value)->get(['units', 'unit_cost', 'total_cost']);
+
+    //         foreach ($products as $product) {
+    //             $total_price += (float) $product->total_cost;
+    //             $total_units += (int) $product->units;
+    //         }
+    //     }
+
+    //     $pallet->update([
+    //         'bol_ids' => serialize($data),
+    //         'total_price' => $total_price,
+    //         'total_unit' => $total_units,
+    //     ]);
+
+    //     return response()->json(array('code' => '201', 'message' => 'done'));
+    // }
+
+    // public function undoPallets(Request $request)
+    // {
+    //     $pallet = Pallets::where('id', $request->id)->first();
+    //     $data = unserialize($pallet->bol_ids);
+
+    //     if (($key = array_search(end($data), $data)) !== false) {
+    //         ScannedProducts::where('bol', $data[$key])->orWhere('package_id', $data[$key])->update(['pallet_id' => NULL]);
+    //         unset($data[$key]);
+    //     }
+
+
+    //     $total_price = 0;
+    //     $total_units = 0;
+    //     foreach ($data as $value) {
+    //         $products = ScannedProducts::where('bol', $value)->get(['units', 'unit_cost', 'total_cost']);
+
+    //         foreach ($products as $product) {
+    //             $total_price += (float) $product->total_cost;
+    //             $total_units += (int) $product->units;
+    //         }
+    //     }
+
+    //     $pallet->update([
+    //         'bol_ids' => serialize($data),
+    //         'total_price' => $total_price,
+    //         'total_unit' => $total_units,
+    //     ]);
+
+    //     return response()->json(array('code' => '201', 'message' => 'done'));
+    // }
 
     public function unknown()
     {

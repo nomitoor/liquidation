@@ -283,10 +283,9 @@
     function deletePallet(id, package_id, bol_id) {
         var result = confirm("Are your sure you want to remove this product from this pallete?");
         if (result) {
-            event.preventDefault();
             $.ajax({
                 type: 'post',
-                url: '/pallets/delete',
+                url: "{{ route('delete-product-from-pallet') }}",
                 data: {
                     '_token': '<?php echo csrf_token(); ?>',
                     'bol_id': bol_id,

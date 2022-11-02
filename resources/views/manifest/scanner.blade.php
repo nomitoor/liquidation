@@ -85,6 +85,12 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <div class="container-fluid">
+                                                    <div class="row">
+                                                            <div style="margin-right:50px" >BOL ID -   <h5 class="my-bol-id" ></h5></div>
+                                                            <div >Package ID -   <h5 class="my-package-id" ></h5></div>
+                                                        </div>
+                                                       
+                                                        
                                                         <div class="row">
                                                             <div class="col-xs-12 col-lg-2 col-sm-12 col-md-12">
                                                                 <label>Total Units</label>
@@ -105,12 +111,11 @@
                                                         <thead>
                                                             <tr>
                                                                 <th>Description</th>
-                                                                <th>BOL</th>
-                                                                <th>Package ID</th>
                                                                 <th>Recovery Rate</th>
                                                                 <th>units</th>
                                                                 <th>unit cost</th>
                                                                 <th>total cost</th>
+                                                                <th>File</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody id="myTable">
@@ -186,6 +191,7 @@
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
+                                                    
                                                     <div class="container-fluid">
                                                         <div class="row">
                                                             <div class="col-xs-12 col-lg-2 col-sm-12 col-md-12">
@@ -603,6 +609,9 @@
                     var table = document.getElementById("myTable");
                     var unit_count = 0;
                     var total_cost = 0;
+                    var bol_id = '';
+                    var package_id = '';
+
                     table.innerHTML = "";
 
                     data.data.forEach((manifest) => {
@@ -613,23 +622,27 @@
                         var cell3 = row.insertCell(3);
                         var cell4 = row.insertCell(4);
                         var cell5 = row.insertCell(5);
-                        var cell6 = row.insertCell(6);
+
 
                         unit_count += parseInt(manifest.units)
                         total_cost = parseFloat(total_cost) + parseFloat(manifest.total_cost)
+                        bol_id = manifest.bol;
+                        package_id = manifest.package_id;
+                     
 
                         cell0.innerHTML = manifest.item_description;
-                        cell1.innerHTML = manifest.bol;
-                        cell2.innerHTML = manifest.package_id;
-                        cell3.innerHTML = manifest.recovery_rate;
-                        cell4.innerHTML = manifest.units;
-                        cell5.innerHTML = manifest.unit_cost;
-                        cell6.innerHTML = manifest.total_cost;
+                        cell1.innerHTML = manifest.recovery_rate;
+                        cell2.innerHTML = manifest.units;
+                        cell3.innerHTML = manifest.unit_cost;
+                        cell4.innerHTML = manifest.total_cost;
+                        cell5.innerHTML = manifest.filename;
+
 
                     })
                     $('.total_units').html(unit_count)
                     $('.total_costs').html(total_cost.toFixed(2))
-
+                    $('.my-bol-id').html(bol_id)
+                    $('.my-package-id').html(package_id)
                 } else if (data.code == '215') {
                     alert('Please scan this product with package ID: ' + data.package_id);
                 } else if (data.code == '304') {

@@ -1,7 +1,6 @@
 // Things needs to be done
 -------------------------------
-
-
+1- Need to add LQIN where updating Pallet ID - In Pallet Add Web API.
 
 
 
@@ -18,3 +17,5 @@
 
 // Things already have added.
 -------------------------------
+1- Added Filename in Web.
+2- Added Filename in App - Scanned Prodcuts
