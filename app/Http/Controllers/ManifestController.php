@@ -225,7 +225,19 @@ class ManifestController extends Controller
         $daily_with_lqin = DailyManifest::where('lqin', $request->id)->get();
        
 
-        if (count($with_package_id)) {
+        $check_from_scanned = ScannedProducts::where('package_id', $request->id)
+        ->orWhere('bol', $request->id)
+        ->orWhere('lqin', $request->id)
+        ->get();
+       
+
+        
+
+
+        if(count($check_from_scanned)){
+            return response()->json(array('message' => 'Found in scanned productss', 'code' => '304'));
+
+        }else if (count($with_package_id)) {
             return response()->json(array('message' => 'Found with Package ID', 'data' => $with_package_id, 'code' => '201'));
         }
         else if(count($with_lqin)){
@@ -260,20 +272,6 @@ class ManifestController extends Controller
         } else if (count($daily_dropshipbin_bucket)) {
             return response()->json(array('message' => 'Found with Bol ID', 'data' => $daily_dropshipbin_bucket, 'code' => '201'));
         } else {
-            $with_package_id = ScannedProducts::where('package_id', $request->id)->get();
-            $with_bol_id = ScannedProducts::where('bol', $request->id)->get();
-            $with_lqin = ScannedProducts::where('lqin', $request->id)->get();
-
-            if (count($with_package_id)) {
-                return response()->json(array('message' => 'Found in scanned productss', 'code' => '304'));
-            } else if (count($with_bol_id)) {
-                return response()->json(array('message' => 'Found in scanned productss', 'code' => '304'));
-            } else if (count($with_lqin)) {
-                return response()->json(array('message' => 'Found in scanned productss', 'code' => '304'));
-            } else {
-                return response()->json(array('message' => 'not found', 'code' => '404'));
-            }
-
             return response()->json(array('message' => 'not found', 'code' => '404'));
         }
     }
