@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\ClaimList;
 use App\Models\Pallets;
+use App\Models\PalletProductRelation;
 use Redirect;
 use App\Models\ScannedProducts;
 use Illuminate\Http\Request;
@@ -116,16 +117,16 @@ class PalletsController extends Controller
      */
     public function show(Pallets $pallet)
     {
-        $bol_ids = unserialize($pallet->bol_ids);
+        $bol_ids_data = PalletProductRelation::select('scanned_products_id')->where('pallet_id', $pallet->id)->get();
 
-        if ($bol_ids) {
+        if (count($bol_ids_data)) {
+
+            $bol_ids=$bol_ids_data->toArray();
             $pallet_products = [];
 
-            foreach ($bol_ids as $bol_id) {
-                $prd = ScannedProducts::where('bol', $bol_id)->orWhere('package_id', $bol_id)->orWhere('lqin', $bol_id)->get();
-                foreach ($prd as $pd) {
-                    array_push($pallet_products, $pd);
-                }
+            foreach ($bol_ids as $product_unique_id) {
+                $prd = ScannedProducts::where('id', $product_unique_id)->first();
+                array_push($pallet_products, $prd);
             }
 
             $breadcrumbs = [
@@ -140,9 +141,10 @@ class PalletsController extends Controller
                 'total_price' => $pallet->total_price,
                 'total_units' => $pallet->total_unit
             ]);
+        }else{
+            return Redirect::back()->withErrors(['error' => 'No products added to this pallet']);
         }
 
-        return Redirect::back()->withErrors(['error' => 'No products added to this pallet']);
     }
 
     /**

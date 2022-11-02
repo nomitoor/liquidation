@@ -2,6 +2,7 @@
 namespace App\Exports;
 use App\Models\ScannedProducts;
 use App\Models\Pallets;
+use App\Models\PalletProductRelation;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -28,18 +29,11 @@ class ScannedProductsClientExport implements FromQuery, WithMapping, WithHeading
      */
     public function query()
     {   
-        $all_bol_ids = Pallets::where('id', $this->id)->get(['bol_ids']);
-        $bol_ids = unserialize($all_bol_ids[0]->bol_ids);
-        $data = ScannedProducts::whereIn('bol', $bol_ids)->orWhereIn('package_id', $bol_ids )->orWhereIn('lqin',$bol_ids);
-//         //   $data = ScannedProducts::where('pallet_id', $this->id);
-//    //   $data = DB::table('scanned_products')->whereIn('bol', $bol_ids);
 
-//       // dd($data);
-
-//       print_r(count($bol_ids));
-
-//          dd(0);
+        $bol_ids_data = PalletProductRelation::where('pallet_id', $this->id)->get()->pluck('scanned_products_id')->toArray();
+        $data = ScannedProducts::whereIn('id', $bol_ids_data);
         return $data;
+
     }
 
     // here you select the row that you want in the file
