@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use DB;
 
 use App\Models\ClaimList;
 use App\Models\DailyManifest;
@@ -10,6 +11,7 @@ use App\Models\LPN;
 use App\Models\PalletProductRelation;
 use App\Models\ScannedProducts;
 use Illuminate\Http\Request;
+
 
 class PalletsAPIController extends Controller
 {
@@ -124,9 +126,13 @@ class PalletsAPIController extends Controller
             return response()->json(['code' => 201, 'message' => 'Bol already added to pallet - > ' . $pallet_id_of_package]);
        
         } else {
-            $products_query = ScannedProducts::where('bol', $request->bol_id)->whereNull('pallet_id');
-            $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->whereNull('pallet_id');
-            $with_lqin = ScannedProducts::where('lqin', $request->bol_id)->whereNull('pallet_id');
+            // $products_query = ScannedProducts::where('bol', $request->bol_id)->whereNull('pallet_id');
+            // $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->whereNull('pallet_id');
+            // $with_lqin = ScannedProducts::where('lqin', $request->bol_id)->whereNull('pallet_id');
+
+            $products_query = ScannedProducts::where('bol', $request->bol_id);
+            $with_package_id = ScannedProducts::where('package_id', $request->bol_id);
+            $with_lqin = ScannedProducts::where('lqin', $request->bol_id);
 
             $scanned_products = $products_query->get();
             $scanned_products_with_package_id = $with_package_id->get();
@@ -231,19 +237,20 @@ class PalletsAPIController extends Controller
 
                 ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
                 return response()->json(array('code' => 201, 'message' => 'Pallet updated Succesfully'));
-            } else {
+            } 
+            // else {
 
-                $products_query = ScannedProducts::where('bol', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
-                $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
+            //     $products_query = ScannedProducts::where('bol', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
+            //     $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
 
-                if (!is_null($products_query)) {
-                    $pallet_details = Pallets::where('id', $products_query->pallet_id)->first();
-                    return response()->json(array('code' => 201, 'message' => 'This BOL ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id)));
-                } else {
-                    $pallet_details = Pallets::where('id', $with_package_id->pallet_id)->first();
-                    return response()->json(array('code' => 201, 'message' => 'This BOL ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id)));
-                }
-            }
+            //     if (!is_null($products_query)) {
+            //         $pallet_details = Pallets::where('id', $products_query->pallet_id)->first();
+            //         return response()->json(array('code' => 201, 'message' => 'This BOL ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id)));
+            //     } else {
+            //         $pallet_details = Pallets::where('id', $with_package_id->pallet_id)->first();
+            //         return response()->json(array('code' => 201, 'message' => 'This BOL ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id)));
+            //     }
+            // }
         }
     }
 
@@ -517,34 +524,40 @@ class PalletsAPIController extends Controller
 
     public function removePallets(Request $request)
     {
-        $pallet = Pallets::where('id', $request->id)->first();
-        $data = unserialize($pallet->bol_ids);
 
-        if (($key = array_search($request->bol_id, $data)) !== false || ($key = array_search($request->package_id, $data)) !== false) {
-            unset($data[$key]);
+        $bol_ids_data = PalletProductRelation::select('scanned_products_id')->where('pallet_id', $request->id)
+        ->where(function($q) use($request){ 
+            $q->Where('bol_id', $request->package_id )
+              ->orWhere('bol_id', $request->bol_id);
+        });
+
+        $data_to_remove = $bol_ids_data->get();
+
+        if(count($data_to_remove)){
+            $dataCalculate= ScannedProducts::whereIn('id', $data_to_remove)->get();
+            $total_price = 0;
+            $total_units = 0;
+            $total_recovery = 0;
+    
+            foreach ($dataCalculate as $product) {
+                    $total_price += (float) $product->total_cost;
+                    $total_units += (int) $product->units;
+                    $total_recovery += (int) $product->total_recovery;
+    
+                }
+        
+        
+            DB::table('pallet')->decrement('total_price', $total_price);
+            DB::table('pallet')->decrement('total_unit', $total_units);
+            DB::table('pallet')->decrement('total_recovery', $total_recovery);
+            $bol_ids_data->delete();
+            return response()->json(array('code' => '201', 'message' => 'Pallet removed from the list'));
+      
+        }else{
+            return response()->json(array('code' => '203', 'message' => 'Unable to remove'));
         }
 
-        ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->package_id)->update(['pallet_id' => NULL]);
-
-        $total_price = 0;
-        $total_units = 0;
-        foreach ($data as $value) {
-            $products = ScannedProducts::where('bol', $value)->orWhere('package_id', $value)->get(['units', 'unit_cost', 'total_cost']);
-
-            foreach ($products as $product) {
-                $total_price += (float) $product->total_cost;
-                $total_units += (int) $product->units;
-            }
-        }
-
-        $pallet->update([
-            'bol_ids' => serialize($data),
-            'total_price' => $total_price,
-            'total_unit' => $total_units,
-        ]);
-
-        return response()->json(array('code' => '201', 'message' => 'Pallet removed from the list'));
-    }
+         }
 
 
     public function findBolFromLpn(Request $request)
