@@ -207,6 +207,8 @@ class ManifestController extends Controller
 
     public function getManifest(Request $request)
     {
+        if($request->id!=null && trim($request->id,' '))
+        {
         $with_package_id = Manifest::where('package_id', $request->id)->get();
         $with_bol_id = Manifest::where('bol', $request->id)->get();
         $with_lpn = Manifest::where('lpn', $request->id)->get();
@@ -273,6 +275,10 @@ class ManifestController extends Controller
             return response()->json(array('message' => 'Found with Bol ID', 'data' => $daily_dropshipbin_bucket, 'code' => '201'));
         } else {
             return response()->json(array('message' => 'not found', 'code' => '404'));
+        }
+        }
+        else{
+            return response()->json(array('message' => 'Input Something To Search', 'code' => '405'));
         }
     }
 

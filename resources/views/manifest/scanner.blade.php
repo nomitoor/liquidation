@@ -649,13 +649,15 @@
                     $('#return_id').val(id)
                     getProductList(id)
 
-                } else {
+                } else if (data.code == '404'){
                     var result = confirm("Do you want add this to unknown list?");
                     if (result) {
                         $('.uknown-list').html(id)
                         $('#unknown-field').val(id)
                         $('#unknown-list').click()
                     }
+                }else{
+                    alert("Input Something To Search");
                 }
             }
         });
@@ -704,7 +706,7 @@
                     $('.total_units').html(unit_count)
                     $('.total_costs').html(total_cost.toFixed(2))
 
-                } else {
+                } else if(data.code == '404'){
 
                     var result = confirm("Do you want add this to unknown list?");
                     if (result) {
@@ -712,6 +714,8 @@
                         $('#unknown-field').val(id)
                         $('#unknown-list').click()
                     }
+                } else{
+                    alert("Input Something To Search");
                 }
             }
         });
