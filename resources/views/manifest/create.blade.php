@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'Uploading manifest')
+@section('title', 'Upload Weekly Manifest')
 
 @section('vendor-style')
 <!-- vendor css files -->
@@ -19,7 +19,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Please upload manifest file here</h4>
+                    <h4 class="card-title">Upload Weekly Manifest Below</h4>
                 </div>
                 <div class="card-body">
                     <form method="POST" enctype="multipart/form-data" id="upload-file" action="{{ route('manifest.store') }}">
@@ -36,7 +36,7 @@
                             </div>
 
                             <div class="col-md-12">
-                                <button type="submit" class="btn btn-primary" id="submit">Submit</button>
+                                <button type="submit" class="btn btn-primary" id="submit">Upload Now</button>
                             </div>
                         </div>
                     </form>
