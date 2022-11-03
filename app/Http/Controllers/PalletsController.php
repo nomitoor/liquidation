@@ -204,14 +204,16 @@ class PalletsController extends Controller
     public function update(Request $request, Pallets $pallet)
     {
 
-
+        if($request->bol_id != null && trim($request->bol_id, ' ') != ''){
+        
         $relationCheck = PalletProductRelation::where('bol_id', $request->bol_id)->get();
 
         if (count($relationCheck) > 0) {
             $pallet_id_of_package = $relationCheck[0]->pallet_id;
             return \Redirect::back()->withErrors(['error' => '^^^^^^^^   - Bol already added to pallet -> DE' . sprintf("%05d", $pallet_id_of_package)]);
 
-        } else {
+        } 
+        else {
 
 
         $products_query = ScannedProducts::where('bol', $request->bol_id);
@@ -352,7 +354,12 @@ class PalletsController extends Controller
 
 
 
-        }
+        }}
+      else{
+        return \Redirect::back()->withErrors(['error' => 'Input Something to Search']);
+
+      }
+        
 
 
 

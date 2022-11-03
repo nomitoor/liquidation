@@ -117,7 +117,8 @@ class PalletsAPIController extends Controller
     public function addToPallet(Request $request, Pallets $pallet)
     {
 
-
+    if($request->bol_id != null && trim($request->bol_id, ' ') != ''){
+ 
         $relationCheck = PalletProductRelation::where('bol_id', $request->bol_id)->get();
 
         if (count($relationCheck) > 0) {
@@ -238,20 +239,12 @@ class PalletsAPIController extends Controller
                 ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
                 return response()->json(array('code' => 201, 'message' => 'Pallet updated Succesfully'));
             } 
-            // else {
-
-            //     $products_query = ScannedProducts::where('bol', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
-            //     $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
-
-            //     if (!is_null($products_query)) {
-            //         $pallet_details = Pallets::where('id', $products_query->pallet_id)->first();
-            //         return response()->json(array('code' => 201, 'message' => 'This BOL ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id)));
-            //     } else {
-            //         $pallet_details = Pallets::where('id', $with_package_id->pallet_id)->first();
-            //         return response()->json(array('code' => 201, 'message' => 'This BOL ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id)));
-            //     }
-            // }
+          
         }
+    }else{
+        return response()->json(['code' => 405, 'message' => 'Input Something To Add To Pallet' ]);
+    }
+        
     }
 
 
