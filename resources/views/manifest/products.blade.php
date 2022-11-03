@@ -22,7 +22,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header border-bottom d-none">
-                    <h4 class="card-title">All Products</h4>
+                    <h4 class="card-title">Scanned Products</h4>
                     <a class="btn btn-primary" href="{{ route('manifest.create') }}">Upload File</a>
                 </div>
                 <div class="card-datatable">

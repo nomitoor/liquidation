@@ -22,7 +22,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header border-bottom">
-                    <h4 class="card-title">All Products</h4>
+                    <h4 class="card-title">All Unknown Products</h4>
                     <a class="btn btn-primary" onclick="checkManifest()">Check Manifest</a>
                 </div>
                 <div class="card-datatable">

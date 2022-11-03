@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'Products')
+@section('title', 'Daily Records')
 
 @section('vendor-style')
 {{-- vendor css files --}}
@@ -22,7 +22,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header border-bottom">
-                    <h4 class="card-title">All Products</h4>
+                    <h4 class="card-title">All Daily Manifest Records</h4>
                     <a class="btn btn-primary" href="{{ route('daily-manifest-create') }}">Upload Daily File</a>
                 </div>
                 <div class="card-datatable">
