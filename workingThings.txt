@@ -1,7 +1,8 @@
 // Things needs to be done
 -------------------------------
 1- Need to add LQIN where updating Pallet ID - In Pallet Add Web API.
-
+2- File Check UI.
+3- 
 
 
 
@@ -19,3 +20,5 @@
 -------------------------------
 1- Added Filename in Web.
 2- Added Filename in App - Scanned Prodcuts
+3- File Check Added.
+4- Weekly, Daily , Scanned Tables Optimzied

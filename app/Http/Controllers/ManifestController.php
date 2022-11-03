@@ -86,29 +86,33 @@ class ManifestController extends Controller
         if ($request->has('manifestfile')) {
             $file = $request->file('manifestfile');
             $filename = $file->getClientOriginalName();
-            $location = 'uploads';
+            $filecheck = ManifestRecord::where('file_name', $filename)->get();
 
-            $file->move(public_path($location), $file->getClientOriginalName());
-
-            $filepath = public_path($location . "/" . $filename);
-
-            Excel::import(new ManifestImport($filename), $filepath);
-
-            ManifestRecord::create([
-                'file_name' => $filename,
-                'number_of_entities' => '1234567', // TODO: Work on count of the records
-                'uploaded_by' => auth()->user()->id
-            ]);
-
-            if (\File::exists($filepath)) {
-                unlink($filepath);
+            if(count($filecheck)>0){
+                return response()->json('File already has been uploaded');
             }
-            $breadcrumbs = [
-                ['link' => "manifest", 'name' => "Manifest"], ['name' => "Upload Manfiest"]
-            ];
-            $manifest = Manifest::all();
-            return view('manifest/manifest', ['breadcrumbs' => $breadcrumbs, 'manifest' => $manifest]);
-        }
+            else{
+                $location = 'uploads';
+                $file->move(public_path($location), $file->getClientOriginalName());
+                $filepath = public_path($location . "/" . $filename);
+    
+                Excel::import(new ManifestImport($filename), $filepath);
+                ManifestRecord::create([
+                    'file_name' => $filename,
+                    'number_of_entities' => '1234567', // TODO: Work on count of the records
+                    'uploaded_by' => auth()->user()->id
+                ]);
+                if (\File::exists($filepath)) {
+                    unlink($filepath);
+                }
+                $breadcrumbs = [
+                    ['link' => "manifest", 'name' => "Manifest"], ['name' => "Upload Manfiest"]
+                ];
+                $manifest = Manifest::all();
+                return view('manifest/manifest', ['breadcrumbs' => $breadcrumbs, 'manifest' => $manifest]);
+            
+            }
+           }
         $breadcrumbs = [
             ['link' => "manifest", 'name' => "Manifest"], ['name' => "Upload Manfiest"]
         ];
@@ -121,24 +125,35 @@ class ManifestController extends Controller
         if ($request->has('manifestfile')) {
             $file = $request->file('manifestfile');
             $filename = $file->getClientOriginalName();
-            $location = 'uploads';
 
-            $file->move(public_path($location), $file->getClientOriginalName());
+            $filecheck = DailyManifestRecord::where('file_name', $filename)->get();
 
-            $filepath = public_path($location . "/" . $filename);
-            DailyManifestRecord::create([
-                'file_name' => $filename,
-                'number_of_entities' => '1234567', // TODO: Work on count of the records
-                'uploaded_by' => auth()->user()->id
-            ]);
-            Excel::import(new DailyManifestImport($filename), $filepath);
+            if(count($filecheck)>0){
+                return response()->json('File already has been uploaded');
+            }
+            else{
+                $location = 'uploads';
 
-            $breadcrumbs = [
-                ['link' => "manifest", 'name' => "Manifest"], ['name' => "Upload Manfiest"]
-            ];
-            $manifest = Manifest::all();
-            return view('manifest/daily-manifest', ['breadcrumbs' => $breadcrumbs, 'manifest' => $manifest]);
-        }
+                $file->move(public_path($location), $file->getClientOriginalName());
+    
+                $filepath = public_path($location . "/" . $filename);
+                DailyManifestRecord::create([
+                    'file_name' => $filename,
+                    'number_of_entities' => '1234567', // TODO: Work on count of the records
+                    'uploaded_by' => auth()->user()->id
+                ]);
+                Excel::import(new DailyManifestImport($filename), $filepath);
+    
+                $breadcrumbs = [
+                    ['link' => "manifest", 'name' => "Manifest"], ['name' => "Upload Manfiest"]
+                ];
+                $manifest = Manifest::all();
+                return view('manifest/daily-manifest', ['breadcrumbs' => $breadcrumbs, 'manifest' => $manifest]);
+             
+            }
+
+
+            }
         $breadcrumbs = [
             ['link' => "manifest", 'name' => "Manifest"], ['name' => "Upload Manfiest"]
         ];
