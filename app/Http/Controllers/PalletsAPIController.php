@@ -127,6 +127,29 @@ class PalletsAPIController extends Controller
             return response()->json(['code' => 201, 'message' => 'Bol already added to pallet - > ' . $pallet_id_of_package]);
        
         } else {
+
+
+            // $product = ScannedProducts::where('bol', $request->bol_id)
+            // ->orWhere('package_id', $request->bol_id)
+            // ->orWhere('lqin', $request->bol_id)
+            // ->get();
+
+            // $relationCheck = PalletProductRelation::where('bol_id', $product[0]->bol)
+            // ->orWhere('bol_id',  $product[0]->package_id)
+            // ->orWhere('bol_id',  $product[0]->lqin)
+            // ->get();
+
+            // $pallet_id_of_package = $relationCheck[0]->pallet_id;
+            // $type_of_package = $relationCheck[0]->type;
+
+
+            // if(count($relationCheck)){
+            //     return response()->json(['code' => 201, 'message' => 'Bol already added to pallet - > ' . $pallet_id_of_package . '  Aagaist' .$type_of_package]);
+            // }
+            // else{
+
+           
+            
             // $products_query = ScannedProducts::where('bol', $request->bol_id)->whereNull('pallet_id');
             // $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->whereNull('pallet_id');
             // $with_lqin = ScannedProducts::where('lqin', $request->bol_id)->whereNull('pallet_id');
@@ -240,6 +263,8 @@ class PalletsAPIController extends Controller
                 return response()->json(array('code' => 201, 'message' => 'Pallet updated Succesfully'));
             } 
           
+        
+            
         }
     }else{
         return response()->json(['code' => 405, 'message' => 'Input Something To Add To Pallet' ]);

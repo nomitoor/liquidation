@@ -214,7 +214,24 @@ class PalletsController extends Controller
 
         } 
         else {
+            $product = ScannedProducts::where('bol', $request->bol_id)
+            ->orWhere('package_id', $request->bol_id)
+            ->orWhere('lqin', $request->bol_id)
+            ->get();
 
+            $relationCheck = PalletProductRelation::where('bol_id', $product[0]->bol)
+            ->orWhere('bol_id',  $product[0]->package_id)
+            ->orWhere('bol_id',  $product[0]->lqin)
+            ->get();
+
+            $pallet_id_of_package = $relationCheck[0]->pallet_id;
+            $type_of_package = $relationCheck[0]->type;
+
+
+            if(count($relationCheck)){
+                return \Redirect::back()->withErrors(['error' => 'Already added to pallet -> DE' . sprintf("%05d", $pallet_id_of_package) .'   --  with -- >'. $type_of_package]);
+            }
+            else{
 
         $products_query = ScannedProducts::where('bol', $request->bol_id);
         $with_package_id = ScannedProducts::where('package_id', $request->bol_id);
@@ -352,6 +369,8 @@ class PalletsController extends Controller
         // }
 
 
+
+            }
 
 
         }}
