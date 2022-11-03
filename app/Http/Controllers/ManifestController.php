@@ -191,9 +191,53 @@ class ManifestController extends Controller
         //
     }
 
-    public function getAll()
+    public function getAll(Request $request)
     {
-        return response()->json(array('data' => Manifest::all()));
+
+       $draw = $request->get('draw');
+        $start = $request->get("start");
+        $rowperpage = $request->get("length"); // Rows display per page
+
+        $columnIndex_arr = $request->get('order');
+        $columnName_arr = $request->get('columns');
+        $order_arr = $request->get('order');
+        $search_arr = $request->get('search');
+
+        $columnIndex = $columnIndex_arr[0]['column']; // Column index
+        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
+        $searchValue = $search_arr['value']; // Search value
+
+        // Total records
+        $totalRecords = Manifest::select('count(*) as allcount')->count();
+        $totalRecordswithFilter = Manifest::select('count(*) as allcount')->where('bol', 'like', '%' .$searchValue . '%')->count();
+
+        $records = Manifest::orderBy($columnName,$columnSortOrder)
+        ->where('bol', 'like', '%' .$searchValue . '%')
+        ->select('manifests.*')
+        ->skip($start)
+        ->take($rowperpage)
+        ->get()->toArray();
+
+        
+        $data_arr = array();
+        $sno = $start+1;
+        foreach($records as $record){
+         
+            $data_arr[] = $record;
+        }
+
+        $response = array(
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordswithFilter,
+            "aaData" => $data_arr
+        ); 
+
+     echo json_encode($response);
+     exit;
+
+        //return response()->json(array('data' => Manifest::all()));
     }
 
     public function codeScanner()
