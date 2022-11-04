@@ -21,7 +21,7 @@ class PalletsController extends Controller
     public function index()
     {
         $pallets = Pallets::with('category')->orderBy('id', 'DESC')->paginate(10);
-        
+
         /* foreach ($pallets as $key => $pallet) {
         //     // $rec = 0;
         //     // try {
@@ -122,7 +122,7 @@ class PalletsController extends Controller
 
         if (count($bol_ids_data)) {
 
-            $bol_ids=$bol_ids_data->toArray();
+            $bol_ids = $bol_ids_data->toArray();
             $pallet_products = [];
 
             foreach ($bol_ids as $product_unique_id) {
@@ -142,10 +142,9 @@ class PalletsController extends Controller
                 'total_price' => $pallet->total_price,
                 'total_units' => $pallet->total_unit
             ]);
-        }else{
+        } else {
             return Redirect::back()->withErrors(['error' => 'No products added to this pallet']);
         }
-
     }
 
     /**
@@ -165,16 +164,15 @@ class PalletsController extends Controller
 
         if (count($bol_ids_data)) {
 
-            $bol_ids=$bol_ids_data->toArray();
+            $bol_ids = $bol_ids_data->toArray();
 
             foreach ($bol_ids as $product_unique_id) {
                 $prd = ScannedProducts::where('id', $product_unique_id)->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
                 array_push($scanned_products, $prd[0]);
             }
+        }
 
-        }    
 
-        
 
         // $scanned_products = ScannedProducts::whereIn('bol', unserialize($pallet->bol_ids) ?: [])->orWhereIn('package_id', unserialize($pallet->bol_ids) ?: [])
         // ->get(['id', 'bol', 'package_id', 'item_description', 'units', 'unit_cost', 'total_cost']);
@@ -194,44 +192,8 @@ class PalletsController extends Controller
         return view('pallets/edit', ['breadcrumbs' => $breadcrumbs, 'pallets' => $pallet, 'last_total_cost' => 'NAN', 'scanned_products' => $scanned_products]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Pallets $pallet)
-    {
+    public function mainAddToPalletFunction(Request $request, Pallets $pallet){
 
-        if($request->bol_id != null && trim($request->bol_id, ' ') != ''){
-        
-        $relationCheck = PalletProductRelation::where('bol_id', $request->bol_id)->get();
-
-        if (count($relationCheck) > 0) {
-            $pallet_id_of_package = $relationCheck[0]->pallet_id;
-            return \Redirect::back()->withErrors(['error' => '^^^^^^^^   - Bol already added to pallet -> DE' . sprintf("%05d", $pallet_id_of_package)]);
-
-        } 
-        else {
-            $product = ScannedProducts::where('bol', $request->bol_id)
-            ->orWhere('package_id', $request->bol_id)
-            ->orWhere('lqin', $request->bol_id)
-            ->get();
-
-            $relationCheck = PalletProductRelation::where('bol_id', $product[0]->bol)
-            ->orWhere('bol_id',  $product[0]->package_id)
-            ->orWhere('bol_id',  $product[0]->lqin)
-            ->get();
-
-            $pallet_id_of_package = $relationCheck[0]->pallet_id;
-            $type_of_package = $relationCheck[0]->type;
-
-
-            if(count($relationCheck)){
-                return \Redirect::back()->withErrors(['error' => 'Already added to pallet -> DE' . sprintf("%05d", $pallet_id_of_package) .'   --  with -- >'. $type_of_package]);
-            }
-            else{
 
         $products_query = ScannedProducts::where('bol', $request->bol_id);
         $with_package_id = ScannedProducts::where('package_id', $request->bol_id);
@@ -241,9 +203,9 @@ class PalletsController extends Controller
         $scanned_products_with_package_id = $with_package_id->get();
         $scanned_products_with_lqin = $with_lqin->get();
 
-      
+
         if (count($scanned_products)) {
-            
+
             $total_price = 0;
             $total_units = 0;
             $total_recovery = 0;
@@ -275,11 +237,8 @@ class PalletsController extends Controller
 
             ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
             return \Redirect::back()->withErrors(['error' => 'Pallet updated Succesfully']);
-
-
-
         } else if (count($scanned_products_with_package_id)) {
-           
+
 
             $total_price = 0;
             $total_units = 0;
@@ -313,10 +272,8 @@ class PalletsController extends Controller
 
 
             return \Redirect::back()->withErrors(['error' => 'Pallet updated Succesfully']);
+        } else if (count($scanned_products_with_lqin)) {
 
-
-        }  else if (count($scanned_products_with_lqin)) {
-           
 
             $total_price = 0;
             $total_units = 0;
@@ -348,11 +305,10 @@ class PalletsController extends Controller
 
             ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
             return \Redirect::back()->withErrors(['error' => 'Pallet updated Succesfully']);
-        }
-        else{
+        } else {
             return \Redirect::back()->withErrors(['error' => 'Nothing Found Against Searched ID']);
         }
-        
+
         // else {
 
         //     $products_query = ScannedProducts::where('bol', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
@@ -370,20 +326,58 @@ class PalletsController extends Controller
 
 
 
-            }
-
-
-        }}
-      else{
-        return \Redirect::back()->withErrors(['error' => 'Input Something to Search']);
-
-      }
-        
-
-
-
-
+    
     }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Pallets $pallet)
+    {
+
+        if ($request->bol_id != null && trim($request->bol_id, ' ') != '') {
+
+            $relationCheck = PalletProductRelation::where('bol_id', $request->bol_id)->get();
+
+            if (count($relationCheck) > 0) {
+                $pallet_id_of_package = $relationCheck[0]->pallet_id;
+                return \Redirect::back()->withErrors(['error' => '^^^^^^^^   - Bol already added to pallet -> DE' . sprintf("%05d", $pallet_id_of_package)]);
+            } else {
+                $product = ScannedProducts::where('bol', $request->bol_id)
+                    ->orWhere('package_id', $request->bol_id)
+                    ->orWhere('lqin', $request->bol_id)
+                    ->get()->toArray();
+                
+                if (count($relationCheck)>0) {
+                    $relationCheck = PalletProductRelation::where('bol_id', $product[0]->bol)
+                    ->orWhere('bol_id',  $product[0]->package_id)
+                    ->orWhere('bol_id',  $product[0]->lqin)
+                    ->get();
+
+                $pallet_id_of_package = $relationCheck[0]->pallet_id;
+                $type_of_package = $relationCheck[0]->type;
+
+
+                if (count($relationCheck)) {
+                    return \Redirect::back()->withErrors(['error' => 'Already added to pallet -> DE' . sprintf("%05d", $pallet_id_of_package) . '   --  with -- >' . $type_of_package]);
+                } else {
+                    PalletsController::mainAddToPalletFunction($request,$pallet);
+                }  } else {
+                    return \Redirect::back()->withErrors(['error' => 'Product is not available in Scan']);
+                }
+                
+            }
+        } else {
+            return \Redirect::back()->withErrors(['error' => 'Input Something to Search']);
+        }
+    }
+
+
+   
 
     /**
      * Remove the specified resource from storage.
@@ -394,7 +388,7 @@ class PalletsController extends Controller
     // public function deletePalletsWithBol(Request $request)
     // {
 
-        
+
 
 
     //     $pallet = Pallets::where('id', $request->id)->first();
