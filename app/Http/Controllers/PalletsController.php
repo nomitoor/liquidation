@@ -192,143 +192,7 @@ class PalletsController extends Controller
         return view('pallets/edit', ['breadcrumbs' => $breadcrumbs, 'pallets' => $pallet, 'last_total_cost' => 'NAN', 'scanned_products' => $scanned_products]);
     }
 
-    public function mainAddToPalletFunction(Request $request, Pallets $pallet){
-
-
-        $products_query = ScannedProducts::where('bol', $request->bol_id);
-        $with_package_id = ScannedProducts::where('package_id', $request->bol_id);
-        $with_lqin = ScannedProducts::where('lqin', $request->bol_id);
-
-        $scanned_products = $products_query->get();
-        $scanned_products_with_package_id = $with_package_id->get();
-        $scanned_products_with_lqin = $with_lqin->get();
-
-
-        if (count($scanned_products)) {
-
-            $total_price = 0;
-            $total_units = 0;
-            $total_recovery = 0;
-
-            foreach ($scanned_products as $products) {
-                $total_price += (float) $products->total_cost;
-                $total_units += (int) $products->units;
-                $total_recovery += (float) $products->total_recovery;
-            }
-
-            $new_total_price = $pallet->total_price + $total_price;
-            $new_total_units = $pallet->total_unit + $total_units;
-            $new_total_recovery = $pallet->total_recovery + $total_recovery;
-
-            foreach ($scanned_products as $scannedids) {
-                PalletProductRelation::Create([
-                    'pallet_id' => $pallet->id,
-                    'scanned_products_id' => $scannedids->id,
-                    'bol_id' => $request->bol_id,
-                    'type' => 'BOL-ID'
-                ]);
-            }
-
-            $pallet->update([
-                'total_price' => $new_total_price,
-                'total_unit' => $new_total_units,
-                'total_recovery' => $new_total_recovery
-            ]);
-
-            ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
-            return \Redirect::back()->withErrors(['error' => 'Pallet updated Succesfully']);
-        } else if (count($scanned_products_with_package_id)) {
-
-
-            $total_price = 0;
-            $total_units = 0;
-            $total_recovery = 0;
-
-
-            foreach ($scanned_products_with_package_id as $products) {
-                $total_price += (float) $products->total_cost;
-                $total_units += (int) $products->units;
-                $total_recovery += (float) $products->total_recovery;
-            }
-
-            $new_total_price = $pallet->total_price + $total_price;
-            $new_total_units = $pallet->total_unit + $total_units;
-            $new_total_recovery = $pallet->total_recovery + $total_recovery;
-
-            foreach ($scanned_products_with_package_id as $scannedids) {
-                PalletProductRelation::Create([
-                    'pallet_id' => $pallet->id,
-                    'scanned_products_id' => $scannedids->id,
-                    'bol_id' => $request->bol_id,
-                    'type' => 'PACKAGE-ID'
-                ]);
-            }
-            $pallet->update([
-                'total_price' => $new_total_price,
-                'total_unit' => $new_total_units,
-                'total_recovery' => $new_total_recovery
-            ]);
-            ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
-
-
-            return \Redirect::back()->withErrors(['error' => 'Pallet updated Succesfully']);
-        } else if (count($scanned_products_with_lqin)) {
-
-
-            $total_price = 0;
-            $total_units = 0;
-            $total_recovery = 0;
-
-            foreach ($scanned_products_with_lqin as $products) {
-                $total_price += (float) $products->total_cost;
-                $total_units += (int) $products->units;
-                $total_recovery += (float) $products->total_recovery;
-            }
-
-            $new_total_price = $pallet->total_price + $total_price;
-            $new_total_units = $pallet->total_unit + $total_units;
-            $new_total_recovery = $pallet->total_recovery + $total_recovery;
-
-            foreach ($scanned_products_with_lqin as $scannedids) {
-                PalletProductRelation::Create([
-                    'pallet_id' => $pallet->id,
-                    'scanned_products_id' => $scannedids->id,
-                    'bol_id' => $request->bol_id,
-                    'type' => 'LQIN-ID'
-                ]);
-            }
-            $pallet->update([
-                'total_price' => $new_total_price,
-                'total_unit' => $new_total_units,
-                'total_recovery' => $new_total_recovery
-            ]);
-
-            ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
-            return \Redirect::back()->withErrors(['error' => 'Pallet updated Succesfully']);
-        } else {
-            return \Redirect::back()->withErrors(['error' => 'Nothing Found Against Searched ID']);
-        }
-
-        // else {
-
-        //     $products_query = ScannedProducts::where('bol', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
-        //     $with_package_id = ScannedProducts::where('package_id', $request->bol_id)->where('pallet_id', '<>', NULL)->first();
-
-        //     if (!is_null($products_query)) {
-        //         $pallet_details = Pallets::where('id', $products_query->pallet_id)->first();
-
-        //         return \Redirect::back()->withErrors(['error' => 'This BOL ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id)]);
-        //     } else {
-        //         $pallet_details = Pallets::where('id', $with_package_id->pallet_id)->first();
-        //         return \Redirect::back()->withErrors(['error' => 'This PACKAGE ID is already part of PALLET: ' . $pallet_details->description . ' with PALLET ID: DE' . sprintf("%05d", $pallet_details->id)]);
-        //     }
-        // }
-
-
-
     
-    }
-
     /**
      * Update the specified resource in storage.
      *
@@ -341,31 +205,39 @@ class PalletsController extends Controller
 
         if ($request->bol_id != null && trim($request->bol_id, ' ') != '') {
 
+            // if already added into pallet then simply give error to users;
             $relationCheck = PalletProductRelation::where('bol_id', $request->bol_id)->get();
 
             if (count($relationCheck) > 0) {
                 $pallet_id_of_package = $relationCheck[0]->pallet_id;
                 return \Redirect::back()->withErrors(['error' => '^^^^^^^^   - Bol already added to pallet -> DE' . sprintf("%05d", $pallet_id_of_package)]);
             } else {
+
                 $product = ScannedProducts::where('bol', $request->bol_id)
                     ->orWhere('package_id', $request->bol_id)
                     ->orWhere('lqin', $request->bol_id)
-                    ->get()->toArray();
-                
-                if (count($relationCheck)>0) {
+                    ->get();
+               
+                // check if product exist or not in the scanned    
+                if (count($product)>0) {
                     $relationCheck = PalletProductRelation::where('bol_id', $product[0]->bol)
                     ->orWhere('bol_id',  $product[0]->package_id)
                     ->orWhere('bol_id',  $product[0]->lqin)
                     ->get();
 
-                $pallet_id_of_package = $relationCheck[0]->pallet_id;
-                $type_of_package = $relationCheck[0]->type;
-
-
+                // Checking before adding if lqin, packageid and bol exist in relation    
                 if (count($relationCheck)) {
+                    $pallet_id_of_package = $relationCheck[0]->pallet_id;
+                    $type_of_package = $relationCheck[0]->type;    
                     return \Redirect::back()->withErrors(['error' => 'Already added to pallet -> DE' . sprintf("%05d", $pallet_id_of_package) . '   --  with -- >' . $type_of_package]);
                 } else {
-                    PalletsController::mainAddToPalletFunction($request,$pallet);
+                    // Simple Adding To Pallet
+                    if(PalletsController::addtoPalletMainF($request,$pallet)){
+                      return \Redirect::back()->withErrors(['error' => 'Pallet updated Succesfully']);
+                    }else{
+                        return  \Redirect::back()->withErrors(['error' => 'Nothing Found Against Searched ID']);
+                    }
+            
                 }  } else {
                     return \Redirect::back()->withErrors(['error' => 'Product is not available in Scan']);
                 }
@@ -374,6 +246,123 @@ class PalletsController extends Controller
         } else {
             return \Redirect::back()->withErrors(['error' => 'Input Something to Search']);
         }
+    }
+
+
+    public function addtoPalletMainF(Request $request,Pallets $pallet){
+        $products_query = ScannedProducts::where('bol', $request->bol_id);
+                    $with_package_id = ScannedProducts::where('package_id', $request->bol_id);
+                    $with_lqin = ScannedProducts::where('lqin', $request->bol_id);
+            
+                    $scanned_products = $products_query->get();
+                    $scanned_products_with_package_id = $with_package_id->get();
+                    $scanned_products_with_lqin = $with_lqin->get();
+            
+            
+                    if (count($scanned_products)) {
+            
+                        $total_price = 0;
+                        $total_units = 0;
+                        $total_recovery = 0;
+            
+                        foreach ($scanned_products as $products) {
+                            $total_price += (float) $products->total_cost;
+                            $total_units += (int) $products->units;
+                            $total_recovery += (float) $products->total_recovery;
+                        }
+            
+                        $new_total_price = $pallet->total_price + $total_price;
+                        $new_total_units = $pallet->total_unit + $total_units;
+                        $new_total_recovery = $pallet->total_recovery + $total_recovery;
+            
+                        foreach ($scanned_products as $scannedids) {
+                            PalletProductRelation::Create([
+                                'pallet_id' => $pallet->id,
+                                'scanned_products_id' => $scannedids->id,
+                                'bol_id' => $request->bol_id,
+                                'type' => 'BOL-ID'
+                            ]);
+                        }
+            
+                        $pallet->update([
+                            'total_price' => $new_total_price,
+                            'total_unit' => $new_total_units,
+                            'total_recovery' => $new_total_recovery
+                        ]);
+            
+                        ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
+                        return true;
+                    } else if (count($scanned_products_with_package_id)) {
+            
+            
+                        $total_price = 0;
+                        $total_units = 0;
+                        $total_recovery = 0;
+            
+            
+                        foreach ($scanned_products_with_package_id as $products) {
+                            $total_price += (float) $products->total_cost;
+                            $total_units += (int) $products->units;
+                            $total_recovery += (float) $products->total_recovery;
+                        }
+            
+                        $new_total_price = $pallet->total_price + $total_price;
+                        $new_total_units = $pallet->total_unit + $total_units;
+                        $new_total_recovery = $pallet->total_recovery + $total_recovery;
+            
+                        foreach ($scanned_products_with_package_id as $scannedids) {
+                            PalletProductRelation::Create([
+                                'pallet_id' => $pallet->id,
+                                'scanned_products_id' => $scannedids->id,
+                                'bol_id' => $request->bol_id,
+                                'type' => 'PACKAGE-ID'
+                            ]);
+                        }
+                        $pallet->update([
+                            'total_price' => $new_total_price,
+                            'total_unit' => $new_total_units,
+                            'total_recovery' => $new_total_recovery
+                        ]);
+                        ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
+            
+            
+                        return true;
+                    } else if (count($scanned_products_with_lqin)) {
+            
+            
+                        $total_price = 0;
+                        $total_units = 0;
+                        $total_recovery = 0;
+            
+                        foreach ($scanned_products_with_lqin as $products) {
+                            $total_price += (float) $products->total_cost;
+                            $total_units += (int) $products->units;
+                            $total_recovery += (float) $products->total_recovery;
+                        }
+            
+                        $new_total_price = $pallet->total_price + $total_price;
+                        $new_total_units = $pallet->total_unit + $total_units;
+                        $new_total_recovery = $pallet->total_recovery + $total_recovery;
+            
+                        foreach ($scanned_products_with_lqin as $scannedids) {
+                            PalletProductRelation::Create([
+                                'pallet_id' => $pallet->id,
+                                'scanned_products_id' => $scannedids->id,
+                                'bol_id' => $request->bol_id,
+                                'type' => 'LQIN-ID'
+                            ]);
+                        }
+                        $pallet->update([
+                            'total_price' => $new_total_price,
+                            'total_unit' => $new_total_units,
+                            'total_recovery' => $new_total_recovery
+                        ]);
+            
+                        ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
+                        return true;
+                    } else {
+                        return false;
+                    }
     }
 
 
