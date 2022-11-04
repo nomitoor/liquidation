@@ -266,7 +266,7 @@ class ManifestController extends Controller
 
     public function getManifest(Request $request)
     {
-        if($request->id!=null && trim($request->id,' '))
+        if($request->id!=null && trim($request->id,' ') && $request->id!='DROPSHIP_BIN')
         {
         $with_package_id = Manifest::where('package_id', $request->id)->get();
         $with_bol_id = Manifest::where('bol', $request->id)->get();

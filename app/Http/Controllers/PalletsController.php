@@ -203,7 +203,7 @@ class PalletsController extends Controller
     public function update(Request $request, Pallets $pallet)
     {
 
-        if ($request->bol_id != null && trim($request->bol_id, ' ') != '') {
+        if ($request->bol_id != null && trim($request->bol_id, ' ') != '' && $request->bol_id!='DROPSHIP_BIN') {
 
             // if already added into pallet then simply give error to users;
             $relationCheck = PalletProductRelation::where('bol_id', $request->bol_id)->get();
@@ -250,9 +250,10 @@ class PalletsController extends Controller
 
 
     public function addtoPalletMainF(Request $request,Pallets $pallet){
+
         $products_query = ScannedProducts::where('bol', $request->bol_id);
-                    $with_package_id = ScannedProducts::where('package_id', $request->bol_id);
-                    $with_lqin = ScannedProducts::where('lqin', $request->bol_id);
+        $with_package_id = ScannedProducts::where('package_id', $request->bol_id);
+        $with_lqin = ScannedProducts::where('lqin', $request->bol_id);
             
                     $scanned_products = $products_query->get();
                     $scanned_products_with_package_id = $with_package_id->get();
