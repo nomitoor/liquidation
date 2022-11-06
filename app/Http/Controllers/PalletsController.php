@@ -81,6 +81,9 @@ class PalletsController extends Controller
         $pallet = Pallets::create([
             'description' => $request->description,
             'category_id' => $request->category_id,
+            'total_price' => 0,
+            'total_unit' => 0,
+            'total_recovery' => 0,
         ]);
 
         return redirect('pallets/' . $pallet->id . '/edit');
