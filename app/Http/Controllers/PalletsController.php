@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use DB;
 
 use App\Models\Category;
 use App\Models\ClaimList;
