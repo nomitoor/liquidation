@@ -199,7 +199,7 @@ class PalletsAPIController extends Controller
                     ]);
                 }
 
-                $query = DB::table('pallet')->where('studid',$pallet->id);   
+                $query = DB::table('pallet')->where('id',$pallet->id);   
                 $query ->increment('total_price', $total_price);
                 $query ->increment('total_unit', $total_units);
                 $query ->increment('total_recovery', $total_recovery);
@@ -229,7 +229,7 @@ class PalletsAPIController extends Controller
                     ]);
                 }
 
-                $query = DB::table('pallet')->where('studid',$pallet->id);   
+                $query = DB::table('pallet')->where('id',$pallet->id);   
                 $query ->increment('total_price', $total_price);
                 $query ->increment('total_unit', $total_units);
                 $query->increment('total_recovery', $total_recovery);
@@ -257,7 +257,7 @@ class PalletsAPIController extends Controller
                         'type' => 'LQIN-ID'
                     ]);
                 }
-                $query = DB::table('pallet')->where('studid',$pallet->id);   
+                $query = DB::table('pallet')->where('id',$pallet->id);   
                 $query ->increment('total_price', $total_price);
                 $query ->increment('total_unit', $total_units);
                 $query->increment('total_recovery', $total_recovery);
