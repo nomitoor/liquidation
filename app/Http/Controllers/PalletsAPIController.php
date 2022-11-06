@@ -28,7 +28,10 @@ class PalletsAPIController extends Controller
     {
         $pallet = Pallets::create([
             'description' => $request->description,
-            'category_id' => $request->category_id
+            'category_id' => $request->category_id,
+            'total_price' => 0,
+            'total_unit' => 0,
+            'total_recovery' => 0,
         ]);
 
         return response()->json(array('message' => 'Pallet Created successfully', 'id' => $pallet->id));

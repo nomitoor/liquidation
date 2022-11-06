@@ -275,9 +275,7 @@ class PalletsController extends Controller
                             $total_recovery += (float) $products->total_recovery;
                         }
             
-                        $new_total_price = $pallet->total_price + $total_price;
-                        $new_total_units = $pallet->total_unit + $total_units;
-                        $new_total_recovery = $pallet->total_recovery + $total_recovery;
+                       
             
                         foreach ($scanned_products as $scannedids) {
                             PalletProductRelation::Create([
@@ -288,11 +286,12 @@ class PalletsController extends Controller
                             ]);
                         }
             
-                        $pallet->update([
-                            'total_price' => $new_total_price,
-                            'total_unit' => $new_total_units,
-                            'total_recovery' => $new_total_recovery
-                        ]);
+                        $query = DB::table('pallet')->where('id',$pallet->id);   
+                        $query ->increment('total_price', $total_price);
+                        $query ->increment('total_unit', $total_units);
+                        $query->increment('total_recovery', $total_recovery);
+        
+        
             
                         ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
                         return true;
@@ -310,10 +309,7 @@ class PalletsController extends Controller
                             $total_recovery += (float) $products->total_recovery;
                         }
             
-                        $new_total_price = $pallet->total_price + $total_price;
-                        $new_total_units = $pallet->total_unit + $total_units;
-                        $new_total_recovery = $pallet->total_recovery + $total_recovery;
-            
+                       
                         foreach ($scanned_products_with_package_id as $scannedids) {
                             PalletProductRelation::Create([
                                 'pallet_id' => $pallet->id,
@@ -322,11 +318,13 @@ class PalletsController extends Controller
                                 'type' => 'PACKAGE-ID'
                             ]);
                         }
-                        $pallet->update([
-                            'total_price' => $new_total_price,
-                            'total_unit' => $new_total_units,
-                            'total_recovery' => $new_total_recovery
-                        ]);
+
+                        $query = DB::table('pallet')->where('id',$pallet->id);   
+                        $query ->increment('total_price', $total_price);
+                        $query ->increment('total_unit', $total_units);
+                        $query ->increment('total_recovery', $total_recovery);
+        
+        
                         ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
             
             
@@ -344,9 +342,7 @@ class PalletsController extends Controller
                             $total_recovery += (float) $products->total_recovery;
                         }
             
-                        $new_total_price = $pallet->total_price + $total_price;
-                        $new_total_units = $pallet->total_unit + $total_units;
-                        $new_total_recovery = $pallet->total_recovery + $total_recovery;
+                       
             
                         foreach ($scanned_products_with_lqin as $scannedids) {
                             PalletProductRelation::Create([
@@ -356,11 +352,14 @@ class PalletsController extends Controller
                                 'type' => 'LQIN-ID'
                             ]);
                         }
-                        $pallet->update([
-                            'total_price' => $new_total_price,
-                            'total_unit' => $new_total_units,
-                            'total_recovery' => $new_total_recovery
-                        ]);
+
+
+                          $query = DB::table('pallet')->where('id',$pallet->id);   
+                          $query ->increment('total_price', $total_price);
+                          $query ->increment('total_unit', $total_units);
+                          $query->increment('total_recovery', $total_recovery);
+
+
             
                         ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->bol_id)->update(['pallet_id' => $pallet->id]);
                         return true;
