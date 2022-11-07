@@ -59,7 +59,7 @@
                                 <div class="pop" >
 
                                 <a href="#" id="pop">
-                                    <img style=" height: 40px;width: 40px;border-radius: 10%;" src="https://s3.eu-central-1.amazonaws.com/bootstrapbaymisc/blog/24_days_bootstrap/sheep-3.jpg" >
+                                    <img style=" height: 40px;width: 40px;border-radius: 10%;" src="https://cdn-icons-png.flaticon.com/512/5676/5676330.png" >
                                     <input value="{{ $pallet->created_at }}" type="hidden"> 
                                     <input value="{{ $pallet->created_at }}" type="hidden" class="updated"> 
 
