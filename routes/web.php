@@ -74,6 +74,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::post('pallets/delete', [PalletsAPIController::class, 'removePallets'])->name('delete-product-from-pallet');
     Route::post('pallets/undo', [PalletsController::class, 'undoPallets']);
+    Route::post('pallets/deleteFullPallet', [PalletsController::class, 'deleteFullPallets']);
     Route::resource('pallets', PalletsController::class);
 
     Route::get('unknown', [PalletsController::class, 'unknown']);

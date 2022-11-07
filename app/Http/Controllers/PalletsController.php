@@ -372,77 +372,6 @@ class PalletsController extends Controller
 
    
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    // public function deletePalletsWithBol(Request $request)
-    // {
-
-
-
-
-    //     $pallet = Pallets::where('id', $request->id)->first();
-    //     $data = unserialize($pallet->bol_ids);
-
-    //     if (($key = array_search($request->bol_id, $data)) !== false || ($key = array_search($request->package_id, $data)) !== false) {
-    //         unset($data[$key]);
-    //     }
-
-    //     ScannedProducts::where('bol', $request->bol_id)->orWhere('package_id', $request->package_id)->update(['pallet_id' => NULL]);
-
-    //     $total_price = 0;
-    //     $total_units = 0;
-    //     foreach ($data as $value) {
-    //         $products = ScannedProducts::where('bol', $value)->orWhere('package_id', $value)->get(['units', 'unit_cost', 'total_cost']);
-
-    //         foreach ($products as $product) {
-    //             $total_price += (float) $product->total_cost;
-    //             $total_units += (int) $product->units;
-    //         }
-    //     }
-
-    //     $pallet->update([
-    //         'bol_ids' => serialize($data),
-    //         'total_price' => $total_price,
-    //         'total_unit' => $total_units,
-    //     ]);
-
-    //     return response()->json(array('code' => '201', 'message' => 'done'));
-    // }
-
-    // public function undoPallets(Request $request)
-    // {
-    //     $pallet = Pallets::where('id', $request->id)->first();
-    //     $data = unserialize($pallet->bol_ids);
-
-    //     if (($key = array_search(end($data), $data)) !== false) {
-    //         ScannedProducts::where('bol', $data[$key])->orWhere('package_id', $data[$key])->update(['pallet_id' => NULL]);
-    //         unset($data[$key]);
-    //     }
-
-
-    //     $total_price = 0;
-    //     $total_units = 0;
-    //     foreach ($data as $value) {
-    //         $products = ScannedProducts::where('bol', $value)->get(['units', 'unit_cost', 'total_cost']);
-
-    //         foreach ($products as $product) {
-    //             $total_price += (float) $product->total_cost;
-    //             $total_units += (int) $product->units;
-    //         }
-    //     }
-
-    //     $pallet->update([
-    //         'bol_ids' => serialize($data),
-    //         'total_price' => $total_price,
-    //         'total_unit' => $total_units,
-    //     ]);
-
-    //     return response()->json(array('code' => '201', 'message' => 'done'));
-    // }
 
     public function unknown()
     {
@@ -470,37 +399,37 @@ class PalletsController extends Controller
         ]);
     }
 
-    public function destroy($id)
-    {
-        $pallet = Pallets::where('id', $id)->first();
-        ScannedProducts::where('pallet_id', $id)->update(['pallet_id' => NULL]);
+    // public function destroy($id)
+    // {
+    //     $pallet = Pallets::where('id', $id)->first();
+    //     ScannedProducts::where('pallet_id', $id)->update(['pallet_id' => NULL]);
 
-        if ($pallet->bol_ids) {
-            $data = unserialize($pallet->bol_ids);
+    //     if ($pallet->bol_ids) {
+    //         $data = unserialize($pallet->bol_ids);
 
-            $total_price = 0;
-            $total_units = 0;
-            foreach ($data as $value) {
-                $products = ScannedProducts::where('bol', $value)->get(['units', 'unit_cost', 'total_cost']);
+    //         $total_price = 0;
+    //         $total_units = 0;
+    //         foreach ($data as $value) {
+    //             $products = ScannedProducts::where('bol', $value)->get(['units', 'unit_cost', 'total_cost']);
 
-                foreach ($products as $product) {
-                    $total_price += (float) $product->total_cost;
-                    $total_units += (int) $product->units;
-                }
-            }
+    //             foreach ($products as $product) {
+    //                 $total_price += (float) $product->total_cost;
+    //                 $total_units += (int) $product->units;
+    //             }
+    //         }
 
-            $pallet->update([
-                'bol_ids' => serialize($data),
-                'total_price' => $total_price,
-                'total_unit' => $total_units,
-            ]);
-        }
+    //         $pallet->update([
+    //             'bol_ids' => serialize($data),
+    //             'total_price' => $total_price,
+    //             'total_unit' => $total_units,
+    //         ]);
+    //     }
 
-        Pallets::findorFail($id)->update(['category_id' => null]);
-        $pallet->container()->detach();
-        $pallet->delete();
-        return redirect('/pallets');
-    }
+    //     Pallets::findorFail($id)->update(['category_id' => null]);
+    //     $pallet->container()->detach();
+    //     $pallet->delete();
+    //     return redirect('/pallets');
+    // }
 
     public function updatePalletDescription(Request $request)
     {
@@ -508,4 +437,7 @@ class PalletsController extends Controller
 
         return redirect('pallets/' . $request->pallet_id . '/edit');
     }
+
+
+  
 }

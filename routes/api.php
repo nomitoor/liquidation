@@ -23,6 +23,7 @@ Route::post('pallet/store', [PalletsAPIController::class, 'storeAPI']);
 Route::get('pallet/view', [PalletsAPIController::class, 'allPallets']);
 Route::get('pallet/view/{id}', [PalletsAPIController::class, 'getPallet']);
 Route::post('manifests/details', [PalletsAPIController::class, 'getManifestDetails']);
+Route::post('pallet/deleteFullPallet', [PalletsAPIController::class, 'deleteFullPallets']);
 
 Route::post('pallets/update/{pallet}', [PalletsAPIController::class, 'addToPallet']);
 Route::post('manifest/add-to-unknown', [PalletsAPIController::class, 'addToUknown']);

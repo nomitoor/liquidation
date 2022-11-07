@@ -609,4 +609,35 @@ class PalletsAPIController extends Controller
             return response()->json(array('message' => 'Not found', 'code' => '404'));
         }
     }
+
+
+    public function deleteFullPallets(Request $pallet){
+
+        try {
+          
+           $requestedPallet = Pallets::where('id', $pallet->id)->first();
+           $relationProducts = PalletProductRelation::where('pallet_id', $pallet->id);
+
+
+           if($requestedPallet){
+            if ($requestedPallet != null) {
+                $requestedPallet->container()->detach();
+                $requestedPallet->delete();
+               }
+               if ($relationProducts != null) {
+                $relationProducts->delete();
+               }
+               return response()->json(array('code' => 200, 'message' => 'Pallet Has Been Deleted'));
+           }else{
+            return response()->json(array('code' => 404, 'message' => 'Pallet Not Found'));
+           }
+       
+          } catch (\Exception $e) {
+            return response()->json(array('code' => 400, 'message' => $e));
+          }
+
+       
+       
+
+    }
 }

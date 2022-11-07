@@ -40,26 +40,39 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>pallet id</th>
+                                <th>Pallet Image</th>
+                                <th>id</th>
                                 <th>Category</th>
-                                <th>Total price</th>
-                                <th>Total units</th>
-                                <th>Total Recovery</th>
+                                <th>Cost</th>
+                                <th>Units</th>
+                                <th>Recovery</th>
                                 <th>Description</th>
-                                <th>Createt at</th>
+                                
                                 <th style="width: 260px;">Actions</th>
+
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($pallets as $pallet)
                             <tr>
+                                <td>
+                                <div class="pop" >
+
+                                <a href="#" id="pop">
+                                    <img style=" height: 40px;width: 40px;border-radius: 10%;" src="https://s3.eu-central-1.amazonaws.com/bootstrapbaymisc/blog/24_days_bootstrap/sheep-3.jpg" >
+                                    <input value="{{ $pallet->created_at }}" type="hidden"> 
+                                    <input value="{{ $pallet->created_at }}" type="hidden" class="updated"> 
+
+                                </a>
+</div>
+                                </td>
                                 <td>{{ 'DE'.sprintf("%05d", $pallet->id) }}</td>
                                 <td>{{ $pallet->category->title ?? '-' }}</td>
                                 <td>{{ $pallet->total_price }}</td>
                                 <td>{{ $pallet->total_unit }}</td>
                                 <td>{{ $pallet->total_recovery }}</td>
                                 <td>{{ $pallet->description }}</td>
-                                <td>{{ $pallet->created_at }}</td>
+                               
                                 <td>
                                     <a href="{{ route('pallets.show', $pallet->id) }}" class="btn btn-warning btn-sm">
                                         View
@@ -68,11 +81,18 @@
                                         Edit
                                     </a>
 
-                                    <form onSubmit="return confirm('Do you want to delete this pallet?')" action="{{ url('/pallets', ['pallet' => $pallet->id]) }}" method="post">
+                                    <a onclick="deleteAllPallets({{ $pallet->id }})"  class="btn btn-danger btn-sm">
+                                        Delete
+                                    </a>
+                                    <!-- <form onSubmit="return confirm('Do you want to delete this pallet?')" action="{{ url('/pallets', ['pallet' => $pallet->id]) }}" method="post">
                                         <input class="btn btn-danger btn-sm" type="submit" value="Delete" />
                                         <input type="hidden" name="_method" value="delete" />
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                     </form>
+                                   -->
+                                </td>
+                                <td>
+                                
                                 </td>
                             </tr>
                             @endforeach
@@ -85,7 +105,21 @@
     </div>
 </section>
 
-<!--/ Ajax Sourced Server-side -->
+<div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" data-dismiss="modal">
+      <div class="modal-content"  >              
+        <div class="modal-body">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+             <img src="" class="imagepreview" style="width: 100%;" >
+        </div> 
+     <div class="modal-footer">
+       <div class="col-xs-12">
+           <p class="text-right">Created At  --  Updated At</p>
+           <p class="text-left"></p>
+       </div>
+     </div>         
+   </div>
+ </div>
 @endsection
 
 
@@ -103,6 +137,15 @@
 <!-- <script src="{{ asset(mix('js/scripts/tables/table-datatables-advanced.js')) }}"></script> -->
 
 <script>
+
+$(function() {
+    $('.pop').on('click', function() {
+        $('.imagepreview').attr('src', $(this).find('img').attr('src'));
+        $('.text-left').text($(this).find('input').attr('value')+'  --  '+$('.updated').attr('value'));
+
+        $('#imagemodal').modal('show');   
+    });     
+});
     function viewProducts(id) {
         alert(id)
     }
@@ -149,5 +192,33 @@
             }
         });
     }
+
+    function deleteAllPallets(id) {
+        var result = confirm("Are your sure you want delete this Pallet?");
+        if (result) {
+            event.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: 'api/pallet/deleteFullPallet',
+                data: {
+                    '_token': '<?php echo csrf_token(); ?>',
+                    'id': id,
+                },
+                success: function(data) {
+                    if (data.code == 200) {
+                        location.reload()
+                    }else{
+                        alert(data.message);
+                    }
+                }
+            });
+        }
+    }
 </script>
+<style>
+  .pallet-image{
+ 
+}
+
+</style>
 @endsection
