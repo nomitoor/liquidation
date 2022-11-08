@@ -49,14 +49,11 @@ class PalletsAPIController extends Controller
 
 
 
-
+    // THIS NEEDS TO BE UPDATED.
+    // THIS I have to update.
     public function getPallet(Request $request)
     {
         $pallet = Pallets::with('category')->find($request->id);
-        // if (count($pallet)) {
-        //        } else {
-        //     return response()->json(array('code' => '404', 'message' => 'Pallet Not Found'));
-        // }
         $scanned_products = ScannedProducts::where('pallet_id', $pallet->id)->get();
         return response()->json(array('code' => '201', 'pallet_data' => $pallet, 'products' => $scanned_products, 'message' => 'Pallet Found'));
     }
