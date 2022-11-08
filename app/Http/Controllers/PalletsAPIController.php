@@ -32,6 +32,7 @@ class PalletsAPIController extends Controller
             'total_price' => 0,
             'total_unit' => 0,
             'total_recovery' => 0,
+            'pallet_image' => 'https://liquidation-bucket.s3.eu-central-1.amazonaws.com/pallets/default-pallet.png'
         ]);
 
         return response()->json(array('message' => 'Pallet Created successfully', 'id' => $pallet->id));
