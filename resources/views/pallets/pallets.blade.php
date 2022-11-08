@@ -68,9 +68,9 @@
                                 </td>
                                 <td>{{ 'DE'.sprintf("%05d", $pallet->id) }}</td>
                                 <td>{{ $pallet->category->title ?? '-' }}</td>
-                                <td>{{ $pallet->total_price }}</td>
+                                <td>{{ round($pallet->total_price,2) }}</td>
                                 <td>{{ $pallet->total_unit }}</td>
-                                <td>{{ $pallet->total_recovery }}</td>
+                                <td>{{  round($pallet->total_recovery,2) }}</td>
                                 <td>{{ $pallet->description }}</td>
                                
                                 <td>
