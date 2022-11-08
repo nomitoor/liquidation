@@ -582,10 +582,10 @@ class PalletsAPIController extends Controller
     
                 }
         
-        
-            DB::table('pallet')->decrement('total_price', $total_price);
-            DB::table('pallet')->decrement('total_unit', $total_units);
-            DB::table('pallet')->decrement('total_recovery', $total_recovery);
+            $query = DB::table('pallet')->where('id',$pallet->id);   
+            $query ->decrement('total_price', $total_price);
+            $query ->decrement('total_unit', $total_units);
+            $query ->decrement('total_recovery', $total_recovery);
             $bol_ids_data->delete();
             return response()->json(array('code' => '201', 'message' => 'Pallet removed from the list'));
       
