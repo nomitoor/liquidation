@@ -85,7 +85,7 @@ class PalletsController extends Controller
             'total_price' => 0,
             'total_unit' => 0,
             'total_recovery' => 0,
-            'pallet_image' => 'https://liquidation-bucket.s3.eu-central-1.amazonaws.com/pallets/default-pallet.png'
+            'pallet_image' => 'default-pallet.png'
         ]);
 
         return redirect('pallets/' . $pallet->id . '/edit');

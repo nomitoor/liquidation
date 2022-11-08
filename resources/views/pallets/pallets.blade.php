@@ -59,7 +59,7 @@
                                 <div class="pop" >
 
                                 <a href="#" id="pop">
-                                    <img style=" height: 40px;width: 40px;border-radius: 10%;" src="{{ $pallet->pallet_image }}" >
+                                    <img style=" height: 40px;width: 40px;border-radius: 10%;" src="{{ 'https://liquidation-bucket.s3.eu-central-1.amazonaws.com/pallets/'.$pallet->pallet_image }}" >
                                     <input value="{{ $pallet->created_at }}" type="hidden"> 
                                     <input value="{{ $pallet->created_at }}" type="hidden" class="updated"> 
 

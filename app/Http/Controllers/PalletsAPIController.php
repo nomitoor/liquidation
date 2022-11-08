@@ -32,7 +32,7 @@ class PalletsAPIController extends Controller
             'total_price' => 0,
             'total_unit' => 0,
             'total_recovery' => 0,
-            'pallet_image' => 'https://liquidation-bucket.s3.eu-central-1.amazonaws.com/pallets/default-pallet.png'
+            'pallet_image' => 'default-pallet.png'
         ]);
 
         return response()->json(array('message' => 'Pallet Created successfully', 'id' => $pallet->id));
@@ -555,7 +555,7 @@ class PalletsAPIController extends Controller
    
    
    
-        public function removePallets(Request $request)
+    public function removePallets(Request $request)
     {
 
 
@@ -592,6 +592,8 @@ class PalletsAPIController extends Controller
         }
 
          }
+
+
 
 
     public function findBolFromLpn(Request $request)
@@ -638,4 +640,26 @@ class PalletsAPIController extends Controller
        
 
     }
+
+
+
+
+
+    public function uploadImageToServer(Request $request)
+    {
+        if($request->has('image')){
+            $file  = $request->file('image');
+            $ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+            $path  = "pallets/P-".$request->pallet_id."-image.".$ext;
+            $path_to_store_db = "P-".$request->pallet_id."-image.".$ext;
+            $file_path = \Storage::disk("s3")->put($path,file_get_contents($file));
+            $foundPallet = Pallets::where('id', $request->pallet_id)->update(['pallet_image' => $path_to_store_db]);
+           return response()->json(array('message' =>  'File Sent to Server' , 'code' => 200));
+        } else{
+            return response()->json(array('message' =>  'Unable to Upload' , 'code' => 404));
+
+        }
+
+    }
+
 }
