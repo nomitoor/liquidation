@@ -582,7 +582,7 @@ class PalletsAPIController extends Controller
     
                 }
         
-            $query = DB::table('pallet')->where('id',$pallet->id);   
+            $query = DB::table('pallet')->where('id', $request->id);   
             $query ->decrement('total_price', $total_price);
             $query ->decrement('total_unit', $total_units);
             $query ->decrement('total_recovery', $total_recovery);
