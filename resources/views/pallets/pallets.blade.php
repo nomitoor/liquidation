@@ -40,7 +40,7 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Pallet Image</th>
+                                <th>Image</th>
                                 <th>id</th>
                                 <th>Category</th>
                                 <th>Cost</th>
